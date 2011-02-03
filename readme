@@ -1,0 +1,36 @@
+audiolib.js is a powerful audio tools library for javascript.
+
+Amongst other things, it provides AudioDevice class which has a consistent callback API that supports both Firefox4's Audio Data API and Chrome 10's Web Audio API.
+
+Usage:
+var dev = new AudioDevice(sampleRate, channelCount, function(sampleBuffer){
+	// Fill the buffer here.
+});
+
+// Effects
+
+var del = new Delay(sampleRate, delay, feedback);
+
+var flt = new IIRFilter(sampleRate, cutoffFreq, resonance);
+
+var flt = new LP12Filter(sampleRate, cutoffFreq, resonance);
+
+var flt = new LowPassFilter(sampleRate, cutoffFreq, resonance);
+
+var dist = new Distortion(samplerate);
+
+// to feed a new input sample
+effect.pushSample(sample);
+// to get the output
+sample = effect.getMix();
+
+// Synthesis
+
+var osc = new Oscillator(samplerate, frequency);
+
+// to generate a new sample
+osc.generate(fm1, fm2, ..., fmX);
+// to get the output
+osc.getMix();
+
+Licensed under MIT license.
