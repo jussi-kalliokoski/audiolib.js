@@ -1,7 +1,20 @@
 (function (global){
-	function mozAudioDevice(sampleRate, channelCount, readFn){
-		var	preBufferSize		= sampleRate / 2,
-			currentWritePosition	= 0,
+	function propertyEnum(arr){
+		var	i, l	= arr.length,
+			result	= {};
+		for (i=0; i<l; i++){
+			result[arr[i]] = true;
+		}
+		return result;
+	}
+
+	var	allowedBufferSizes	= propertyEnum([256, 512, 1024, 2048, 4096, 8192, 16384]),
+		allowedSampleRates	= propertyEnum([44100, 22050]);
+
+	function mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : sampleRate / 2;
+		var	currentWritePosition	= 0,
 			tail			= null,
 			audioDevice		= new Audio(),
 			timer;
@@ -41,9 +54,11 @@
 		this.sampleRate = sampleRate;
 	}
 
-	function chromeAudioDevice(sampleRate, channelCount, readFn){
-		var	context	= new (global.AudioContext || global.webkitAudioContext)(sampleRate),
-			node	= context.createJavaScriptNode(4096, 0, channelCount);
+	function webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
+		var	context		= new (global.AudioContext || global.webkitAudioContext)(sampleRate),
+			node		= context.createJavaScriptNode(4096, 0, channelCount);
 
 		function bufferFill(e){
 			var	outputBuffer	= e.outputBuffer,
@@ -76,16 +91,16 @@
 		this.sampleRate = context.sampleRate;
 	}
 
-	function AudioDevice(sampleRate, channelCount, readFn){
+	function AudioDevice(sampleRate, channelCount, readFn, preBufferSize){
 		try{
-			return new mozAudioDevice(sampleRate, channelCount, readFn);
-		}catch(e){}
+			return new mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+		}catch(e1){}
 		
 		try{
-			return new chromeAudioDevice(sampleRate, channelCount, readFn);
-		}catch(e){}
+			return new webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+		}catch(e2){}
 		throw "No audio device available.";
 	}
 
 	global.AudioDevice = AudioDevice;
-})(this);
+}(this));
