@@ -43,7 +43,7 @@
 
 	function chromeAudioDevice(sampleRate, channelCount, readFn){
 		var	context	= new (global.AudioContext || global.webkitAudioContext)(sampleRate),
-			node	= context.createJavaScriptNode(512, 0, channelCount);
+			node	= context.createJavaScriptNode(4096, 0, channelCount);
 
 		function bufferFill(e){
 			var	outputBuffer	= e.outputBuffer,
