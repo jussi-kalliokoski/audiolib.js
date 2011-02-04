@@ -53,6 +53,7 @@
 		};
 
 		this.sampleRate = sampleRate;
+		this.type = 'moz';
 	}
 
 	function webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
@@ -90,6 +91,28 @@
 		};
 
 		this.sampleRate = context.sampleRate;
+		this.type = 'webkit';
+	}
+
+	function dummyAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
+		var 	timer,
+			arrayType = window.Float32Array || Array;
+
+		function bufferFill(){
+			var	soundData = new arrayType(preBufferSize);
+			readFn(soundData);
+		}
+
+		this.kill = function(){
+			clearInterval(timer);
+		}
+
+		setInterval(bufferFill, preBufferSize / sampleRate * 1000);
+
+		this.sampleRate = sampleRate;
+		this.type = 'dummy';
 	}
 
 	function AudioDevice(sampleRate, channelCount, readFn, preBufferSize){
@@ -100,8 +123,15 @@
 		try{
 			return new webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
 		}catch(e2){}
+
+		if (AudioDevice.dummy){
+			return new dummyAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+		}
+
 		throw "No audio device available.";
 	}
+
+	AudioDevice.dummy = false;
 
 	global.AudioDevice = AudioDevice;
 }(this));
