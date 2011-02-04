@@ -1,4 +1,4 @@
-function MidiEventTracker(midiport){
+function MidiEventTracker(){
 	var	self		= this,
 		pressedKeys	= [];
 	this.velocity = 0; // 0.0 - 1.0
