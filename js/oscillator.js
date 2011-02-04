@@ -30,7 +30,7 @@ function Oscillator(samplerate, freq)
 		}
 	};
 	this.getMix = function(){
-		return waveShapes[this.waveShape];
+		return waveShapes[this.waveShape]();
 	};
 	this.getPhase = function(){
 		return p;
