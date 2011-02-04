@@ -98,7 +98,7 @@
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
 		var 	timer,
-			arrayType = window.Float32Array || Array;
+			arrayType = window.Float32Array || Array;
 
 		function bufferFill(){
 			var	soundData = new arrayType(preBufferSize);
