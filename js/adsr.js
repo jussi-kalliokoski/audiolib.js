@@ -20,7 +20,7 @@ function ADSREnvelope(sampleRate, attack, decay, sustain, release){
 					state = 2;
 				}
 			}, function(){ // 2: Sustain
-				self.value = self.sustain.value;
+				self.value = self.sustain;
 			}, function(){ // 3: Release
 				self.value = Math.max(0, self.value - 1000 / self.sampleRate / self.decay);
 		}];
