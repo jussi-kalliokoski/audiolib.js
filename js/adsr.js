@@ -15,7 +15,7 @@ function ADSREnvelope(sampleRate, attack, decay, sustain, release){
 					state = 1;
 				}
 			}, function(){ // 1: Decay
-				self.value += 1000 / self.sampleRate / self.decay * self.sustain;
+				self.value -= 1000 / self.sampleRate / self.decay * self.sustain;
 				if (self.value <= self.sustain){
 					state = 2;
 				}
