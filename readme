@@ -33,4 +33,8 @@ osc.generate(fm1, fm2, ..., fmX);
 // to get the output
 osc.getMix();
 
+A few live demos:
+http://niiden.com/simplesynth/simplesynth.html
+http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should)
+
 Licensed under MIT license.
