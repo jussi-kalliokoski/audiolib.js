@@ -1,28 +1,24 @@
 function ADSREnvelope(sampleRate, attack, decay, sustain, release){
-	this.attack	= attack	|| 50;
-	this.decay	= decay		|| 50;
+	this.attack	= attack	|| 50; // ms
+	this.decay	= decay		|| 50; // ms
 	this.sustain	= sustain	|| 1; // 0.0 - 1.0
-	this.release	= release	|| 50;
+	this.release	= release	|| 50; // ms
 
 	this.value = 0;
 
 	var	self	= this,
 		state	= 3,
 		gate	= false,
-		states	= [
-			function(){ // 0: Attack
+		states	= [function(){ // 0: Attack
 				self.value += 1000 / self.sampleRate / self.attack;
 				if (self.value >= 1){
 					state = 1;
 				}
-			},
-			function(){ // 1: Decay
+			}, function(){ // 1: Decay
 				self.value += 1000 / self.sampleRate / self.decay * self.sustain;
-			},
-			function(){ // 2: Sustain
+			}, function(){ // 2: Sustain
 				self.value = self.sustain.value;
-			},
-			function(){ // 3: Release
+			}, function(){ // 3: Release
 				self.value = Math.max(0, self.value - 1000 / self.sampleRate / self.decay);
 		}];
 
