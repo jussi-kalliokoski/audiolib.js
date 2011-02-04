@@ -3,7 +3,8 @@ function Oscillator(samplerate, freq)
 	var	phase		= 0,
 		p		= 0,
 		FullPI		= Math.PI * 2,
-		wavetable	= new Float32Array(1);
+		wavetable	= new Float32Array(1),
+		waveShapes;
 	this.frequency = 440;
 	if (freq){
 		this.frequency = freq;
@@ -29,25 +30,7 @@ function Oscillator(samplerate, freq)
 		}
 	};
 	this.getMix = function(){
-		switch(this.waveShape){
-			case 1:
-				return this.triangle();
-				break;
-			case 2:
-				return this.pulse();
-				break;
-			case 3:
-				return this.sawtooth();
-				break;
-			case 4:
-				return this.invSawtooth();
-				break;
-			case 5:
-				return this.square();
-				break;
-			default:
-				return this.sine();
-		}
+		return waveShapes[this.waveShape];
 	};
 	this.getPhase = function(){
 		return p;
@@ -93,4 +76,6 @@ function Oscillator(samplerate, freq)
 	this.wavetable = function(){
 		return wavetable[Math.floor(p * wavetable.length)];
 	};
+
+	waveShapes = this.waveShapes = [this.sine, this.triangle, this.pulse, this.sawtooth, this.invSawtooth, this.square];
 }
