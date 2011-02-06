@@ -44,6 +44,15 @@ adsr.generate();
 // Get the value
 adsr.value; // 0.0 - 1.0, unless you put something more as sustain
 
+var stepSeq = new StepSequencer(sampleRate, stepLength, stepArray, attack);
+
+// To start the sequence over
+stepSeq.triggerGate();
+// to update the value ** Do this on every sample fetch for this to work properly. also returns the current value
+stepSeq.generate();
+// Get the value
+stepSeq.value; // 0.0 - 1.0
+
 A few live demos:
 http://niiden.com/simplesynth/simplesynth.html
 http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should work)
