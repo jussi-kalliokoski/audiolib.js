@@ -17,7 +17,7 @@ var flt = new LP12Filter(sampleRate, cutoffFreq, resonance);
 
 var flt = new LowPassFilter(sampleRate, cutoffFreq, resonance);
 
-var dist = new Distortion(samplerate);
+var dist = new Distortion(sampleRate);
 
 // to feed a new input sample
 effect.pushSample(sample);
@@ -26,15 +26,26 @@ sample = effect.getMix();
 
 // Synthesis
 
-var osc = new Oscillator(samplerate, frequency);
+var osc = new Oscillator(sampleRate, frequency);
 
 // to generate a new sample
 osc.generate(fm1, fm2, ..., fmX);
 // to get the output
 osc.getMix();
 
+// Envelopes
+
+var adsr = new ADSREnvelope(sampleRate, attack, decay, sustain, release);
+
+// to trigger the gate
+adsr.triggerGate(isOpen);
+// to update the value ** Do this on every sample fetch for this to work properly. also returns the current value
+adsr.generate();
+// Get the value
+adsr.value; // 0.0 - 1.0, unless you put something more as sustain
+
 A few live demos:
 http://niiden.com/simplesynth/simplesynth.html
-http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should)
+http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should work)
 
 Licensed under MIT license.
