@@ -22,7 +22,7 @@ function ADSREnvelope(sampleRate, attack, decay, sustain, release){
 			}, function(){ // 2: Sustain
 				self.value = self.sustain;
 			}, function(){ // 3: Release
-				self.value = Math.max(0, self.value - 1000 / self.sampleRate / self.decay);
+				self.value = Math.max(0, self.value - 1000 / self.sampleRate / self.release);
 		}];
 
 	this.generate = function(){

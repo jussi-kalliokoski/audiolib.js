@@ -4,7 +4,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 	var	self	= this,
 		buffer, bufferPos, sample;
 
-	self.delayTime	= delayTime || 30;
+	self.delayTime	= delayTime || 30;
 	self.depth	= depth	|| 3;
 	self.freq	= freq || 0.1;
 
