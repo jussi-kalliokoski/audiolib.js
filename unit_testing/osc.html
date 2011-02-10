@@ -18,6 +18,8 @@ function testOscillator(waveshape){
 		osc.generate();
 		context.lineTo(i, (osc.getMix() + 1) * height / 2);
 	}
+	context.moveTo(0, height / 2);
+	context.lineTo(width, height / 2);
 	context.stroke();
 }
 
@@ -30,6 +32,14 @@ function testOscillators(){
 
 window.onload = testOscillators;
 		</script>
+		<style>
+canvas
+{
+	display: block;
+	border: 1px solid black;
+	margin-bottom: 20px;
+}
+		<style>
 	</head>
 	<body>
 	</body>
