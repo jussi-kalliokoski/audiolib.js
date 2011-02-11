@@ -1,14 +1,15 @@
 // Requires IIRFilter
 
-function Distortion(samplerate)
+function Distortion(sampleRate)
 {
-	var	hpf1	= new IIRFilter(samplerate, 720.484),
-		lpf1	= new IIRFilter(samplerate, 723.431),
-		hpf2	= new IIRFilter(samplerate, 1.0),
+	var	hpf1	= new IIRFilter(sampleRate, 720.484),
+		lpf1	= new IIRFilter(sampleRate, 723.431),
+		hpf2	= new IIRFilter(sampleRate, 1.0),
 		smpl	= 0.0;
 	this.gain = 4;
 	this.master = 1;
-	this.samplerate = samplerate;
+	this.sampleRate = sampleRate;
+	this.filters = [hpf1, lpf1, hpf2];
 	this.pushSample = function(s)
 	{
 		hpf1.pushSample(s);
@@ -21,7 +22,7 @@ function Distortion(samplerate)
 		}
 		lpf1.pushSample(smpl);
 		hpf2.pushSample(lpf1.getMix(0));
-		smpl = hpf2.getMix(1) * this.master.value;
+		smpl = hpf2.getMix(1) * this.master;
 	};
 	this.getMix = function(){
 		return smpl;

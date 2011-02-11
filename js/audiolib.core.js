@@ -15,4 +15,17 @@ audioLib.Capper = function(sampleRate, cap){
 	};
 };
 
+audioLib.Expo = function(sampleRate, param){
+	var	self	= this;
+		sample	= 0.0;
+	self.sampleRate = sampleRate;
+	self.param = param || 0.8;
+	self.pushSample = function(s){
+		sample = (s < 0 ? -Math.pow(self.param * 2, -s) : Math.pow(self.param * 2, s) ) / 10;
+	};
+	self.getMix = function(){
+		return sample;
+	};
+}
+
 }(this));
