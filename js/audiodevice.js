@@ -168,26 +168,23 @@
 			return intToString(Math.floor((sample + 1) * sampleSize / 2), bytesPerSample);
 		}
 		// Create wave header
-		head =	'WAVEfmt ' +
-			intToString(16, 4) +
-			intToString(1, 2) +
-			intToString(channelCount, 2) +
-			intToString(sampleRate, 4) +
-			intToString(byteRate, 4) +
-			intToString(blockAlign, 2) +
-			intToString(bitsPerSample, 2);
-		data = 'RIFF' + intToString(head.length, 4) + head;
+		data =	'RIFF' +			// RIFF identifier	4 bytes		char
+			intToString(38 + length, 4) +	// length		4 bytes		uint
+			'WAVE' +			// wave identifier	4 bytes		char
+			'fmt ' +			// sGroupId		4 bytes		char
+			intToString(18, 4) +		// dwChunkSize		4 bytes		uint
+			intToString(1, 2) +		// wFormatTag		2 bytes		ushort
+			intToString(channelCount, 2) +	// wChannels		2 bytes		ushort
+			intToString(sampleRate, 4) +	// dwSamplesPerSec	4 bytes		uint
+			intToString(byteRate, 4) +	// dwAvgBytesPerSec	4 bytes		uint
+			intToString(blockAlign, 2) +	// wBlockAlign		2 bytes		ushort
+			intToString(bitsPerSample, 4) +	// dwBitsPerSample	4 bytes		uint
+			'data' +			// chunk identifier	4 bytes		char
+			intToString(length, 4);		// chunk length		4 bytes		uint
 
-		for (i=0, n=0; i<length; i++, n = (n+1)%65500){
-			if (!n){
-				if (i){
-					data += chunk;
-				}
-				chunk = 'data' + intToString( length - i > 65500 ? 65500 : length - i, 4 );
-			}
-			chunk += sampleToString(input[i]);
+		for (i=0; i<length; i++){
+			data += sampleToString(input[i]);
 		}
-		data += chunk;
 		return data;
 	}
 
