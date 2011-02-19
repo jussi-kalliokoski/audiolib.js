@@ -4,7 +4,8 @@
 		<script src=../audiolib.js></script>
 		<script>
 function testRecord(){
-	var	dev	= AudioDevice.createDummy(44100, 2, function(buffer){
+	AudioDevice.dummy = true;
+	var	dev	= AudioDevice(44100, 2, function(buffer){
 			var i, l = buffer.length;
 			for (i=0; i<l; i++){
 				osc.generate();

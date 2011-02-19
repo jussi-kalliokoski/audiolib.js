@@ -57,8 +57,9 @@
 		};
 		this.activeRecordings = [];
 
-		this.sampleRate = sampleRate;
-		this.type = 'moz';
+		this.sampleRate		= sampleRate;
+		this.channelCount	= channelCount;
+		this.type		= 'moz';
 	}
 
 	function webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
@@ -98,8 +99,9 @@
 		};
 		this.activeRecordings = [];
 
-		this.sampleRate = context.sampleRate;
-		this.type = 'webkit';
+		this.sampleRate		= context.sampleRate;
+		this.channelCount	= channelCount;
+		this.type		= 'webkit';
 	}
 
 	function dummyAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
@@ -122,8 +124,9 @@
 
 		setInterval(bufferFill, preBufferSize / sampleRate * 1000);
 
-		this.sampleRate = sampleRate;
-		this.type = 'dummy';
+		this.sampleRate		= sampleRate;
+		this.channelCount	= channelCount;
+		this.type		= 'dummy';
 	}
 
 	function AudioDevice(sampleRate, channelCount, readFn, preBufferSize){
@@ -151,9 +154,9 @@
 		channelCount = channelCount || 1;
 		bitsPerSample = bitsPerSample || 8;
 
-		var	blockAlign	= channelCount * bitsPerSample >> 3,
+		var	bytesPerSample	= bitsPerSample / 8,
 			byteRate	= sampleRate * blockAlign,
-			bytesPerSample	= bitsPerSample / 8,
+			blockAlign	= channelCount * bytesPerSample,
 			length		= input.length,
 			sampleSize	= Math.pow(2, bitsPerSample) - 1,
 			head,
@@ -172,21 +175,19 @@
 			intToString(sampleRate, 4) +
 			intToString(byteRate, 4) +
 			intToString(blockAlign, 2) +
-			intToString(bitsPerSample, 2) +
-			'data';
+			intToString(bitsPerSample, 2);
+		data = 'RIFF' + intToString(head.length, 4) + head;
 
 		for (i=0, n=0; i<length; i++, n = (n+1)%65500){
 			if (!n){
 				if (i){
-					data =	'RIFF' +
-						intToString( chunk.length, 4) +
-						chunk;
+					data += chunk;
 				}
-				chunk = head + intToString( length - i > 65500 ? 65500 : length - i, 4 );
+				chunk = 'data' + intToString( length - i > 65500 ? 65500 : length - i, 4 );
 			}
 			chunk += sampleToString(input[i]);
 		}
-		data = 'RIFF' + intToString(chunk.length, 4) + chunk;
+		data += chunk;
 		return data;
 	}
 
