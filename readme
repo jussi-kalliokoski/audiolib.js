@@ -53,6 +53,18 @@ stepSeq.generate();
 // Get the value
 stepSeq.value; // 0.0 - 1.0
 
+//Recording
+
+var rec = dev.record();
+
+// To stop
+rec.stop();
+// To export wav
+var audioElement = new Audio(
+	'data:audio/wav;base64,' +
+	btoa( rec.toWav() ) // presuming btoa is supported
+);
+
 A few live demos:
 http://niiden.com/simplesynth/simplesynth.html
 http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should work)
