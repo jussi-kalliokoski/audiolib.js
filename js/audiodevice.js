@@ -158,6 +158,7 @@
 			byteRate	= sampleRate * blockAlign,
 			blockAlign	= channelCount * bytesPerSample,
 			length		= input.length,
+			dLength		= length * bytesPerSample,
 			sampleSize	= Math.pow(2, bitsPerSample) - 1,
 			head,
 			i, n, m,
@@ -169,7 +170,7 @@
 		}
 		// Create wave header
 		data =	'RIFF' +			// RIFF identifier	4 bytes		char
-			intToString(38 + length, 4) +	// length		4 bytes		uint
+			intToString(38 + dLength, 4) +	// length		4 bytes		uint
 			'WAVE' +			// wave identifier	4 bytes		char
 			'fmt ' +			// sGroupId		4 bytes		char
 			intToString(18, 4) +		// dwChunkSize		4 bytes		uint
@@ -180,7 +181,7 @@
 			intToString(blockAlign, 2) +	// wBlockAlign		2 bytes		ushort
 			intToString(bitsPerSample, 4) +	// dwBitsPerSample	4 bytes		uint
 			'data' +			// chunk identifier	4 bytes		char
-			intToString(length, 4);		// chunk length		4 bytes		uint
+			intToString(dLength, 4);	// chunk length		4 bytes		uint
 
 		for (i=0; i<length; i++){
 			data += sampleToString(input[i]);
