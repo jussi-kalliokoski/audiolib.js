@@ -149,29 +149,31 @@
 		return length ? intToStr(integ & 255) + intToString(integ >> 8, length - 1) : '';
 	}
 
-	function arrayToWav(input, sampleRate, channelCount, bitsPerSample){
+	function arrayToWav(input, sampleRate, channelCount, bytesPerSample){
 		sampleRate = sampleRate || 44100;
 		channelCount = channelCount || 1;
-		bitsPerSample = bitsPerSample || 8;
+		bytesPerSample = bytesPerSample || 2;
 
-		var	bytesPerSample	= bitsPerSample / 8,
-			byteRate	= sampleRate * blockAlign,
+		var	bitsPerSample	= bytesPerSample * 8,
 			blockAlign	= channelCount * bytesPerSample,
+			byteRate	= sampleRate * blockAlign,
 			length		= input.length,
 			dLength		= length * bytesPerSample,
-			sampleSize	= Math.pow(2, bitsPerSample) - 1,
+			// A bit crazy... But fixes the problem of limits in 16 bit audio
+			sampleSize	= (bytesPerSample === 16) ? 65520 : Math.pow(2, bitsPerSample) - 1,
 			head,
 			i, n, m,
 			data		= '',
 			chunk		= '';
 
+
 		function sampleToString(sample){
 			return intToString(Math.floor((sample + 1) * sampleSize / 2), bytesPerSample);
 		}
 		// Create wave header
-		data =	'RIFF' +			// RIFF identifier	4 bytes		char
-			intToString(38 + dLength, 4) +	// length		4 bytes		uint
-			'WAVE' +			// wave identifier	4 bytes		char
+		data =	'RIFF' +			// sGroupID		4 bytes		char
+			intToString(38 + dLength, 4) +	// dwFileLength		4 bytes		uint
+			'WAVE' +			// sRiffType		4 bytes		char
 			'fmt ' +			// sGroupId		4 bytes		char
 			intToString(18, 4) +		// dwChunkSize		4 bytes		uint
 			intToString(1, 2) +		// wFormatTag		2 bytes		ushort
