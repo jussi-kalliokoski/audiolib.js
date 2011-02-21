@@ -152,7 +152,7 @@
 	function arrayToWav(input, sampleRate, channelCount, bytesPerSample){
 		sampleRate = sampleRate || 44100;
 		channelCount = channelCount || 1;
-		bytesPerSample = bytesPerSample || 2;
+		bytesPerSample = bytesPerSample || 1;
 
 		var	bitsPerSample	= bytesPerSample * 8,
 			blockAlign	= channelCount * bytesPerSample,
@@ -198,8 +198,8 @@
 	}
 
 	Recording.prototype = {
-		toWav: function(){
-			return arrayToWav(this.join(), this.boundTo.sampleRate, this.boundTo.channelCount);
+		toWav: function(bytesPerSample){
+			return arrayToWav(this.join(), this.boundTo.sampleRate, this.boundTo.channelCount, bytesPerSample);
 		}, add: function(buffer){
 			this.buffers.push(buffer);
 		}, clear: function(){
