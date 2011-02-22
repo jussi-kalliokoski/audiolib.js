@@ -40,7 +40,7 @@ function Oscillator(samplerate, freq)
 		phase = 0.0;
 	};
 	this.setWavetable = function(wt){
-		if (!wt instanceof Float32Array){
+		if (!wt instanceof arrayType){
 			return false;
 		}
 		wavetable = wt.slice(0);

@@ -2,7 +2,8 @@ function Delay(samplerate, time, feedback)
 {
 	var	self		= this,
 		bufferSize	= (!samplerate ? 44100 : samplerate) * 2,
-		buffer		= new Float32Array(bufferSize),
+		arrayType	= window.Float32Array || Array,
+		buffer		= new arrayType(bufferSize),
 		bufferPos	= 0,
 		speed		= 0,
 		prevTime	= 0;
