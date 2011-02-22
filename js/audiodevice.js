@@ -112,7 +112,7 @@
 			timer;
 
 		function bufferFill(){
-			var	soundData = new arrayType(preBufferSize);
+			var	soundData = new arrayType(preBufferSize * channelCount);
 			readFn(soundData);
 			self.recordData(soundData);
 		}
@@ -159,8 +159,8 @@
 			byteRate	= sampleRate * blockAlign,
 			length		= input.length,
 			dLength		= length * bytesPerSample,
-			// A bit crazy... But fixes the problem of limits in 16 bit audio
-			sampleSize	= (bytesPerSample === 16) ? 65520 : Math.pow(2, bitsPerSample) - 1,
+			silencePadding	= (Math.pow(2, bitsPerSample) - 1) / 2,
+			sampleSize	= bytesPerSample === 2 ? 32760 : silencePadding,
 			head,
 			i, n, m,
 			data		= '',
@@ -168,22 +168,22 @@
 
 
 		function sampleToString(sample){
-			return intToString(Math.floor((sample + 1) * sampleSize / 2), bytesPerSample);
+			return intToString(Math.floor(silencePadding + sample * sampleSize), bytesPerSample);
 		}
 		// Create wave header
 		data =	'RIFF' +			// sGroupID		4 bytes		char
-			intToString(38 + dLength, 4) +	// dwFileLength		4 bytes		uint
+			intToString(36 + dLength, 4) +	// dwFileLength		4 bytes		uint
 			'WAVE' +			// sRiffType		4 bytes		char
 			'fmt ' +			// sGroupId		4 bytes		char
-			intToString(18, 4) +		// dwChunkSize		4 bytes		uint
+			intToString(16, 4) +		// dwChunkSize		4 bytes		uint
 			intToString(1, 2) +		// wFormatTag		2 bytes		ushort
 			intToString(channelCount, 2) +	// wChannels		2 bytes		ushort
 			intToString(sampleRate, 4) +	// dwSamplesPerSec	4 bytes		uint
 			intToString(byteRate, 4) +	// dwAvgBytesPerSec	4 bytes		uint
 			intToString(blockAlign, 2) +	// wBlockAlign		2 bytes		ushort
-			intToString(bitsPerSample, 4) +	// dwBitsPerSample	4 bytes		uint
-			'data' +			// chunk identifier	4 bytes		char
-			intToString(dLength, 4);	// chunk length		4 bytes		uint
+			intToString(bitsPerSample, 2) +	// dwBitsPerSample	2 bytes		uint
+			'data' +			// sGroupId		4 bytes		char
+			intToString(dLength, 4);	// dwChunkSize		4 bytes		uint
 
 		for (i=0; i<length; i++){
 			data += sampleToString(input[i]);
