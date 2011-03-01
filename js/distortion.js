@@ -10,8 +10,7 @@ function Distortion(sampleRate)
 	this.master = 1;
 	this.sampleRate = sampleRate;
 	this.filters = [hpf1, lpf1, hpf2];
-	this.pushSample = function(s)
-	{
+	this.pushSample = function(s){
 		hpf1.pushSample(s);
 		smpl = hpf1.getMix(1) * this.gain;
 		smpl = Math.atan(smpl) + smpl;
@@ -23,6 +22,7 @@ function Distortion(sampleRate)
 		lpf1.pushSample(smpl);
 		hpf2.pushSample(lpf1.getMix(0));
 		smpl = hpf2.getMix(1) * this.master;
+		return smpl;
 	};
 	this.getMix = function(){
 		return smpl;

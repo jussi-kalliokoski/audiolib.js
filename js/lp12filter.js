@@ -1,15 +1,16 @@
 // Adapted from Corban Brook's dsp.js
 
 function LP12Filter(samplerate, cutoff, resonance){
-	this.cutoff = !cutoff ? 20000 : cutoff; // > 40
-	this.resonance = !resonance ? 1 : resonance; // 1 - 20
-	this.samplerate = samplerate;
 	var	self		= this,
 		vibraSpeed	= 0,
 		vibraPos	= 0,
 		pi2		= Math.PI * 2,
 		w, q, r, c,
 		prevCut, prevReso;
+
+	self.cutoff = !cutoff ? 20000 : cutoff; // > 40
+	self.resonance = !resonance ? 1 : resonance; // 1 - 20
+	self.samplerate = samplerate;
 
 	function calcCoeff(){
 		w = pi2 * self.cutoff / self.samplerate;
@@ -18,18 +19,19 @@ function LP12Filter(samplerate, cutoff, resonance){
 		c = r + 1 - 2 * Math.cos(w) * q;
 	}
 
-	this.pushSample = function(sample){
-		if (prevCut !== this.cutoff || prevReso !== this.resonance){
+	self.pushSample = function(sample){
+		if (prevCut !== self.cutoff || prevReso !== self.resonance){
 			calcCoeff();
-			prevCut = this.cutoff;
-			prevReso = this.resonance;
+			prevCut = self.cutoff;
+			prevReso = self.resonance;
 		}
 		vibraSpeed += (sample - vibraPos) * c;
 		vibraPos += vibraSpeed;
 		vibraSpeed *= r;
+		return vibraPos;
 	};
 
-	this.getMix = function(){
+	self.getMix = function(){
 		return vibraPos;
 	};
 

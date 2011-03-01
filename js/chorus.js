@@ -36,6 +36,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 		}
 
 		sample = buffer[delay];
+		return sample;
 	};
 	self.getMix = function(){
 		return sample;

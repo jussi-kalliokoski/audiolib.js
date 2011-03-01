@@ -9,6 +9,7 @@ audioLib.Capper = function(sampleRate, cap){
 	self.cap = cap || 1;
 	self.pushSample = function(s){
 		sample = s > self.cap ? 2 * self.cap - s : s < -self.cap ? -2 * self.cap - s : s;
+		return sample;
 	};
 	self.getMix = function(){
 		return sample;
@@ -22,6 +23,7 @@ audioLib.Expo = function(sampleRate, param){
 	self.param = param || 0.8;
 	self.pushSample = function(s){
 		sample = (s < 0 ? -Math.pow(self.param * 2, -s) : Math.pow(self.param * 2, s) ) / 10;
+		return sample;
 	};
 	self.getMix = function(){
 		return sample;

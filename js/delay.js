@@ -6,7 +6,10 @@ function Delay(samplerate, time, feedback)
 		buffer		= new arrayType(bufferSize),
 		bufferPos	= 0,
 		speed		= 0,
-		prevTime	= 0;
+		prevTime	= 0,
+		sample		= 0.0,
+
+		floor		= Math.floor;
 
 	function calcCoeff(){
 		speed = bufferSize / self.samplerate / self.time * 1000;
@@ -32,7 +35,7 @@ function Delay(samplerate, time, feedback)
 	}
 
 	function algo1(s){
-		var startPos = Math.floor(bufferPos);
+		var startPos = floor(bufferPos);
 		if (prevTime !== self.time){
 			calcCoeff();
 		}
@@ -40,7 +43,7 @@ function Delay(samplerate, time, feedback)
 		if (bufferPos >= bufferSize){
 			bufferPos -= bufferSize;
 		}
-		fillBuffer(s + buffer[Math.floor(bufferPos)] * self.feedback, startPos, Math.floor(bufferPos));
+		fillBuffer(s + buffer[floor(bufferPos)] * self.feedback, startPos, floor(bufferPos));
 	}
 
 	this.time = !time ? 1000 : time; //ms
@@ -50,12 +53,15 @@ function Delay(samplerate, time, feedback)
 
 	this.pushSample = function(s){
 		if (this.algorithm === 0){
-			return algo0(s);
+			algo0(s);
+		} else {
+			algo1(s);
 		}
-		return algo1(s);
+		sample = buffer[floor(bufferPos)];
+		return sample;
 	};
 
 	this.getMix = function(){
-		return buffer[Math.floor(bufferPos)];
+		return sample;
 	};
 }
