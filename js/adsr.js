@@ -1,3 +1,14 @@
+/**
+ * Creates an ADSR envelope.
+ *
+ * @constructor
+ * @this {ADSREnvelope}
+ * @param {number} sampleRate Sample Rate (hz).
+ * @param {number} attack (Optional) Attack (ms).
+ * @param {number} decay (Optional) Decay (ms).
+ * @param {number} sustain (Optional) Sustain (unsigned double).
+ * @param {number} release (Optional) Release (ms).
+*/
 function ADSREnvelope(sampleRate, attack, decay, sustain, release){
 	this.attack	= attack	|| 50; // ms
 	this.decay	= decay		|| 50; // ms

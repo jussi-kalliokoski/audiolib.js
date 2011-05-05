@@ -1,3 +1,10 @@
+/**
+ * Creates a MidiEventTracker to control voices from MIDI events.
+ *
+ * @constructor
+ * @this MidiEventTracker
+*/
+
 function MidiEventTracker(){
 	var	self		= this,
 		pressedKeys	= [];

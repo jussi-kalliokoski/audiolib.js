@@ -1,3 +1,13 @@
+/**
+ * Creates a StepSequencer.
+ *
+ * @constructor
+ * @this {StepSequencer}
+ * @param {number} samplerate Sample Rate (hz).
+ * @param {number} stepLength (Optional) Step Length (ms).
+ * @param {Array} steps (Optional) Array of steps (unsigned double) for the sequencer to iterate.
+ * @param {number} attack (Optional) Attack (ms).
+*/
 function StepSequencer(sampleRate, stepLength, steps, attack){
 	var	self	= this,
 		phase	= 0;

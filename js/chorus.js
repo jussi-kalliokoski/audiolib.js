@@ -1,5 +1,15 @@
 // Depends on oscillator.
 
+/**
+ * Creates a Chorus effect.
+ *
+ * @constructor
+ * @this {Chorus}
+ * @param {number} sampleRate Sample Rate (hz).
+ * @param {number} delayTime (Optional) Delay time (ms).
+ * @param {number} depth (Optional) Depth.
+ * @param {number} freq (Optional) Frequency (hz) of the LFO.
+*/
 function Chorus(sampleRate, delayTime, depth, freq){
 	var	self		= this,
 		arrayType	= window.Float32Array || Array,

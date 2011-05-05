@@ -1,3 +1,12 @@
+/**
+ * Creates a Delay effect.
+ *
+ * @constructor
+ * @this {Delay}
+ * @param {number} samplerate Sample Rate (hz).
+ * @param {number} time (Optional) Delay time (ms).
+ * @param {number} feedback (Optional) Feedback (unsigned double).
+*/
 function Delay(samplerate, time, feedback)
 {
 	var	self		= this,

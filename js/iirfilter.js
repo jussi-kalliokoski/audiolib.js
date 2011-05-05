@@ -1,5 +1,15 @@
 // Adapted from Corban Brook's dsp.js
 
+/**
+ * Creates a IIRFilter effect.
+ *
+ * @constructor
+ * @this {IIRFilter}
+ * @param {number} samplerate Sample Rate (hz).
+ * @param {number} cutoff (Optional) The cutoff frequency (hz).
+ * @param {number} resonance (Optional) Resonance (unsigned double).
+ * @param {number} type (Optional) The type of the filter [uint2].
+*/
 function IIRFilter(samplerate, cutoff, resonance, type){
 	var	self	= this,
 		f	= [0.0, 0.0, 0.0, 0.0],

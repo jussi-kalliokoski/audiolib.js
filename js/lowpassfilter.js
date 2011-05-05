@@ -1,5 +1,14 @@
 // A simple and fast low pass filter. Also low quality...
 
+/**
+ * Creates a LowPassFilter effect.
+ *
+ * @constructor
+ * @this {LowPassFilter}
+ * @param {number} samplerate Sample Rate (hz).
+ * @param {number} freq (Optional) The cutoff frequency (hz).
+ * @param {number} reso (Optional) Resonance (unsigned double).
+*/
 function LowPassFilter(samplerate, freq, reso){
 	var	self	= this,
 		smpl	= [0.0, 0.0];

@@ -1,6 +1,13 @@
 // Requires IIRFilter
 
-function Distortion(sampleRate)
+/**
+ * Creates a Distortion effect.
+ *
+ * @constructor
+ * @this {Distortion}
+ * @param {number} sampleRate Sample Rate (hz).
+*/
+function Distortion(sampleRate) // Based on the famous TubeScreamer.
 {
 	var	hpf1	= new IIRFilter(sampleRate, 720.484),
 		lpf1	= new IIRFilter(sampleRate, 723.431),

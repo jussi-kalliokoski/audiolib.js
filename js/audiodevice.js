@@ -128,7 +128,14 @@
 		this.channelCount	= channelCount;
 		this.type		= 'dummy';
 	}
-
+/**
+ * Creates an AudioDevice according to specified parameters, if possible.
+ *
+ * @param {number} sampleRate Sample rate (ms).
+ * @param {number} channelCount Channel count.
+ * @param {Function} readFn A callback to handle the buffer fills.
+ * @param {number} preBufferSize (Optional) Specifies a pre-buffer size to control the amount of latency.
+*/
 	function AudioDevice(sampleRate, channelCount, readFn, preBufferSize){
 		try{
 			return new mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
@@ -145,9 +152,26 @@
 		throw "No audio device available.";
 	}
 
+/**
+ * Converts an integer to binary data.
+ *
+ * @param {number} integ The number to convert.
+ * @param {number} length The byte count of the outputted data.
+ * return {String} Binary data.
+*/
 	function intToString(integ, length){
 		return length ? intToStr(integ & 255) + intToString(integ >> 8, length - 1) : '';
 	}
+
+/**
+ * Converts an array to PCM data.
+ *
+ * @param {Array} input The array containing the wave data.
+ * @param {number} sampleRate (Optional) Sample Rate (ms) of the outputted data.
+ * @param {number} channelCount (Optional) The number of channels of the outputted data.
+ * @param {number} bytesPerSample (Optional) The number of bytes per sample of the outputted data.
+ * @return {String} PCM wave data.
+*/
 
 	function arrayToWav(input, sampleRate, channelCount, bytesPerSample){
 		sampleRate = sampleRate || 44100;
@@ -246,6 +270,9 @@
 		}
 	};
 
+/**
+ * {Boolean} Determines whether to use a dummy audio device if no supported API is present.
+*/
 	AudioDevice.dummy = false;
 	AudioDevice.arrayToWav = arrayToWav;
 	AudioDevice.integerToString = intToString;
