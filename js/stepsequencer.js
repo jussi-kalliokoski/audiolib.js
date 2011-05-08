@@ -25,9 +25,14 @@ function StepSequencer(sampleRate, stepLength, steps, attack){
 			sequenceLength	= stepLength * steps.length,
 			step, overStep, prevStep, stepDiff,
 			val;
-		phase		= (phase + 1) % sequenceLength;
+		if (++phase === sequenceLength){
+			phase = 0;
+		}
 		step		= phase / sequenceLength * steps.length;
-		overStep	= step % 1;
+		overStep	= step;
+		while (overStep > 1){
+			step--;
+		}
 		step		= Math.floor(step);
 		prevStep	= (step || steps.length) - 1;
 		stepDiff	= steps[step] - steps[prevStep];
