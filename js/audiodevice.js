@@ -64,10 +64,12 @@
 
 	function webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
-		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 4096;
 		var	self		= this,
-			context		= new (global.AudioContext || global.webkitAudioContext)(sampleRate),
-			node		= context.createJavaScriptNode(4096, 0, channelCount);
+			context		= new (global.AudioContext || global.webkitAudioContext)(),
+			node		= context.createJavaScriptNode(preBufferSize, 0, channelCount),
+			// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides, and that we have to use a dummy buffer source.
+			inputBuffer	= context.createBufferSource(/* sampleRate */);
 
 		function bufferFill(e){
 			var	outputBuffer	= e.outputBuffer,
@@ -92,6 +94,8 @@
 		}
 
 		node.onaudioprocess = bufferFill;
+		// Connect the dummy buffer to the JS node to get a push.
+		inputBuffer.connect(node);
 		node.connect(context.destination);
 
 		this.kill = function(){
