@@ -29,10 +29,7 @@ function StepSequencer(sampleRate, stepLength, steps, attack){
 			phase = 0;
 		}
 		step		= phase / sequenceLength * steps.length;
-		overStep	= step;
-		while (overStep > 1){
-			step--;
-		}
+		overStep	= step % 1;
 		step		= Math.floor(step);
 		prevStep	= (step || steps.length) - 1;
 		stepDiff	= steps[step] - steps[prevStep];

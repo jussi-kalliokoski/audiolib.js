@@ -21,14 +21,8 @@ function Oscillator(samplerate, freq)
 		for (i=0; i<l; i++){
 			f += f * arguments[i];
 		}
-		phase += f / this.samplerate / 2;
-		while (phase > 1){
-			phase--;
-		}
-		p = (phase + this.phaseOffset);
-		while (phase > 1){
-			phase--;
-		}
+		phase = (phase + f / this.samplerate / 2) % 1;
+		p = (phase + this.phaseOffset) % 1;
 		p = p < pw ? p / pw : (p-pw) / (1-pw);
 	};
 	this.getMix = function(){
