@@ -19,4 +19,5 @@ audioLib.LP12Filter	= LP12Filter;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 
-}).call(typeof exports === 'undefined' ? {} : this, this.window || process, Math);
+return audioLib;
+}).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math);

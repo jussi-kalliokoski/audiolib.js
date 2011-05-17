@@ -10,7 +10,7 @@ function testADSREnvelope(){
 		height		= canvas.height;
 	canvas.width = width;
 
-	var i, adsr = new ADSREnvelope(width, 50, 200, 0.4, 270);
+	var i, adsr = new audioLib.ADSREnvelope(width, 50, 200, 0.4, 270);
 	adsr.release = 270;
 	context.beginPath();
 	adsr.triggerGate(true);

@@ -34,10 +34,7 @@ function Oscillator(samplerate, freq)
 		phase = 0.0;
 	};
 	this.setWavetable = function(wt){
-		if (!wt instanceof Float32Array){
-			return false;
-		}
-		wavetable = wt.slice(0);
+		wavetable = wt;
 		return true;
 	};
 	this.sine = function(){

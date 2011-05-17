@@ -11,7 +11,7 @@ function testOscillator(waveshape){
 	canvas.width = width;
 	document.body.appendChild(canvas);
 
-	var i, osc = new Oscillator(width, 5);
+	var i, osc = new audioLib.Oscillator(width, 5);
 	osc.waveShape = waveshape;
 	context.beginPath();
 	for (i=0; i<width; i++){
@@ -24,7 +24,7 @@ function testOscillator(waveshape){
 }
 
 function testOscillators(){
-	var i, l = (new Oscillator()).waveShapes.length;
+	var i, l = (new audioLib.Oscillator()).waveShapes.length;
 	for (i=0; i<l; i++){
 		testOscillator(i);
 	}

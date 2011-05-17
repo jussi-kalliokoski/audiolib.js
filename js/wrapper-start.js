@@ -1,7 +1,7 @@
 /*
 	audiolib.js
 	Jussi Kalliokoski
-	https://github.com/jussi-kalliokoski/audioLib.js
+	https://github.com/jussi-kalliokoski/audiolib.js
 	MIT license
 */
 
@@ -16,6 +16,7 @@ var	arrayType	= global.Float32Array || Array,
 	audioLib	= this;
 
 function Float32Array(length){
-	var array = new Float32Array(length);
-	array.subarray = array.subarray || array.slice;
+	var array = new arrayType(length);
+	array.subarray = array.subarray || array.slice;
+	return array;
 }
