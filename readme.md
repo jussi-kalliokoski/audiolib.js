@@ -14,15 +14,15 @@ var dev = new AudioDevice(sampleRate, channelCount, function(sampleBuffer){
 ```javascript
 // Effects
 
-var del = new Delay(sampleRate, delay, feedback);
+var del = new audioLib.Delay(sampleRate, delay, feedback);
 
-var flt = new IIRFilter(sampleRate, cutoffFreq, resonance);
+var flt = new audioLib.IIRFilter(sampleRate, cutoffFreq, resonance);
 
-var flt = new LP12Filter(sampleRate, cutoffFreq, resonance);
+var flt = new audioLib.LP12Filter(sampleRate, cutoffFreq, resonance);
 
-var flt = new LowPassFilter(sampleRate, cutoffFreq, resonance);
+var flt = new audioLib.LowPassFilter(sampleRate, cutoffFreq, resonance);
 
-var dist = new Distortion(sampleRate);
+var dist = new audioLib.Distortion(sampleRate);
 
 // to feed a new input sample
 effect.pushSample(sample);
@@ -31,7 +31,7 @@ sample = effect.getMix();
 
 // Synthesis
 
-var osc = new Oscillator(sampleRate, frequency);
+var osc = new audioLib.Oscillator(sampleRate, frequency);
 
 // to generate a new sample
 osc.generate(fm1, fm2, ..., fmX);
@@ -40,7 +40,7 @@ osc.getMix();
 
 // Envelopes
 
-var adsr = new ADSREnvelope(sampleRate, attack, decay, sustain, release);
+var adsr = new audioLib.ADSREnvelope(sampleRate, attack, decay, sustain, release);
 
 // to trigger the gate
 adsr.triggerGate(isOpen);
@@ -49,7 +49,7 @@ adsr.generate();
 // Get the value
 adsr.value; // 0.0 - 1.0, unless you put something more as sustain
 
-var stepSeq = new StepSequencer(sampleRate, stepLength, stepArray, attack);
+var stepSeq = new audioLib.StepSequencer(sampleRate, stepLength, stepArray, attack);
 
 // To start the sequence over
 stepSeq.triggerGate();
