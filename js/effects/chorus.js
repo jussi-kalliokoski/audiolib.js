@@ -12,7 +12,6 @@
 */
 function Chorus(sampleRate, delayTime, depth, freq){
 	var	self		= this,
-		arrayType	= window.Float32Array || Array,
 		buffer, bufferPos, sample;
 
 	self.delayTime	= delayTime || 30;
@@ -20,7 +19,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 	self.freq	= freq || 0.1;
 
 	function calcCoeff(){
-		buffer = new arrayType(self.sampleRate * 0.1);
+		buffer = new Float32Array(self.sampleRate * 0.1);
 		bufferPos = 0;
 		var i, l = buffer.length;
 		for (i=0; i<l; i++){

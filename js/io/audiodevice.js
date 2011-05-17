@@ -28,7 +28,7 @@
 				written = audioDevice.mozWriteAudio(tail);
 				currentWritePosition += written;
 				if (written < tail.length){
-					tail = tail[subarray](written);
+					tail = tail.subarray(written);
 					return tail;
 				}
 				tail = null;
@@ -111,11 +111,10 @@
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
 		var 	self		= this,
-			arrayType	= window.Float32Array || Array,
 			timer;
 
 		function bufferFill(){
-			var	soundData = new arrayType(preBufferSize * channelCount);
+			var	soundData = new Float32Array(preBufferSize * channelCount);
 			readFn(soundData);
 			self.recordData(soundData);
 		}
@@ -240,8 +239,7 @@
 				}
 			}
 		}, join: function(){
-			var	arrayType	= window.Float32Array || Array,
-				bufferLength	= 0,
+			var	bufferLength	= 0,
 				bufPos		= 0,
 				buffers		= this.buffers,
 				newArray,
@@ -250,7 +248,7 @@
 			for (i=0; i<l; i++){
 				bufferLength += buffers[i].length;
 			}
-			newArray = new arrayType(bufferLength);
+			newArray = new Float32Array(bufferLength);
 			for (i=0; i<l; i++){
 				for (n=0; n<buffers[i].length; n++){
 					newArray[bufPos + n] = buffers[i][n];

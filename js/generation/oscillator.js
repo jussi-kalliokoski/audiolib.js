@@ -3,8 +3,7 @@ function Oscillator(samplerate, freq)
 	var	phase		= 0,
 		p		= 0,
 		FullPI		= Math.PI * 2,
-		arrayType	= window.Float32Array || Array,
-		wavetable	= new arrayType(1),
+		wavetable	= new Float32Array(1),
 		waveShapes;
 	this.frequency = 440;
 	if (freq){
@@ -35,7 +34,7 @@ function Oscillator(samplerate, freq)
 		phase = 0.0;
 	};
 	this.setWavetable = function(wt){
-		if (!wt instanceof arrayType){
+		if (!wt instanceof Float32Array){
 			return false;
 		}
 		wavetable = wt.slice(0);
