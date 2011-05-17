@@ -1,6 +1,6 @@
-(function(global){
+var audioLib = {};
 
-var audioLib = global.audioLib = {};
+(function(global, audioLib){
 
 audioLib.Capper = function(sampleRate, cap){
 	var	self	= this,
@@ -30,4 +30,4 @@ audioLib.Expo = function(sampleRate, param){
 	};
 }
 
-}(this));
+}(this, audioLib));
