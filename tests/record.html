@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src=../audiolib.js></script>
+		<script>
+function testRecord(){
+	AudioDevice.dummy = true;
+	var	dev	= AudioDevice(44100, 2, function(buffer){
+			var i, l = buffer.length, s;
+			for (i=0; i<l; i++){
+				osc.generate();
+				s = osc.getMix()
+				buffer[i] = s * Math.sin(spos/10000);
+				buffer[i+1] = s * Math.cos(spos/8000);
+				i++;
+				spos++;
+			}
+		}), osc = new Oscillator(dev.sampleRate, 440),
+		spos	= 0,
+		recording = dev.record();
+	setTimeout(function(){
+		recording.stop();
+		dev.kill();
+		var wave = new Audio('data:audio/wav;base64,' + btoa(recording.toWav()));
+		wave.controls = true;
+		document.body.appendChild(wave);
+	}, 8000);
+}
+window.onload = testRecord;
+		</script>
+	</head>
+	<body></body>
+</html>
