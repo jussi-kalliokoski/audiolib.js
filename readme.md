@@ -1,12 +1,17 @@
+audiolib.js
+===========
+
 audiolib.js is a powerful audio tools library for javascript.
 
 Amongst other things, it provides AudioDevice class which has a consistent callback API that supports both Firefox4's Audio Data API and Chrome 10's Web Audio API.
 
-Usage:
+Usage
+-----
 var dev = new AudioDevice(sampleRate, channelCount, function(sampleBuffer){
 	// Fill the buffer here.
 });
 
+```javascript
 // Effects
 
 var del = new Delay(sampleRate, delay, feedback);
@@ -65,8 +70,13 @@ var audioElement = new Audio(
 	btoa( rec.toWav() ) // presuming btoa is supported
 );
 
-A few live demos:
-http://niiden.com/simplesynth/simplesynth.html
-http://niiden.com/jstmodular/ (not yet tested on chrome, but if all adds up, it should work)
+```
+
+Demos
+-----
+
+(if you have your own, please fork & add | msg me)
+ * http://niiden.com/orbisyn/
+
 
 Licensed under MIT license.
