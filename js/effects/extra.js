@@ -1,5 +1,3 @@
-var audioLib = {};
-
 (function(global, audioLib){
 
 audioLib.Capper = function(sampleRate, cap){
