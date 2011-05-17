@@ -1,8 +1,6 @@
 MINIFY := yui-compressor
 
 all:
-	cat js/wrapper-start.js js/*/* js/wrapper-end.js > audiolib.js
-	${MINIFY} audiolib.js -o audiolib.min.js
-
-clean:
-	rm audiolib.js audiolib.min.js -f
+	mkdir lib -p
+	cat js/wrapper-start.js js/*/* js/wrapper-end.js > lib/audiolib.js
+	${MINIFY} lib/audiolib.js -o lib/audiolib.min.js
