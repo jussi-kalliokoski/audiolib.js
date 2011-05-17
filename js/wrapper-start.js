@@ -5,7 +5,8 @@
 
 this.audioLib = new function (global, Math){
 
-var arrayType = global.Float32Array || Array;
+var	arrayType	= global.Float32Array || Array,
+	audioLib	= this;
 
 function Float32Array(length){
 	var array = new Float32Array(length);

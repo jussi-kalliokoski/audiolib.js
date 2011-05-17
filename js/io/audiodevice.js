@@ -9,7 +9,7 @@
 	}
 
 	var	allowedBufferSizes	= propertyEnum([256, 512, 1024, 2048, 4096, 8192, 16384]),
-		allowedSampleRates	= propertyEnum([44100, 22050]),
+		allowedSampleRates	= propertyEnum([48000, 44100, 22050]),
 
 		intToStr		= String.fromCharCode;
 
