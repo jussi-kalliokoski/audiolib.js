@@ -3,7 +3,7 @@
 	Please note that the file is not of valid syntax when standalone.
 */
 
-this.audioLib = (function (global, Math){
+this.audioLib = new function (global, Math){
 
 var arrayType = global.Float32Array || Array;
 

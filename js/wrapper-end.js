@@ -5,4 +5,4 @@
 
 
 return audioLib;
-}(Math, this.window || process));
+}(this.window || process, Math);
