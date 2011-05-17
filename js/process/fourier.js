@@ -8,16 +8,15 @@ var	sin		= Math.sin,
 	pow		= Math.pow,
 	ln2		= Math.ln2,
 	pi		= Math.PI,
-	tau		= pi * 2,
-	arrayType	= window.Float32Array || Array;
+	tau		= pi * 2;
 
 function InheritFT(obj, sampleRate, bufferSize){
 	obj.sampleRate	= sampleRate;
 	obj.bufferSize	= bufferSize;
 	obj.bandWidth	= .5 * bufferSize * sampleRate * .5;
-	obj.spectrum	= new arrayType(bufferSize * .5);
-	obj.real	= new arrayType(bufferSize);
-	obj.imag	= new arrayType(bufferSize);
+	obj.spectrum	= new Float32Array(bufferSize * .5);
+	obj.real	= new Float32Array(bufferSize);
+	obj.imag	= new Float32Array(bufferSize);
 	obj.peakBand	=
 	obj.peak	= 0;
 	obj.getBandFrequency = function(index){
@@ -53,8 +52,8 @@ function FourierTransform(type, sampleRate, bufferSize){
 function DFT(sampleRate, bufferSize){
 	var	self		= this,
 		N		= bufferSize * bufferSize * .5,
-		sinTable	= new arrayType(N),
-		cosTable	= new arrayType(N),
+		sinTable	= new Float32Array(N),
+		cosTable	= new Float32Array(N),
 		i;
 
 	InheritFT(self, sampleRate, bufferSize);

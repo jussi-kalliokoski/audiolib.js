@@ -1,4 +1,11 @@
 /*
+	audiolib.js
+	Jussi Kalliokoski
+	https://github.com/jussi-kalliokoski/audioLib.js
+	MIT license
+*/
+
+/*
 	wrapper-start.js
 	Please note that the file is not of valid syntax when standalone.
 */
