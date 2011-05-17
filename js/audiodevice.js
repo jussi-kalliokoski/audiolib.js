@@ -20,8 +20,7 @@
 			currentWritePosition	= 0,
 			tail			= null,
 			audioDevice		= new Audio(),
-			timer,
-			subarray		= (Float32Array.prototype.subarray) ? 'subarray' : 'slice'; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
+			timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
 
 		function bufferFill(){
 			var written, currentPosition, available, soundData;
@@ -43,7 +42,7 @@
 				self.recordData(soundData);
 				written = audioDevice.mozWriteAudio(soundData);
 				if (written < soundData.length){
-					tail = soundData[subarray](written);
+					tail = soundData.subarray(written);
 				}
 				currentWritePosition += written;
 			}
