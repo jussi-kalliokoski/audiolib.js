@@ -9,6 +9,7 @@ audioLib.MidiEventTracker	= MidiEventTracker;
 audioLib.StepSequencer		= StepSequencer;
 
 //Effects
+audioLib.AllPassFilter	= AllPassFilter;
 audioLib.Chorus		= Chorus;
 audioLib.Delay		= Delay;
 audioLib.Distortion	= Distortion;
