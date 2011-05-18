@@ -5,13 +5,22 @@ audiolib.js is a powerful audio tools library for javascript.
 
 Amongst other things, it provides AudioDevice class which has a consistent callback API that supports both Firefox4's Audio Data API and Chrome 10's Web Audio API.
 
+As of v.0.4.0, audioLib supports scheduling, which means you can synchronize events with the audio stream (e.g. turning a slider would be scheduled to the right time in the buffer versus being changed only on buffer fill event).
+However, using the scheduled interface is a design choice you will have to weigh carefully, as it might introduce a performance hit, and it affects how your data is being handled. For instance, in the scheduled interface you will most likely not get a buffer of the specified preBufferSize, but instead, you get a buffer that contains a single sample for each channel, and you have to be careful with this, performance-wise.
+
 Usage
 -----
-var dev = new AudioDevice(sampleRate, channelCount, function(sampleBuffer){
-	// Fill the buffer here.
-});
 
 ```javascript
+// Create a device.
+var dev = audioLib.AudioDevice(function(sampleBuffer){
+	// Fill the buffer here.
+}, channelCount, preBufferSize, sampleRate);
+
+// Or create a scheduled AudioDevice
+var dev = audioLib.AudioDevice.createScheduled(/* same arguments as for the normal AudioDevice call */);
+
+
 // Effects
 
 var del = new audioLib.Delay(sampleRate, delay, feedback);

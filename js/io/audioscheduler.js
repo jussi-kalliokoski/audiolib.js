@@ -1,7 +1,6 @@
 // Requires AudioDevice
 
-// We don't care much about those other arguments
-this.AudioDevice.createScheduled(function(a, b, callback, c){
+this.AudioDevice.createScheduled(function(callback){
 	var	schedule	= [],
 		previousCall	= 0,
 		dev;
@@ -17,11 +16,11 @@ this.AudioDevice.createScheduled(function(a, b, callback, c){
 					schedule.splice(n--, 1);
 				}
 			}
-			callback(buffer.subarray(i * channelCount, channelCount));
+			callback(buffer.subarray(i * channelCount, channelCount), channelCount);
 		}
 	}
 
-	dev = this(a, b, fn, c);
+	dev = this.apply(this, [fn].concat(Array.prototype.splice.call(arguments, 1)));
 	dev.schedule = function(callback, context, args){
 		schedule.push({
 			f: callback,

@@ -1,7 +1,7 @@
 {
 	"name":		"audiolib",
 	"author":	"Jussi Kalliokoski",
-	"version":	"0.3.0",
+	"version":	"0.4.0",
 	"description":	"audiolib.js is a powerful audio tools library for javascript.",
 	"repository":	{
 		"type":		"git",
