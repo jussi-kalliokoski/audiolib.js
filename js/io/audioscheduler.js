@@ -11,7 +11,7 @@ this.AudioDevice.createScheduled(function(callback){
 		previousCall = +new Date;
 		for (i=0; i<l; i++){
 			for (n=0; n<schedule.length; n++){
-				if (schedule[n].t-- <=){
+				if (schedule[n].t-- <= 0){
 					schedule[n].f.apply(schedule[n].x, schedule[n].a);
 					schedule.splice(n--, 1);
 				}
