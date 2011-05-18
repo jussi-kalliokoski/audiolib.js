@@ -13,7 +13,7 @@
 
 		intToStr		= String.fromCharCode;
 
-	function mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+	function mozAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : sampleRate / 2;
 		var	self			= this,
@@ -61,7 +61,7 @@
 		this.type		= 'moz';
 	}
 
-	function webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+	function webkitAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 4096;
 		var	self		= this,
@@ -107,7 +107,7 @@
 		this.type		= 'webkit';
 	}
 
-	function dummyAudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+	function dummyAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 8192;
 		var 	self		= this,
@@ -133,12 +133,12 @@
 /**
  * Creates an AudioDevice according to specified parameters, if possible.
  *
- * @param {number} sampleRate Sample rate (ms).
- * @param {number} channelCount Channel count.
  * @param {Function} readFn A callback to handle the buffer fills.
+ * @param {number} channelCount Channel count.
  * @param {number} preBufferSize (Optional) Specifies a pre-buffer size to control the amount of latency.
+ * @param {number} sampleRate Sample rate (ms).
 */
-	function AudioDevice(sampleRate, channelCount, readFn, preBufferSize){
+	function AudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		try{
 			return new mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
 		}catch(e1){}
