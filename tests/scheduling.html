@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="../lib/audiolib.js"></script>
+		<script>
+(function(){
+
+window.onload = function(){
+setTimeout(function(){
+	var
+		dev	= audioLib.AudioDevice.createScheduled(function(buffer, ch){
+			osc.generate();
+			var	smpl	= osc.getMix(),
+				i;
+			for (i=0; i<ch; i++){
+				buffer[i] = smpl;
+			}
+		}, 2),
+		osc	= new audioLib.Oscillator(dev.sampleRate);
+		window.onmousemove = function(e){
+			var	freq	= e.clientY / window.innerHeight * 880,
+				pw	= e.clientX / window.innerWidth;
+			dev.schedule(function(){
+				osc.frequency	= freq;
+				osc.pulseWidth	= pw;
+			});
+		};
+}, 2000);
+}());
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
