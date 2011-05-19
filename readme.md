@@ -20,6 +20,10 @@ var dev = audioLib.AudioDevice(function(sampleBuffer){
 // Or create a scheduled AudioDevice
 var dev = audioLib.AudioDevice.createScheduled(/* same arguments as for the normal AudioDevice call */);
 
+// Schedule an event
+dev.schedule(function(){
+	// do something, change oscillator frequency, whatever, see ./tests/scheduling.html for an example.
+});
 
 // Effects
 
