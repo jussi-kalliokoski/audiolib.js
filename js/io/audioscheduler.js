@@ -29,4 +29,5 @@ this.AudioDevice.createScheduled = function(callback){
 			t: ((new Date - previousCall) * 0.001 * this.sampleRate)
 		});
 	};
+	return dev;
 };
