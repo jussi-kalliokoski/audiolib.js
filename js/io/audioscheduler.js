@@ -1,6 +1,6 @@
 // Requires AudioDevice
 
-this.AudioDevice.createScheduled(function(callback){
+this.AudioDevice.createScheduled = function(callback){
 	var	schedule	= [],
 		previousCall	= 0,
 		dev;
@@ -29,4 +29,4 @@ this.AudioDevice.createScheduled(function(callback){
 			t: ((new Date - previousCall) * 0.001 * this.sampleRate)
 		});
 	};
-});
+};
