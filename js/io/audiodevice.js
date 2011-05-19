@@ -15,7 +15,7 @@
 
 	function mozAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
-		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : sampleRate / 2;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? preBufferSize : sampleRate / 2;
 		var	self			= this,
 			currentWritePosition	= 0,
 			tail			= null,
@@ -63,7 +63,7 @@
 
 	function webkitAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
-		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 4096;
+		preBufferSize	= allowedBufferSizes[preBufferSize] ? preBufferSize : 4096;
 		var	self		= this,
 			context		= new (window.AudioContext || webkitAudioContext)(),
 			node		= context.createJavaScriptNode(preBufferSize, 0, channelCount),
