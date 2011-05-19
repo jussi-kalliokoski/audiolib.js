@@ -7,16 +7,20 @@ this.AudioDevice.createScheduled = function(callback){
 
 	function fn(buffer, channelCount){
 		var	l		= buffer.length / channelCount,
-			n, i;
+			chunkSize	= dev.chunkSize,
+			chunkLength	= chunkSize * channelCount,
+			n, i, ptr;
 		previousCall = +new Date;
-		for (i=0; i<l; i++){
+		for (i=0; i<l; i += chunkSize){
 			for (n=0; n<schedule.length; n++){
-				if (schedule[n].t-- <= 0){
+				schedule[n].t -= chunkSize;
+				if (schedule[n].t <= 0){
 					schedule[n].f.apply(schedule[n].x, schedule[n].a);
 					schedule.splice(n--, 1);
 				}
 			}
-			callback(buffer.subarray(i * channelCount, channelCount), channelCount);
+			ptr = i * chunkLength;
+			callback(buffer.subarray(ptr, ptr + chunkLength), channelCount);
 		}
 	}
 
@@ -29,5 +33,6 @@ this.AudioDevice.createScheduled = function(callback){
 			t: ((new Date - previousCall) * 0.001 * this.sampleRate)
 		});
 	};
+	dev.chunkSize = 1;
 	return dev;
 };
