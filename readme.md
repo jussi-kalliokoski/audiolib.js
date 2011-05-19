@@ -89,7 +89,8 @@ Demos
 -----
 
 (if you have your own, please fork & add | msg me)
- * http://niiden.com/orbisyn/
+
+* http://niiden.com/orbisyn/
 
 
 Licensed under MIT license.
