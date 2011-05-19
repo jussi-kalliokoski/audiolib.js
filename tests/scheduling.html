@@ -12,7 +12,7 @@ setTimeout(function(){
 		dev	= audioLib.AudioDevice.createScheduled(function(buffer, ch){
 			var	l	= buffer.length / ch,
 				smpl, i, n;
-			for (i=0; i<ch; i++){
+			for (i=0; i<l; i++){
 				osc.generate();
 				smpl = osc.getMix();
 				for (n=0; n<ch; n++){
