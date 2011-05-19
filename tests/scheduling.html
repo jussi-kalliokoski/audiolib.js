@@ -10,11 +10,14 @@ window.onload = function(){
 setTimeout(function(){
 	var
 		dev	= audioLib.AudioDevice.createScheduled(function(buffer, ch){
-			osc.generate();
-			var	smpl	= osc.getMix(),
-				i;
+			var	l	= buffer.length / ch,
+				smpl, i, n;
 			for (i=0; i<ch; i++){
-				buffer[i] = smpl;
+				osc.generate();
+				smpl = osc.getMix();
+				for (n=0; n<ch; n++){
+					buffer[i*ch + n] = smpl;
+				}
 			}
 		}, 2),
 		osc	= new audioLib.Oscillator(dev.sampleRate);
