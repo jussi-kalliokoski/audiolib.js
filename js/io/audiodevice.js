@@ -65,7 +65,7 @@
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? bufferSize : 4096;
 		var	self		= this,
-			context		= new (global.AudioContext || global.webkitAudioContext)(),
+			context		= new (window.AudioContext || webkitAudioContext)(),
 			node		= context.createJavaScriptNode(preBufferSize, 0, channelCount),
 			// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides, and that we have to use a dummy buffer source.
 			inputBuffer	= context.createBufferSource(/* sampleRate */);
@@ -140,15 +140,15 @@
 */
 	function AudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		try{
-			return new mozAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+			return new mozAudioDevice(readFn, channelCount, preBufferSize, sampleRate);
 		}catch(e1){}
 		
 		try{
-			return new webkitAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+			return new webkitAudioDevice(readFn, channelCount, preBufferSize, sampleRate);
 		}catch(e2){}
 
 		if (AudioDevice.dummy){
-			return new dummyAudioDevice(sampleRate, channelCount, readFn, preBufferSize);
+			return new dummyAudioDevice(readFn, channelCount, preBufferSize, sampleRate);
 		}
 
 		throw "No audio device available.";
