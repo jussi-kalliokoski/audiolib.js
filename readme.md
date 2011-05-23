@@ -85,6 +85,19 @@ var audioElement = new Audio(
 
 ```
 
+Node.JS
+-------
+
+To install the latest version on NodeJS, please use the NPMJS:
+
+```shell
+
+$ npm install audiolib
+
+```
+
+You can now use ```javascript require('audiolib') ``` to use the library just as you would on the clientside.
+
 Demos
 -----
 
