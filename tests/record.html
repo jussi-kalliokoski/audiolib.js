@@ -4,7 +4,7 @@
 		<script src=../lib/audiolib.js></script>
 		<script>
 function testRecord(){
-	var	dev	= new audioLib.AudioDevice.devices.dummy(44100, 2, function(buffer){
+	var	dev	= new audioLib.AudioDevice.devices.dummy(function(buffer){
 			var i, l = buffer.length, s;
 			for (i=0; i<l; i++){
 				osc.generate();
@@ -14,7 +14,7 @@ function testRecord(){
 				i++;
 				spos++;
 			}
-		}), osc = new audioLib.Oscillator(dev.sampleRate, 440),
+		}, 2), osc = new audioLib.Oscillator(dev.sampleRate, 440),
 		spos	= 0,
 		recording = dev.record();
 	setTimeout(function(){
