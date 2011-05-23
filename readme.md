@@ -96,7 +96,7 @@ $ npm install audiolib
 
 ```
 
-You can now use ```javascript require('audiolib') ``` to use the library just as you would on the clientside.
+You can now use ``` require('audiolib') ``` to use the library just as you would on the clientside.
 
 Demos
 -----
