@@ -23,9 +23,9 @@ audioLib.Oscillator	= Oscillator;
 
 audioLib.version	= '0.4.1';
 
-function EffectArray(){
+function EffectChain(){
 	var	arr	= Array.prototype.splice.call(arguments, 0),
-		proto	= arr.prototype = EffectArray.prototype;
+		proto	= arr.prototype = EffectChain.prototype;
 	for (i in proto){
 		if (proto.hasOwnProperty(i)){
 			arr[i] = proto[i];
@@ -35,7 +35,7 @@ function EffectArray(){
 }
 
 (function(proto){
-	EffectArray.prototype = proto;
+	EffectChain.prototype = proto;
 	proto.pushSample = function(sample){
 		var	self	= this,
 			mix,
@@ -57,7 +57,7 @@ EffectClass.prototype = {
 	source:	true,
 	mix:	0.5,
 	join:	function(){
-		return EffectArray.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));
+		return EffectChain.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));
 	}
 };
 
@@ -71,7 +71,7 @@ EffectClass.prototype = {
 	}
 }(['AllPassFilter', 'Chorus', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
 
-audioLib.EffectArray	= EffectArray;
+audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
 
 return audioLib;
