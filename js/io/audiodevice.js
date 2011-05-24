@@ -168,14 +168,16 @@
 				buf,
 				bufLength,
 				i, n;
-			buffers && for (i=0; i<buffers.length; i++){
-				buf		= buffers[i];
-				bufLength	= buf.length;
-				for (n=0; n < l && n < bufLength; n++){
-					buffer[n] += buf[n];
+			if (buffers){
+				for (i=0; i<buffers.length; i++){
+					buf		= buffers[i];
+					bufLength	= buf.length;
+					for (n=0; n < l && n < bufLength; n++){
+						buffer[n] += buf[n];
+					}
+					buffers[i] = buf.subarray(n);
+					i >= bufLength && buffers.splice(i--, 1);
 				}
-				buffers[i] = buf.subarray(n);
-				i >= bufLength && buffers.splice(i--, 1);
 			}
 		}, writeBuffer: function(buffer){
 			var	buffers		= this.buffers = this.buffers || [];
