@@ -209,7 +209,7 @@
 			available = Number( currentPosition + preBufferSize * channelCount - currentWritePosition) + 0;
 			if (available > 0){
 				soundData = new Float32Array(available);
-				readFn(soundData, self.channelCount);
+				readFn && readFn(soundData, self.channelCount);
 				self.writeBuffers(soundData);
 				self.recordData(soundData);
 				written = audioDevice.mozWriteAudio(soundData);
@@ -257,7 +257,7 @@
 				channels[i] = outputBuffer.getChannelData(i);
 			}
 
-			readFn(soundData, channelCount);
+			readFn && readFn(soundData, channelCount);
 			self.writeBuffers(soundData);
 			self.recordData(soundData);
 
@@ -294,7 +294,7 @@
 
 		function bufferFill(){
 			var	soundData = new Float32Array(preBufferSize * channelCount);
-			readFn(soundData, self.channelCount);
+			readFn && readFn(soundData, self.channelCount);
 			self.writeBuffers(soundData);
 			self.recordData(soundData);
 		}
