@@ -161,6 +161,26 @@
 			for (i=0; i<l; i++){
 				activeRecs[i].add(buffer);
 			}
+		}, writeBuffers: function(buffer){
+			var	
+				buffers		= this.buffers,
+				l		= buffer.length,
+				buf,
+				bufLength,
+				i, n;
+			buffers && for (i=0; i<buffers.length; i++){
+				buf		= buffers[i];
+				bufLength	= buf.length;
+				for (n=0; n < l && n < bufLength; n++){
+					buffer[n] += buf[n];
+				}
+				buffers[i] = buf.subarray(n);
+				i >= bufLength && buffers.splice(i--, 1);
+			}
+		}, writeBuffer: function(buffer){
+			var	buffers		= this.buffers = this.buffers || [];
+			buffers.push(buffer);
+			return buffers.length;
 		}
 	};
 
@@ -190,6 +210,7 @@
 			if (available > 0){
 				soundData = new Float32Array(available);
 				readFn(soundData, self.channelCount);
+				self.writeBuffers(soundData);
 				self.recordData(soundData);
 				written = audioDevice.mozWriteAudio(soundData);
 				if (written < soundData.length){
@@ -237,6 +258,7 @@
 			}
 
 			readFn(soundData, channelCount);
+			self.writeBuffers(soundData);
 			self.recordData(soundData);
 
 			for (i=0; i<l; i++){
@@ -273,6 +295,7 @@
 		function bufferFill(){
 			var	soundData = new Float32Array(preBufferSize * channelCount);
 			readFn(soundData, self.channelCount);
+			self.writeBuffers(soundData);
 			self.recordData(soundData);
 		}
 
