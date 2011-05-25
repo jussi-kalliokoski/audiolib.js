@@ -22,8 +22,6 @@ audioLib.LP12Filter	= LP12Filter;
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
 
-audioLib.version	= '0.4.1';
-
 function EffectChain(){
 	var	arr	= Array.prototype.splice.call(arguments, 0),
 		proto	= arr.prototype = EffectChain.prototype;
@@ -74,6 +72,8 @@ EffectClass.prototype = {
 
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
+
+audioLib.version	= '0.4.2';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math);
