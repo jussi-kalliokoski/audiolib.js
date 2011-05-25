@@ -20,6 +20,7 @@ audioLib.LP12Filter	= LP12Filter;
 
 //Geneneration
 audioLib.Oscillator	= Oscillator;
+audioLib.Sampler	= Sampler;
 
 audioLib.version	= '0.4.1';
 
