@@ -20,3 +20,5 @@ function Float32Array(length){
 	array.subarray = array.subarray || array.slice;
 	return array;
 }
+
+audioLib.Float32Array = Float32Array;
