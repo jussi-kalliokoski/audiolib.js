@@ -69,10 +69,10 @@ Sampler.resample	= function(buffer, fromRate, fromFrequency, toRate, toFrequency
 		speed		= toRate / fromRate * toFrequency / fromFrequency,
 		l		= buffer.length,
 		length		= Math.ceil(l / speed),
-		newBuffer	= new Float32Array(l),
+		newBuffer	= new Float32Array(length),
 		i, n;
-	for (i=0, n=0; i<sample.length; i += speed){
-		newBuffer[n++] = Sampler.interpolate(sample, i);
+	for (i=0, n=0; i<l; i += speed){
+		newBuffer[n++] = Sampler.interpolate(buffer, i);
 	}
 	return newBuffer;
 };
