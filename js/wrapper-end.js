@@ -73,7 +73,7 @@ EffectClass.prototype = {
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
 
-audioLib.version	= '0.4.2';
+audioLib.version	= '0.4.4';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math);
