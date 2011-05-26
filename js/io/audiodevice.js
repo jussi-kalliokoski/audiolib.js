@@ -14,18 +14,6 @@
 		return result;
 	}
 
-/**
- * Converts an integer to binary data.
- *
- * @param {number} integ The number to convert.
- * @param {number} length The byte count of the outputted data.
- * return {String} Binary data.
-*/
-	function intToString(integ, length){
-		return length ? intToStr(integ & 255) + intToString(integ >> 8, length - 1) : '';
-	}
-
-
 	var	allowedBufferSizes	= propertyEnum([256, 512, 1024, 2048, 4096, 8192, 16384]),
 		allowedSampleRates	= propertyEnum([48000, 44100, 22050]),
 
@@ -53,58 +41,6 @@
 		throw "No audio device available.";
 	}
 
-/**
- * Converts an array to PCM data.
- *
- * @param {Array} input The array containing the wave data.
- * @param {number} sampleRate (Optional) Sample Rate (ms) of the outputted data.
- * @param {number} channelCount (Optional) The number of channels of the outputted data.
- * @param {number} bytesPerSample (Optional) The number of bytes per sample of the outputted data.
- * @return {String} PCM wave data.
-*/
-
-	function arrayToWav(input, sampleRate, channelCount, bytesPerSample){
-		sampleRate = sampleRate || 44100;
-		channelCount = channelCount || 1;
-		bytesPerSample = bytesPerSample || 1;
-
-		var	bitsPerSample	= bytesPerSample * 8,
-			blockAlign	= channelCount * bytesPerSample,
-			byteRate	= sampleRate * blockAlign,
-			length		= input.length,
-			dLength		= length * bytesPerSample,
-			silencePadding	= (Math.pow(2, bitsPerSample) - 1) / 2,
-			sampleSize	= bytesPerSample === 2 ? 32760 : silencePadding,
-			head,
-			i, n, m,
-			data		= '',
-			chunk		= '';
-
-
-		function sampleToString(sample){
-			return intToString(Math.floor(silencePadding + sample * sampleSize), bytesPerSample);
-		}
-		// Create wave header
-		data =	'RIFF' +			// sGroupID		4 bytes		char
-			intToString(36 + dLength, 4) +	// dwFileLength		4 bytes		uint
-			'WAVE' +			// sRiffType		4 bytes		char
-			'fmt ' +			// sGroupId		4 bytes		char
-			intToString(16, 4) +		// dwChunkSize		4 bytes		uint
-			intToString(1, 2) +		// wFormatTag		2 bytes		ushort
-			intToString(channelCount, 2) +	// wChannels		2 bytes		ushort
-			intToString(sampleRate, 4) +	// dwSamplesPerSec	4 bytes		uint
-			intToString(byteRate, 4) +	// dwAvgBytesPerSec	4 bytes		uint
-			intToString(blockAlign, 2) +	// wBlockAlign		2 bytes		ushort
-			intToString(bitsPerSample, 2) +	// dwBitsPerSample	2 bytes		uint
-			'data' +			// sGroupId		4 bytes		char
-			intToString(dLength, 4);	// dwChunkSize		4 bytes		uint
-
-		for (i=0; i<length; i++){
-			data += sampleToString(input[i]);
-		}
-		return data;
-	}
-
 	function Recording(bindTo){
 		this.boundTo = bindTo;
 		this.buffers = [];
@@ -113,7 +49,12 @@
 
 	Recording.prototype = {
 		toWav: function(bytesPerSample){
-			return arrayToWav(this.join(), this.boundTo.sampleRate, this.boundTo.channelCount, bytesPerSample);
+			return audioLib.PCMData.encode({
+				data:		this.join(),
+				sampleRate:	this.boundTo.sampleRate,
+				channelCount:	this.boundTo.channelCount,
+				bytesPerSample:	bytesPerSample
+			});
 		}, add: function(buffer){
 			this.buffers.push(buffer);
 		}, clear: function(){
@@ -316,8 +257,6 @@
 	dummyAudioDevice.enabled	= true;
 	dummyAudioDevice.prototype	= new audioDeviceClass('dummy');
 
-	AudioDevice.arrayToWav		= arrayToWav;
-	AudioDevice.integerToString	= intToString;
 	AudioDevice.deviceClass		= audioDeviceClass;
 	AudioDevice.propertyEnum	= propertyEnum;
 	AudioDevice.devices		= {
