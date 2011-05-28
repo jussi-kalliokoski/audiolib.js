@@ -81,3 +81,44 @@ Sampler.resample	= function(buffer, fromRate, fromFrequency, toRate, toFrequency
 	}
 	return newBuffer;
 };
+
+/**
+ * Splits a sample buffer into those of different channels.
+ *
+ * @param {Float32Array} buffer The sample buffer to split.
+ * @param {number} channelCount The number of channels to split to.
+ * @return {Array} An array containing the resulting sample buffers.
+*/
+
+Sampler.splitChannels	= function(buffer, channelCount){
+	var	l	= buffer.length,
+		size	= l / channelCount,
+		ret	= [],
+		i, n;
+	for (i=0; i<channelCount; i++){
+		ret[i] = new Float32Array(size);
+		for (n=0; n<size; n++){
+			ret[i][n] = buffer[i * channelCount + n];
+		}
+	}
+	return ret;
+};
+
+/**
+ * Joins an array of sample buffers in a single buffer.
+ *
+ * @param {Array} buffers The buffers to join.
+*/
+
+Sampler.joinChannels	= function(buffers){
+	var	channelCount	= buffers.length,
+		l		= buffers[0].length,
+		buffer		= new Float32Array(l * channelCount),
+		i, n;
+	for (i=0; i<channelCount; i++){
+		for (n=0; n<l; n++){
+			buffer[i + n * channelCount] = buffers[i][n];
+		}
+	}
+	return buffer;
+};
