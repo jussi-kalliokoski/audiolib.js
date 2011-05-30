@@ -41,7 +41,8 @@ function Sampler(sampleRate, sample, pitch){
 	};
 	self.loadWav	= function(data, resample){
 		var	pcm	= audioLib.PCMData.decode(data);
-		self.sample	= resample ? Sampler.resample(pcm.data, pcm.sampleRate, 1, self.sampleRate, 1) : pcm.data;
+		data	= Sampler.splitChannels(pcm.data, pcm.channelCount);
+		self.sample	= resample ? Sampler.resample(data, pcm.sampleRate, 1, self.sampleRate, 1) : data;
 	};
 }
 
