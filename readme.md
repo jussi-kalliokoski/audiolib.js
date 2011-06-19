@@ -29,6 +29,9 @@ dev.schedule(function(){
 	// do something, change oscillator frequency, whatever, see ./tests/scheduling.html for an example.
 });
 
+// If you want your application to work as a background tab in Firefox 4, do this before creating the device:
+audioLib.AudioDevice.devices.moz.backgroundWork = true;
+
 // Effects
 
 var del = new audioLib.Delay(sampleRate, delay, feedback);
