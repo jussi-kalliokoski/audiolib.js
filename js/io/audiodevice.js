@@ -139,7 +139,7 @@
 		function doInterval(callback, timeout){
 			var timer, id, prev;
 			if (mozAudioDevice.backgroundWork){
-				id = prev = +new Date;
+				id = prev = +new Date + '';
 				function messageListener(e){
 					if (e.source === window && e.data === id && prev < +new Date){
 						prev = +new Date + timeout;

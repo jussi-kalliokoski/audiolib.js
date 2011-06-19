@@ -6,7 +6,7 @@
 (function(){
 
 window.onload = function(){
-	audioLib.AudioDevice.devices.backgroundWork = true;
+	audioLib.AudioDevice.devices.moz.backgroundWork = true;
 	var
 		dev	= audioLib.AudioDevice(function(buffer, ch){
 			
