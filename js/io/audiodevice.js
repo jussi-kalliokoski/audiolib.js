@@ -136,6 +136,30 @@
 			audioDevice		= new Audio(),
 			timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
 
+		function doInterval(callback, timeout){
+			var timer, id, prev;
+			if (mozAudioDevice.backgroundWork){
+				id = prev = +new Date;
+				function messageListener(e){
+					if (e.source === window && e.data === id && prev < +new Date){
+						prev = +new Date + timeout;
+						callback();
+					}
+					window.postMessage(id, '*');
+				}
+				window.addEventListener('message', messageListener, true);
+				window.postMessage(id, '*');
+				return function(){
+					window.removeEventListener('message', messageListener);
+				};
+			} else {
+				timer = setInterval(callback, timeout);
+				return function(){
+					clearInterval(timer);
+				};
+			}
+		}
+
 		function bufferFill(){
 			var written, currentPosition, available, soundData;
 			if (tail){
@@ -164,10 +188,10 @@
 		}
 
 		audioDevice.mozSetup(channelCount, sampleRate);
-		timer = setInterval(bufferFill, 20);
+		timer = doInterval(bufferFill, 20);
 
 		this.kill = function(){
-			clearInterval(timer);
+			timer();
 		};
 		this.activeRecordings = [];
 
@@ -176,8 +200,9 @@
 		this.type		= 'moz';
 	}
 
-	mozAudioDevice.enabled	= true;
-	mozAudioDevice.prototype = new audioDeviceClass('moz');
+	mozAudioDevice.enabled		= true;
+	mozAudioDevice.backgroundWork	= false;
+	mozAudioDevice.prototype	= new audioDeviceClass('moz');
 
 	function webkitAudioDevice(readFn, channelCount, preBufferSize, sampleRate){
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;

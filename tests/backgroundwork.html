@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="../lib/audiolib.js"></script>
+		<script>
+(function(){
+
+window.onload = function(){
+	audioLib.AudioDevice.devices.backgroundWork = true;
+	var
+		dev	= audioLib.AudioDevice(function(buffer, ch){
+			
+			var	l	= buffer.length / ch,
+				smpl, i, n;
+			for (n=0; n<l; n++){
+				osc.generate();
+				smpl	= osc.getMix()
+				for (i=0; i<ch; i++){
+					buffer[n*ch + i] = smpl;
+				}
+			}
+		}, 2),
+		osc	= new audioLib.Oscillator(dev.sampleRate);
+};
+
+}());
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
