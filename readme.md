@@ -108,6 +108,11 @@ sample = fx.pushSample(sample);
 // You can adjust mix or other properties of the chain simply as it were an array.
 fx[0].mix = 0.75;
 
+// If you are used to buffer based approach (for example DSP.js) and don't need to do any raw manipulation, all the effects can be used as buffer based too.
+var bufFx = audioLib.Delay/* or any effect */.createBufferBased(channelCount, /* the parameters needed by the specific effect */);
+
+bufFx.append(buffer);
+
 ```
 
 Node.JS
