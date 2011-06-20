@@ -139,6 +139,19 @@
 		function doInterval(callback, timeout){
 			var timer, id, prev;
 			if (mozAudioDevice.backgroundWork){
+				if (window.MozBlobBuilder){
+					prev	= new MozBlobBuilder();
+					prev.append('setInterval(function(){ postMessage("tic"); }, ' + timeout + ');');
+					id	= window.URL.createObjectURL(prev.getBlob());
+					timer	= new Worker(id);
+					timer.onmessage = function(){
+						callback();
+					};
+					return function(){
+						timer.close();
+						window.URL.revokeObjectURL(id);
+					};
+				}
 				id = prev = +new Date + '';
 				function messageListener(e){
 					if (e.source === window && e.data === id && prev < +new Date){
