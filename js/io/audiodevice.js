@@ -142,7 +142,7 @@
 						callback();
 					};
 					return function(){
-						timer.close();
+						timer.terminate();
 						window.URL.revokeObjectURL(id);
 					};
 				}
