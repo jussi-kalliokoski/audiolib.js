@@ -136,5 +136,9 @@ Demos
 * http://jsmad.org
 * http://niiden.com/orbisyn/
 
+Plugins
+-------
+
+Specifications for plugin developers can be found in https://github.com/jussi-kalliokoski/audiolib.js/tree/master/specs
 
 Licensed under MIT license.
