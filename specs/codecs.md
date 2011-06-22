@@ -32,7 +32,7 @@ Decoding interface is specified as follows:
 
 ```
 
-interface Encoder inherits Codec
+interface Decoder inherits Codec
 {
 	public ArrayType decodeFrame(String data, Int bitCount, ArrayType result);
 	public AudioData decode(String data, optional asyncCallback);
