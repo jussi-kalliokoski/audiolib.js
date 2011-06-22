@@ -101,7 +101,7 @@ var myCodec = {
 	}
 };
 
-audioLib.codecs(myCodec); // Handles all the necessary bindings to file loading, samplers, record, etc. and to audioLib.codecs object.
+audioLib.codecs('mpx', myCodec); // Handles all the necessary bindings to file loading, samplers, record, etc. and to audioLib.codecs object.
 
 ```
 
