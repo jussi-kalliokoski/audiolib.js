@@ -127,6 +127,7 @@
 			currentWritePosition	= 0,
 			tail			= null,
 			audioDevice		= new Audio(),
+			written, currentPosition, available, soundData,
 			timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
 
 		function doInterval(callback, timeout){
@@ -167,7 +168,6 @@
 		}
 
 		function bufferFill(){
-			var written, currentPosition, available, soundData;
 			if (tail){
 				written = audioDevice.mozWriteAudio(tail);
 				currentWritePosition += written;
