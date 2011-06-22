@@ -109,9 +109,33 @@ BufferEffect.prototype = {
 	}
 }(['AllPassFilter', 'Chorus', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
 
+function Codec(name, codec){
+	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
+	Codec[name] = codec;
+	if (codec.decode){
+		audioLib.Sampler.prototype['load' + nameCamel] = function(filedata){
+			this.load.apply(this, [Codec[name].decode(filedata)].concat([].slice.call(arguments, 1)));
+		};
+	}
+	if (codec.encode){
+		audioLib.AudioDevice.Recording.prototype['to' + nameCamel] = function(bytesPerSample){
+			return Codec[name].encode({
+				data:		this.join(),
+				sampleRate:	this.boundTo.sampleRate,
+				channelCount:	this.boundTo.channelCount,
+				bytesPerSample:	bytesPerSample
+			});
+		};
+	}
+	return codec;
+}
+
+Codec('wav', audioLib.PCMData);
+
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
 audioLib.BufferEffect	= BufferEffect;
+audioLib.codecs		= audioLib.Codec = Codec;
 
 audioLib.version	= '0.4.5';
 

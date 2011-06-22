@@ -48,14 +48,7 @@
 	}
 
 	Recording.prototype = {
-		toWav: function(bytesPerSample){
-			return audioLib.PCMData.encode({
-				data:		this.join(),
-				sampleRate:	this.boundTo.sampleRate,
-				channelCount:	this.boundTo.channelCount,
-				bytesPerSample:	bytesPerSample
-			});
-		}, add: function(buffer){
+		add: function(buffer){
 			this.buffers.push(buffer);
 		}, clear: function(){
 			this.buffers = [];
@@ -302,6 +295,8 @@
 		webkit:		webkitAudioDevice,
 		dummy:		dummyAudioDevice
 	};
+
+	AudioDevice.Recording		= Recording;
 
 	global.AudioDevice = AudioDevice;
 }(this));

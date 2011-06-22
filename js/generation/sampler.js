@@ -31,18 +31,24 @@ function Sampler(sampleRate, sample, pitch){
 			voice.p > voice.l && voices.splice(i--, 1) && voice.onend && voice.onend();
 		}
 	};
-	self.getMix	= function(){
+	self.getMix	= function(ch){
 		var	smpl	= 0,
 			i;
+		ch = ch || 0;
 		for (i=0; i<voices.length; i++){
-			smpl	+= Sampler.interpolate(self.sample, voices[i].p);
+			smpl	+= Sampler.interpolate(self.samples[ch], voices[i].p);
 		}
 		return smpl;
 	};
-	self.loadWav	= function(data, resample){
-		var	pcm	= audioLib.PCMData.decode(data);
-		data	= Sampler.splitChannels(pcm.data, pcm.channelCount)[0];
-		self.sample	= resample ? Sampler.resample(data, pcm.sampleRate, 1, self.sampleRate, 1) : data;
+	self.load	= function(data, resample){
+		var	samples = self.samples = Sampler.splitChannels(data.data, data.channelCount),
+			i;
+		if (resample){
+			for (i=0; i<samples.length; i++){
+				samples[i] = Sampler.resample(samples[i], data.sampleRate, 1, self.sampleRate, 1);
+			}
+		}
+		self.sample	= resample ? Sampler.resample(samples, data.sampleRate, 1, self.sampleRate, 1) : samples;
 	};
 }
 

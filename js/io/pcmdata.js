@@ -329,4 +329,4 @@ PCMData.encode	= function(data, asyncCallback){
 
 return PCMData;
 
-}(Binary, Stream));
+}(this.Binary, this.Stream));
