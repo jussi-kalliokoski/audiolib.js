@@ -115,6 +115,33 @@ bufFx.append(buffer);
 
 ```
 
+Audio Workers
+-------------
+
+You can also use audiolib.js inside Audio Workers (Firefox 6.0+ only), but this is a whole another story. There are many approaches to that, you can include audiolib.js via an external javascript worker file, but audiolib.js offers an alternative approach to this: inline workers. Inline audio workers include the source code already downloaded, and thus creates a new worker that already contains audiolib.js. Inline Audio Workers also allow you to inject code into workers. Here is some code to get started, also see tests/audioworker.html.
+
+```javascript
+
+var worker = audioLib.AudioWorker(function(){
+	device = audioLib.AudioDevice(function(buffer, channelCount){
+		// Do some audio processing, like you weren't in a worker.
+	});
+}, true /* enables injections */);
+
+// Injection
+
+worker.inject(function(){
+	// Execute some code inside the worker.
+});
+
+// Close the worker
+
+worker.terminate();
+
+```
+
+It's important to remember that even though that code looks like it's running in the same environment as the code it's written in, it's actually not and runs in the context of the worker, meaning you can't cross-reference variables. Also, the injections are sandboxed, so if you need to create a global variable, drop var.
+
 Node.JS
 -------
 

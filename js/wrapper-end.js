@@ -137,7 +137,7 @@ audioLib.EffectClass	= EffectClass;
 audioLib.BufferEffect	= BufferEffect;
 audioLib.codecs		= audioLib.Codec = Codec;
 
-audioLib.version	= '0.4.6';
+audioLib.version	= '0.4.7';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math);
