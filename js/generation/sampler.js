@@ -1,9 +1,8 @@
-function Sampler(sampleRate, sample, pitch){
+function Sampler(sampleRate, pitch){
 	var	self	= this,
 		voices	= [],
 		smpl;
 	self.sampleRate	= sampleRate;
-	self.sample	= sample;
 	self.pitch	= pitch || 440;
 	self.delayStart	= 0;
 	self.delayEnd	= 0;
@@ -48,12 +47,13 @@ function Sampler(sampleRate, sample, pitch){
 				samples[i] = Sampler.resample(samples[i], data.sampleRate, 1, self.sampleRate, 1);
 			}
 		}
-		self.sample	= resample ? Sampler.resample(samples, data.sampleRate, 1, self.sampleRate, 1) : samples;
+		self.sample	= data.data;
+		self.samples	= samples;
 	};
 }
 
 /**
- * Interpolates a fractal part position in an array to a sample.
+ * Interpolates a fractal part position in an array to a sample. (Linear interpolation)
  *
  * @param {Array} arr The sample buffer.
  * @param {number} pos The position to interpolate from.
