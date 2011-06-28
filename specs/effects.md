@@ -33,15 +33,24 @@ class interface EFFECT
 ```
 
  ``` pushSample ``` should take in a single sample, process it and return the result.
+
  ``` getMix ``` should return the previously returned value of pushSample, without processing or moving in the sample-time.
+
  ``` __constructor__ ``` is not an actual property of the EFFECT, but describes how the EFFECT constructor should be created. The constructor should take sample rate as the first argument, the rest of the arguments are freely specified by the plugin author.
 
+
  ``` name ``` or ``` fxid ``` is the name of the EFFECT. You should always refer to ``` fxid ``` when trying to identify the effect via these means, ``` name ``` can be specified for individual instances.
+
  ``` type ``` is a string containing the type of the EFFECT, and should always be 'effect' for EFFECT.
+
  ``` sink ``` is a boolean indicating whether the EFFECT is a sink, and should always be true for EFFECT, otherwise see GENERATOR.
+
  ``` source ``` is a boolean indicating whether the EFFECT is a source, and should always be true for EFFECT, otherwise see PROCESSOR.
+
  ``` mix ``` is a Float32 value determining the dry/wet ratio of the effect. Zero (0.0) indicates a completely dry mix, whereas One(1.5) indicates a completely wet mix. Used for interfacing with BUFFEREFFECT and EFFECTCHAIN. Default value is 0.5, where both dry and wet are applied at half the volume.
+
  ``` join ``` creates an ARRAYCHAIN of this EFFECT, joining it with the effects specified as arguments to the function.
+
 
 On integration, the ``` __constructor__ ``` is provided with a property function called ``` createBufferBased(channelCount, /* plugin-specific arguments */ ``` that creates a BUFFEREFFECT of the EFFECT.
 
@@ -57,7 +66,9 @@ Effect audioLib.effects(String name, Function __constructor__, optional Object p
 ```
 
  ``` name ``` is the name to attach the EFFECT to ``` audioLib.effects ``` with, and will also be applied as the ``` fxid ``` and default ``` name ``` of the EFFECT.
+
  ``` __constructor__ ``` is the constructor of the EFFECT. If not specified, the function does nothing but return a property of ``` audioLib.effects ``` by the name specified by ``` name ``` argument.
+
  ``` prototype ``` is an object that the default EFFECT prototype will be extended with. If not specified, will default to the prototype property of ``` __constructor__ ```
 
 Example
