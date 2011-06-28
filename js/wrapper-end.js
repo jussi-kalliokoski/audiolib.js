@@ -93,6 +93,27 @@ BufferEffect.prototype = {
 	}
 };
 
+
+function GeneratorClass(){
+}
+
+GeneratorClass.prototype = {
+	type:	'generator',
+	source:	true,
+	mix:	1,
+	append: function(buffer, channelCount){
+		var	l	= buffer.length,
+			i, n;
+		for (i=0; i<l; i+=channelCount){
+			this.generate();
+			for (n=0; n<channelCount; n++){
+				buffer[i + n] = this.getMix(n) * this.mix;
+			}
+		}
+		return buffer;
+	}
+};
+
 (function(names, i, effects, name, proto){
 	effects = audioLib.effects = {};
 
@@ -108,6 +129,17 @@ BufferEffect.prototype = {
 		effects[name].createBufferBased = createBufferBased;
 	}
 }(['AllPassFilter', 'Chorus', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
+
+(function(names, i, effects, name, proto){
+	effects = audioLib.generators = {};
+
+	for (i=0; i<names.length; i++){
+		name = names[i];
+		effects[name]	= audioLib[name];
+		proto		= effects[name].prototype = new GeneratorClass();
+		proto.name	= proto.fxid = name;
+	}
+}(['Oscillator', 'Sampler']));
 
 function Codec(name, codec){
 	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
@@ -135,6 +167,7 @@ Codec('wav', audioLib.PCMData);
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
 audioLib.BufferEffect	= BufferEffect;
+audioLib.GeneratorClass	= GeneratorClass;
 audioLib.codecs		= audioLib.Codec = Codec;
 
 audioLib.version	= '0.4.7';
