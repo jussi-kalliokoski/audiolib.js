@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="../lib/audiolib.js"></script>
+		<script>
+(function(){
+
+var	
+	osc, lfo,
+	dev, sampleRate, fx, filter, buf;
+
+window.onload	= function(){
+	setTimeout(function(){
+		dev		= audioLib.AudioDevice(null, 2);
+		sampleRate	= dev.sampleRate;
+		buf		= new Float32Array(sampleRate * 8);
+		osc		= new audioLib.Oscillator(sampleRate);
+		osc.waveShape	= 3;
+		osc.append(buf.subarray(0, sampleRate * 2), 2);
+		fx = audioLib.Delay.createBufferBased(2, sampleRate);
+		fx.effects[1].feedback = 0.7;
+		fx.effects[0].feedback = 0.5;
+		fx.effects[1].time = 763;
+		filter = audioLib.LP12Filter.createBufferBased(2, sampleRate, 4000);
+		filter.effects[0].frequency = 8000;
+		filter.mix = 1;
+		fx.append( filter.append(buf) );
+	}, 2000);
+};
+
+window.play	= function(){
+	dev.writeBuffer(buf);
+}
+
+}());
+
+		</script>
+	</head>
+	<body>
+		<button onclick="play()">Play</button>
+	</body>
+</html>
