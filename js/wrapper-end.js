@@ -114,30 +114,46 @@ GeneratorClass.prototype = {
 	}
 };
 
-(function(names, i, effects, name, proto){
-	effects = audioLib.effects = {};
-
+(function(names, i){
 	function createBufferBased(channelCount){
 		return new audioLib.BufferEffect(this, channelCount, [].slice.call(arguments, 1));
 	}
 
-	for (i=0; i<names.length; i++){
-		name = names[i];
-		effects[name]	= audioLib[name];
-		proto		= effects[name].prototype = new EffectClass();
+	function effects(name, effect, prototype){
+		effects[name]	= effect;
+		var	proto	= effect.prototype = new EffectClass();
 		proto.name	= proto.fxid = name;
 		effects[name].createBufferBased = createBufferBased;
+		for (name in prototype){
+			if (prototype.hasOwnProperty(name)){
+				proto[name] = prototype[name];
+			}
+		}
+	}
+
+	audioLib.effects = effects;
+
+	for (i=0; i<names.length; i++){
+		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 }(['AllPassFilter', 'Chorus', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
 
-(function(names, i, effects, name, proto){
-	effects = audioLib.generators = {};
+(function(names, i){
+	function generators(name, effect, prototype){
+		generators[name]= effect;
+		var	proto	= effect.prototype = new GeneratorClass();
+		proto.name	= proto.fxid = name;
+		for (name in prototype){
+			if (prototype.hasOwnProperty(name)){
+				proto[name] = prototype[name];
+			}
+		}
+	}
+
+	audioLib.generators = generators;
 
 	for (i=0; i<names.length; i++){
-		name = names[i];
-		effects[name]	= audioLib[name];
-		proto		= effects[name].prototype = new GeneratorClass();
-		proto.name	= proto.fxid = name;
+		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 }(['Oscillator', 'Sampler']));
 
