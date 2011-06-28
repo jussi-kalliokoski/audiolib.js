@@ -120,15 +120,19 @@ GeneratorClass.prototype = {
 	}
 
 	function effects(name, effect, prototype){
-		effects[name]	= effect;
-		var	proto	= effect.prototype = new EffectClass();
-		proto.name	= proto.fxid = name;
-		effects[name].createBufferBased = createBufferBased;
-		for (name in prototype){
-			if (prototype.hasOwnProperty(name)){
-				proto[name] = prototype[name];
+		if (effect){
+			prototype       = prototype || effect.prototype;
+			effects[name]	= effect;
+			var	proto	= effect.prototype = new EffectClass();
+			proto.name	= proto.fxid = name;
+			effects[name].createBufferBased = createBufferBased;
+			for (name in prototype){
+				if (prototype.hasOwnProperty(name)){
+					proto[name] = prototype[name];
+				}
 			}
 		}
+		return effects[name];
 	}
 
 	audioLib.effects = effects;
@@ -140,14 +144,18 @@ GeneratorClass.prototype = {
 
 (function(names, i){
 	function generators(name, effect, prototype){
-		generators[name]= effect;
-		var	proto	= effect.prototype = new GeneratorClass();
-		proto.name	= proto.fxid = name;
-		for (name in prototype){
-			if (prototype.hasOwnProperty(name)){
-				proto[name] = prototype[name];
+		if (effect){
+			prototype       = prototype || effect.prototype;
+			generators[name]= effect;
+			var	proto	= effect.prototype = new GeneratorClass();
+			proto.name	= proto.fxid = name;
+			for (name in prototype){
+				if (prototype.hasOwnProperty(name)){
+					proto[name] = prototype[name];
+				}
 			}
 		}
+		return generators[name];
 	}
 
 	audioLib.generators = generators;
