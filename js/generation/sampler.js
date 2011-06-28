@@ -52,6 +52,27 @@ function Sampler(sampleRate, pitch){
 	};
 }
 
+(function(){
+
+/**
+ * If method is supplied, adds a new interpolation method to Sampler.interpolation, otherwise sets the default interpolation method (Sampler.interpolate) to the specified property of Sampler.interpolate.
+ *
+ * @param {String} name The name of the interpolation method to get / set.
+ * @param {Function} method The interpolation method. (Optional)
+*/
+
+function interpolation(name, method){
+	if (name && method){
+		interpolation[name] = method;
+	} else if (name && interpolation[name] instanceof Function){
+		Sampler.interpolate = interpolation[name];
+	}
+	return interpolation[name];
+}
+
+Sampler.interpolation = interpolation;
+
+
 /**
  * Interpolates a fractal part position in an array to a sample. (Linear interpolation)
  *
@@ -59,13 +80,29 @@ function Sampler(sampleRate, pitch){
  * @param {number} pos The position to interpolate from.
  * @return {Float32} The interpolated sample.
 */
-Sampler.interpolate	= function(arr, pos){
+interpolation('linear', function(arr, pos){
 	var	first	= Math.floor(pos),
 		second	= first + 1,
 		frac	= pos - first;
-	 second		= second < arr.length ? second : 0;
+	second		= second < arr.length ? second : 0;
 	return arr[first] * (1 - frac) + arr[second] * frac;
-};
+});
+
+/**
+ * Interpolates a fractal part position in an array to a sample. (Nearest neighbour interpolation)
+ *
+ * @param {Array} arr The sample buffer.
+ * @param {number} pos The position to interpolate from.
+ * @return {Float32} The interpolated sample.
+*/
+interpolation('nearest', function(arr, pos){
+	return pos >= arr.length - 0.5 ? arr[0] : arr[Math.round(pos)];
+});
+
+interpolation('linear');
+
+}());
+
 
 /**
  * Resamples a sample buffer from a frequency to a frequency and / or from a sample rate to a sample rate.
