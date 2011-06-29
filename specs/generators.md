@@ -5,7 +5,7 @@ Abstract
 --------
 
 This document describes how GENERATOR extensions to audiolib.js should be designed, and what functionality they should provide.
-GENERATPR extensions are used as a means to be generate buffers or samples.
+GENERATOR extensions are used as a means to be generate buffers or samples.
 
 GENERATOR
 ------
@@ -43,7 +43,7 @@ class interface GENERATOR
 
  ``` type ``` is a string containing the type of the GENERATOR, and should always be 'generator' for GENERATOR.
 
- ``` sink ``` is a boolean indicating whether the GENERATOR is a sink, and should always be false for GENERATOR, otherwise see GENERATOR.
+ ``` sink ``` is a boolean indicating whether the GENERATOR is a sink, and should always be false for GENERATOR, otherwise see [EFFECT](https://github.com/jussi-kalliokoski/audiolib.js/blob/master/specs/effects.md).
 
  ``` source ``` is a boolean indicating whether the GENERATOR is a source, and should always be true for GENERATOR.
 

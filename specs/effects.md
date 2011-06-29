@@ -43,7 +43,7 @@ class interface EFFECT
 
  ``` type ``` is a string containing the type of the EFFECT, and should always be 'effect' for EFFECT.
 
- ``` sink ``` is a boolean indicating whether the EFFECT is a sink, and should always be true for EFFECT, otherwise see GENERATOR.
+ ``` sink ``` is a boolean indicating whether the EFFECT is a sink, and should always be true for EFFECT, otherwise see [GENERATOR](https://github.com/jussi-kalliokoski/audiolib.js/blob/master/specs/generators.md).
 
  ``` source ``` is a boolean indicating whether the EFFECT is a source, and should always be true for EFFECT, otherwise see PROCESSOR.
 
