@@ -47,7 +47,7 @@ class interface EFFECT
 
  ``` source ``` is a boolean indicating whether the EFFECT is a source, and should always be true for EFFECT, otherwise see PROCESSOR.
 
- ``` mix ``` is a Float32 value determining the dry/wet ratio of the effect. Zero (0.0) indicates a completely dry mix, whereas One(1.5) indicates a completely wet mix. Used for interfacing with BUFFEREFFECT and EFFECTCHAIN. Default value is 0.5, where both dry and wet are applied at half the volume.
+ ``` mix ``` is a Float32 value determining the dry/wet ratio of the effect. Zero (0.0) indicates a completely dry mix, whereas One(1.0) indicates a completely wet mix. Used for interfacing with BUFFEREFFECT and EFFECTCHAIN. Default value is 0.5, where both dry and wet are applied at half the volume.
 
  ``` join ``` creates an ARRAYCHAIN of this EFFECT, joining it with the effects specified as arguments to the function.
 
