@@ -68,3 +68,13 @@ function __extend(obj){
 }
 
 __defineConst(audioLib, '__extend', __extend);
+
+function __enum(obj, callback, unignoreInherited){
+	var i;
+	for (i in obj){
+		(obj.hasOwnProperty(i) || unignoreInherited) && callback.call(obj, obj[i], i);
+	}
+	return obj;
+}
+
+__defineConst(audioLib, '__enum', __enum);
