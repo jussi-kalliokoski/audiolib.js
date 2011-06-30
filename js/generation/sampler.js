@@ -108,14 +108,15 @@ interpolation('linear');
  * Resamples a sample buffer from a frequency to a frequency and / or from a sample rate to a sample rate.
  *
  * @param {Float32Array} buffer The sample buffer to resample.
- * @param {number} fromRate The original sample rate of the buffer.
- * @param {number} fromFrequency The original frequency of the buffer.
+ * @param {number} fromRate The original sample rate of the buffer, or if the last argument, the speed ratio to convert with.
+ * @param {number} fromFrequency The original frequency of the buffer, or if the last argument, used as toRate and the secondary comparison will not be made.
  * @param {number} toRate The sample rate of the created buffer.
  * @param {number} toFrequency The frequency of the created buffer.
 */
-Sampler.resample	= function(buffer, fromRate, fromFrequency, toRate, toFrequency){
+Sampler.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or toRate */, toRate, toFrequency){
 	var
-		speed		= toRate / fromRate * toFrequency / fromFrequency,
+		argc		= arguments.length,
+		speed		= argc === 2 ? fromRate : argc === 3 ? toRate / fromFrequency : toRate / fromRate * toFrequency / fromFrequency,
 		l		= buffer.length,
 		length		= Math.ceil(l / speed),
 		newBuffer	= new Float32Array(length),
