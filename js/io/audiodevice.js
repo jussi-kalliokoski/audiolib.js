@@ -214,10 +214,9 @@
 		sampleRate	= allowedSampleRates[sampleRate] ? sampleRate : 44100;
 		preBufferSize	= allowedBufferSizes[preBufferSize] ? preBufferSize : 4096;
 		var	self		= this,
-			context		= new (window.AudioContext || webkitAudioContext)(),
-			node		= context.createJavaScriptNode(preBufferSize, 0, channelCount),
-			// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides, and that we have to use a dummy buffer source.
-			inputBuffer	= context.createBufferSource(/* sampleRate */);
+			// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
+			context		= new (window.AudioContext || webkitAudioContext)(/*sampleRate*/),
+			node		= context.createJavaScriptNode(preBufferSize, 0, channelCount);
 
 		function bufferFill(e){
 			var	outputBuffer	= e.outputBuffer,
@@ -243,8 +242,6 @@
 		}
 
 		node.onaudioprocess = bufferFill;
-		// Connect the dummy buffer to the JS node to get a push.
-		inputBuffer.connect(node);
 		node.connect(context.destination);
 
 		this.kill = function(){
@@ -254,6 +251,10 @@
 
 		this.sampleRate		= context.sampleRate;
 		this.channelCount	= channelCount;
+		/* Keep references in order to avoid garbage collection removing the listeners, working around http://code.google.com/p/chromium/issues/detail?id=82795 */
+		this._context		= context;
+		this._node		= node;
+		this._callback		= bufferFill;
 		this.type		= 'webkit';
 	}
 
