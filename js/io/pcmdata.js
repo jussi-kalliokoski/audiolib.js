@@ -196,17 +196,31 @@ function PCMData(data){
 }
 
 PCMData.decodeFrame = function(frame, bitCount, result){
-	(new Stream(frame)).readBuffer(result, bitCount, 'Float');
+	if (bitCount === 8){
+		var buffer	= new (window.Uint8Array || Array)(result.length);
+		(new Stream(frame)).readBuffer(buffer, 8, 'Uint');
+		for (bitCount=0; bitCount<result.length; bitCount++){
+			result[bitCount] = (buffer[bitCount] - 127.5) * 127.5;
+		}
+	} else {
+		(new Stream(frame)).readBuffer(result, bitCount, 'Float');
+	}
 	return result;
 };
 
 PCMData.encodeFrame = function(frame, bitCount){
-	var	properWriter	= Binary['fromFloat' + bitCount],
+	var	properWriter	= Binary[(bitCount === 8 ? 'fromUint' : 'fromFloat') + bitCount],
 		l		= frame.length,
 		r		= '',
 		i;
-	for (i=0; i<l; i++){
-		r += properWriter(frame[i]);
+	if (bitCount === 8){
+		for (i=0; i<l; i++){
+			r += properWriter(frame[i] * 127.5 + 127.5);
+		}
+	} else {
+		for (i=0; i<l; i++){
+			r += properWriter(frame[i]);
+		}
 	}
 	return r;
 };
@@ -226,7 +240,7 @@ PCMData.decode	= function(data, asyncCallback){
 		dwAvgBytesPerSec	= formatChunk.readUint32(),
 		wBlockAlign		= formatChunk.readUint16(),
 		sampleSize		= wBlockAlign / wChannels,
-		dwBitsPerSample		= dwChunkSize1 === 16 ? formatChunk.readUint16() : formatChunk.readUint32(),
+		dwBitsPerSample		= /* dwChunkSize1 === 16 ? */ formatChunk.readUint16() /* : formatChunk.readUint32() */,
 		sGroupID,
 		dwChunkSize,
 		sampleCount,
