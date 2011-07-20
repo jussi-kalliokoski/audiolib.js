@@ -7,6 +7,8 @@ Abstract
 This document describes how GENERATOR extensions to audiolib.js should be designed, and what functionality they should provide.
 GENERATOR extensions are used as a means to be generate buffers or samples.
 
+   *PLEASE NOTE*: This spec is a draft and a work in progress, and should not be referenced to as anything else. However, as such it does already provide some guidelines and recommendations that should not be disregarded. For suggestions of improvements, fork, blame or raise an issue.
+
 GENERATOR
 ------
 
