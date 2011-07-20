@@ -7,6 +7,8 @@ Abstract
 This document describes how EFFECT extensions to audiolib.js should be designed, and what functionality they should provide.
 EFFECT extensions are used as effects to be applied either on audio buffers or per-sample basis.
 
+   *PLEASE NOTE*: This spec is a draft and a work in progress, and should not be referenced to as anything else. However, as such it does already provide some guidelines and recommendations that should not be disregarded. For suggestions of improvements, fork, blame or raise an issue.
+
 EFFECT
 ------
 
