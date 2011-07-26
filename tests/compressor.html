@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="../lib/audiolib.js"></script>
+        <script src="../js/effects/extra.js"></script>
+        <script>
+(function(){
+
+function plotPCM(buffer, channelCount){
+    var canvas      = document.getElementById('c'),
+        context     = canvas.getContext('2d'),
+        width       = canvas.width,
+        height      = canvas.height,
+        halfHeight  = height/2,
+        waveScale   = 100, // Pixel height of amplitude 1
+        sampleRate  = 44100,
+        plotTime    = 0.018, // Seconds to plot
+        xscale      = width/(sampleRate*plotTime),
+        osc         = new audioLib.Oscillator(sampleRate, 220),
+        osc2        = new audioLib.Oscillator(sampleRate, 277.18),
+        compressor  = new audioLib.Compressor(sampleRate,2),
+        capper      = new audioLib.Capper(sampleRate);
+    
+    // Reference Box, +- 1
+    context.strokeStyle="#33FF33";
+    context.beginPath();
+    context.rect(0,halfHeight-waveScale, width, waveScale*2);
+    context.stroke();
+
+    // Reference Box, += 2
+    context.strokeStyle="#FF0000";
+    context.beginPath();
+    context.rect(0,halfHeight-waveScale*2, width, waveScale*4);
+    context.stroke();
+    
+    
+    // Reference Line, zero
+    context.strokeStyle="#000000";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    context.lineTo(width, halfHeight)
+    context.stroke();
+    
+    // Waveform Sum
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + (osc.getMix()+osc2.getMix()) * waveScale);
+        osc.generate();
+        osc2.generate();
+    }
+    context.stroke();
+    
+    
+    // Sum / 2
+    context.strokeStyle="#ababab";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + (osc.getMix()+osc2.getMix()) * waveScale * 0.5);
+        osc.generate();
+        osc2.generate();
+    }
+    context.stroke();
+    
+
+    // Compressed Waveform
+    context.strokeStyle="#0000FF";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    osc.reset();
+    osc2.reset();
+     
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + compressor.pushSample(osc.getMix()+osc2.getMix()) * waveScale);
+        osc.generate();
+        osc2.generate();
+    } 
+    context.stroke();
+    
+    
+    // Capped Waveform
+    context.strokeStyle="#FF0000";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    osc.reset();
+    osc2.reset();
+     
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + capper.pushSample(osc.getMix()+osc2.getMix()) * waveScale);
+        osc.generate();
+        osc2.generate();
+    }
+    context.stroke();
+}
+
+window.onload = function(){
+    setTimeout(function(){
+        plotPCM();
+    }, 2000);
+};
+
+}());
+
+        </script>
+    </head>
+    <body>
+        <h1>Compressor Test</h1>
+        <p>
+            This test shows 4 waveforms:
+            <ul>
+                <li>Sum of A3 (220 Hz) and C#4 (277.18 Hz) in <span style="color:black;">Black</span></li>
+                <li>Signal scaled by 1/2 (common "compression" approach) in <span style="color:#ababab;">Grey</span></li>
+                <li>Signal capped with <em>audioLib.Capper</em> in <span style="color:red;">Red</span></li>
+                <li>Signal compressed with <em>audioLib.Compressor</em> (scale by 2, standard gain=0.5) in <span style="color:blue;">Blue</span></li>
+            </ul>
+            audioLib.Compressor scales the waveform and boosts lower volume levels without hard corners
+        </p>
+        <canvas id=c width=1000 height=420></canvas>
+    </body>
+</html>
