@@ -8,7 +8,7 @@
  * @param {number} gain (Optional) Gain factor (1.0 - 2.0).
 */
 function Compressor(sampleRate, scaleBy, gain){
-    var self    = this;
+    var self    = this,
         sample  = 0.0;
     self.sampleRate = sampleRate;
     self.scale = scaleBy || 1;
