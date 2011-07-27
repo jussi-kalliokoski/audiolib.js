@@ -10,6 +10,7 @@ audioLib.StepSequencer		= StepSequencer;
 
 //Effects
 audioLib.AllPassFilter	= AllPassFilter;
+audioLib.BiquadFilter = BiquadFilter;
 audioLib.BitCrusher = BitCrusher;
 audioLib.Chorus		= Chorus;
 audioLib.Compressor = Compressor;
@@ -23,6 +24,7 @@ audioLib.LP12Filter	= LP12Filter;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
+audioLib.Tracker    = Tracker;
 
 function EffectClass(){
 }
@@ -142,7 +144,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['AllPassFilter', 'BitCrusher', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
+}(['AllPassFilter', 'BiquadFilter', 'BitCrusher', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
 
 (function(names, i){
 	function generators(name, effect, prototype){
@@ -165,7 +167,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Oscillator', 'Sampler']));
+}(['Oscillator', 'Sampler', 'Tracker']));
 
 function Codec(name, codec){
 	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
