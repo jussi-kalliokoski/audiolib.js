@@ -10,6 +10,7 @@ audioLib.StepSequencer		= StepSequencer;
 
 //Effects
 audioLib.AllPassFilter	= AllPassFilter;
+audioLib.BitCrusher = BitCrusher;
 audioLib.Chorus		= Chorus;
 audioLib.Compressor = Compressor;
 audioLib.Delay		= Delay;
@@ -141,7 +142,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['AllPassFilter', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
+}(['AllPassFilter', 'BitCrusher', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
 
 (function(names, i){
 	function generators(name, effect, prototype){
