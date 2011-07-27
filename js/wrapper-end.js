@@ -24,7 +24,6 @@ audioLib.LP12Filter	= LP12Filter;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
-audioLib.Tracker    = Tracker;
 
 function EffectClass(){
 }
@@ -167,7 +166,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Oscillator', 'Sampler', 'Tracker']));
+}(['Oscillator', 'Sampler']));
 
 function Codec(name, codec){
 	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
