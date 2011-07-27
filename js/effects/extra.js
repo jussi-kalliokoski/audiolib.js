@@ -15,7 +15,7 @@ audioLib.Capper = function(sampleRate, cap){
 };
 
 audioLib.Expo = function(sampleRate, param){
-	var	self	= this;
+	var	self	= this,
 		sample	= 0.0;
 	self.sampleRate = sampleRate;
 	self.param = param || 0.8;
