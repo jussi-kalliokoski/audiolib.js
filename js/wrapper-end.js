@@ -23,7 +23,6 @@ audioLib.LP12Filter	= LP12Filter;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
-audioLib.Tracker    = Tracker;
 
 function EffectClass(){
 }
