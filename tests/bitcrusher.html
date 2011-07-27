@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>audiolib.js | Bit Crusher Test</title>
+        <script src="../lib/audiolib.js"></script>
+        <script>
+(function(){
+
+function plotPCM(buffer, channelCount){
+    var canvas      = document.getElementById('c'),
+        context     = canvas.getContext('2d'),
+        width       = canvas.width,
+        height      = canvas.height,
+        halfHeight  = height/2,
+        waveScale   = 100, // Pixel height of amplitude 1
+        sampleRate  = 44100,
+        plotTime    = 0.018, // Seconds to plot
+        xscale      = width/(sampleRate*plotTime),
+        osc         = new audioLib.Oscillator(sampleRate, 220),
+        bitcrusher  = new audioLib.BitCrusher(sampleRate, 2);
+    
+    // Reference Box, +- 1
+    context.strokeStyle="#33FF33";
+    context.beginPath();
+    context.rect(0,halfHeight-waveScale, width, waveScale*2);
+    context.stroke();
+
+    // Reference Line, zero
+    context.strokeStyle="#000000";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    context.lineTo(width, halfHeight)
+    context.stroke();
+    
+    // Vanilla sine wave
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + osc.getMix() * waveScale);
+        osc.generate();
+    }
+    context.stroke();
+    
+    
+    // Bit Crushed Waveform
+    context.strokeStyle="#0000FF";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    osc.reset();
+     
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + bitcrusher.pushSample(osc.getMix()) * waveScale);
+        osc.generate();
+    } 
+    context.stroke();
+    
+}
+
+window.onload = function(){
+    setTimeout(function(){
+        plotPCM();
+    }, 2000);
+};
+
+}());
+
+        </script>
+    </head>
+    <body>
+        <h1>Bit Crusher Test</h1>
+        <p>
+            This test shows 2 waveforms:
+            <ul>
+                <li>Unmodified sine wave at 220Hz in <span style="color:black;">Black</span></li>
+                <li>Signal mangled with <em>audioLib.BitCrusher</em> (bits = 2) in <span style="color:blue;">Blue</span></li>
+            </ul>
+            audioLib.BitCrusher(sampleRate, n) reduces the signal resolution to n bits.
+        </p>
+        <canvas id=c width=1000 height=420></canvas>
+    </body>
+</html>
