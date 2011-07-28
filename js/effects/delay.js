@@ -10,7 +10,7 @@
 function Delay(sampleRate, time, feedback){
 	var	self	= this;
 	self.time	= isNaN(time) ? self.time : time;
-	self.feedback	= isNaN(time) ? self.feedback : feedback;
+	self.feedback	= isNaN(feedback) ? self.feedback : feedback;
 	self.reset(sampleRate);
 }
 
