@@ -6,7 +6,7 @@
         <script>
 (function(){
     
-var hp, lp, ap;
+var filter;
 
 function plotPCM(buffer, channelCount){
     var canvas      = document.getElementById('c'),
@@ -22,7 +22,10 @@ function plotPCM(buffer, channelCount){
         osc2        = new audioLib.Oscillator(sampleRate, 3500),
         lpf         = new audioLib.BiquadFilter.LowPass(sampleRate, 1200, 0.6),
         apf         = new audioLib.BiquadFilter.AllPass(sampleRate, 300, 0.6),
-        hpf         = new audioLib.BiquadFilter.HighPass(sampleRate, 1200, 0.6);
+        hpf         = new audioLib.BiquadFilter.HighPass(sampleRate, 1200, 0.6),
+        bpfh        = new audioLib.BiquadFilter.BandPass(sampleRate, 3333, 1),
+        bpfl        = new audioLib.BiquadFilter.BandPass(sampleRate, 250, 1),
+        names       = {lp:lpf, hp:hpf, ap:apf, bph:bpfh, bpl:bpfl};
      
     function setup(){
         context.clearRect ( 0, 0, width, height);
@@ -60,39 +63,14 @@ function plotPCM(buffer, channelCount){
     }
     setup();
     
-    hp = function(){
-        // High-Pass Filter
+    filter = function(type, param){
         setup();
-
+        var filter = names[type];
+        filter.reset();
+        
         for(var i=0, max=sampleRate*plotTime; i<max; i++){
             
-            context.lineTo(i*xscale, halfHeight + hpf.pushSample((osc.getMix()+osc2.getMix())) * waveScale);
-            osc.generate();
-            osc2.generate();
-        } 
-        context.stroke();
-    };
-    
-    lp = function(){
-        // Low-Pass Filter
-        setup();
-
-        for(var i=0, max=sampleRate*plotTime; i<max; i++){
-            
-            context.lineTo(i*xscale, halfHeight + lpf.pushSample((osc.getMix()+osc2.getMix())) * waveScale);
-            osc.generate();
-            osc2.generate();
-        } 
-        context.stroke();
-    };
-    
-    ap = function(){
-        // All-Pass Filter
-        setup();
-
-        for(var i=0, max=sampleRate*plotTime; i<max; i++){
-            
-            context.lineTo(i*xscale, halfHeight + apf.pushSample((osc.getMix()+osc2.getMix())) * waveScale);
+            context.lineTo(i*xscale, halfHeight + filter.pushSample((osc.getMix()+osc2.getMix())) * waveScale);
             osc.generate();
             osc2.generate();
         } 
@@ -106,9 +84,11 @@ window.onload = function(){
         plotPCM();
     }, 2000);
 };
-window.hp = function(){hp()};
-window.lp = function(){lp()};
-window.ap = function(){ap()};
+window.hp = function(){filter('hp')};
+window.lp = function(){filter('lp')};
+window.ap = function(){filter('ap')};
+window.bph = function(){filter('bph')};
+window.bpl = function(){filter('bpl')};
 
 }());
 
@@ -122,6 +102,8 @@ window.ap = function(){ap()};
         <button onclick="hp()">High-Pass</button><span> Cutoff: 1200, Q: 0.6</span><br>
         <button onclick="lp()">Low-Pass</button><span> Cutoff: 1200, Q: 0.6</span><br>
         <button onclick="ap()">All-Pass</button><span> f0: 300, Q: 0.6</span><br>
+        <button onclick="bpl()">Band-Pass Low</button><span> centerFreq: 250, bandwidth: 1 octave</span><br>
+        <button onclick="bph()">Band-Pass High</button><span> centerFreq: 3333, bandwidth: 1 octave</span><br>
         <canvas id=c width=1000 height=420></canvas>
     </body>
 </html>
