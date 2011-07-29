@@ -1,5 +1,10 @@
+(function myPlugin(){
+
+function initPlugin(audioLib){
+(function(audioLib){
+
 /**
- * Creates an AllPassFilter effect.
+ * Creates an AllPassFilter effect. (n-sample based)
  *
  * @constructor
  * @this {AllPassFilter}
@@ -37,3 +42,18 @@ function AllPassFilter(sampleRate, maxDelay, delay, volume){
 		return sample;
 	}
 }
+
+audioLib.effects('nSampleAllPassFilter', AllPassFilter);
+audioLib.nSampleAllPassFilter = AllPassFilter;
+
+}(audioLib));
+audioLib.plugins('nSampleAllPassFilter', myPlugin);
+}
+
+if (typeof audioLib === 'undefined' && typeof exports !== 'undefined'){
+	exports.init = initPlugin;
+} else {
+	initPlugin(audioLib);
+}
+
+}());

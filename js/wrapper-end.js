@@ -5,19 +5,16 @@
 
 // Controls
 audioLib.ADSREnvelope		= ADSREnvelope;
-audioLib.MidiEventTracker	= MidiEventTracker;
 audioLib.StepSequencer		= StepSequencer;
 
 //Effects
-audioLib.AllPassFilter	= AllPassFilter;
-audioLib.BiquadFilter = BiquadFilter;
-audioLib.BitCrusher = BitCrusher;
+audioLib.BiquadFilter	= BiquadFilter;
+audioLib.BitCrusher	= BitCrusher;
 audioLib.Chorus		= Chorus;
-audioLib.Compressor = Compressor;
+audioLib.Compressor	= Compressor;
 audioLib.Delay		= Delay;
 audioLib.Distortion	= Distortion;
 audioLib.IIRFilter	= IIRFilter;
-audioLib.LowPassFilter	= LowPassFilter;
 audioLib.LP12Filter	= LP12Filter;
 
 
@@ -143,7 +140,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['AllPassFilter', 'BiquadFilter', 'BitCrusher', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LowPassFilter', 'LP12Filter']));
+}(['BiquadFilter', 'BitCrusher', 'Chorus', 'Compressor', 'Delay', 'Distortion', 'IIRFilter', 'LP12Filter']));
 
 (function(names, i){
 	function generators(name, effect, prototype){

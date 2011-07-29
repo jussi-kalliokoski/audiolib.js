@@ -1,3 +1,8 @@
+(function myPlugin(){
+
+function initPlugin(audioLib){
+(function(audioLib){
+
 // A simple and fast low pass filter. Also low quality...
 
 /**
@@ -28,3 +33,18 @@ function LowPassFilter(samplerate, freq, reso){
 		return smpl[1];
 	};
 }
+
+audioLib.effects('FastLowPassFilter', LowPassFilter);
+audioLib.FastLowPassFilter = LowPassFilter;
+
+}(audioLib));
+audioLib.plugins('FastLowPassFilter', myPlugin);
+}
+
+if (typeof audioLib === 'undefined' && typeof exports !== 'undefined'){
+	exports.init = initPlugin;
+} else {
+	initPlugin(audioLib);
+}
+
+}());

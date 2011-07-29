@@ -1,3 +1,8 @@
+(function myPlugin(){
+
+function initPlugin(audioLib){
+(function(audioLib){
+
 /**
  * Creates a MidiEventTracker to control voices from MIDI events.
  *
@@ -183,3 +188,17 @@ function MidiEventTracker(){
 		self.onMidi(midievent);
 	};
 }
+
+audioLib.MidiEventTracker = MidiEventTracker;
+
+}(audioLib));
+audioLib.plugins('MidiEventTracker', myPlugin);
+}
+
+if (typeof audioLib === 'undefined' && typeof exports !== 'undefined'){
+	exports.init = initPlugin;
+} else {
+	initPlugin(audioLib);
+}
+
+}());
