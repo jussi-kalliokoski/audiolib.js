@@ -191,11 +191,22 @@ function Codec(name, codec){
 
 Codec('wav', audioLib.PCMData);
 
+function Plugin(name, plugin){
+	Plugin[name] = plugin;
+	Plugin._pluginList.push({
+		plugin: plugin,
+		name:	name
+	});
+}
+
+__defineConst(Plugin, '_pluginList', [], false);
+
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
 audioLib.BufferEffect	= BufferEffect;
 audioLib.GeneratorClass	= GeneratorClass;
 audioLib.codecs		= audioLib.Codec = Codec;
+audioLib.plugins	= Plugin;
 
 audioLib.version	= '0.4.7';
 
