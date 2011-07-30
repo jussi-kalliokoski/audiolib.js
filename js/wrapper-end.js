@@ -118,6 +118,9 @@ BufferEffect.prototype = {
 		for (i=0; i<this.effects.length; i++){
 			this.effects[i].removePreProcessing.apply(this.effects[i], arguments);
 		}
+	},
+	addAutomation: function(){
+		return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
 	}
 };
 
@@ -129,6 +132,7 @@ GeneratorClass.prototype = {
 	type:	'generator',
 	source:	true,
 	mix:	1,
+	generatedBuffer: null,
 	append: function(buffer, channelCount){
 		var	l	= buffer.length,
 			i, n;
@@ -155,6 +159,17 @@ GeneratorClass.prototype = {
 				this.generate		= f;
 				callback.generate	= null;
 			}
+		}
+	},
+	addAutomation: function(){
+		return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
+	},
+	generateBuffer: function(length){
+		this.generatedBuffer = new Float32Array(length);
+		var i;
+		for (i=0; i<length; i++){
+			this.generate();
+			this.generatedBuffer[i] = this.getMix();
 		}
 	}
 };
@@ -242,6 +257,114 @@ function Plugin(name, plugin){
 }
 
 __defineConst(Plugin, '_pluginList', [], false);
+
+function Automation(fx, parameter, automation, amount, type){
+	if (!fx.automation){
+		fx.automation = [];
+		if (fx.type === 'generator'){
+			fx.append = Automation.generatorAppend;
+		} else {
+			fx.append = Automation.effectAppend;
+		}
+	}
+	var automation = {
+		parameter:	parameter,
+		automation:	automation,
+		amount:		isNaN(amount) ? 1 : amount,
+		type:		type || 'modulation'
+	};
+	fx.automation.push(automation);
+	return automation;
+}
+
+Automation.generatorAppend = function(buffer, channelCount){
+	var	self	= this,
+		l	= buffer.length,
+		k	= self.automation.length,
+		def	= [],
+		i, n, m, a;
+	channelCount	= channelCount || 1;
+	for (m=0; m<k; m++){
+		def.push(self[self.automation[m].parameter]);
+	}
+	for (i=0; i<l; i+=channelCount){
+		for (m=0; m<k; m++){
+			self[self.automation[m].parameter] = def[m];
+		}
+		for (m=0; m<k; m++){
+			a = self.automation[m];
+			switch(a.type){
+				case 'modulation':
+					self[a.parameter] *= a.amount * a.automation.generatedBuffer[i];
+					break;
+				case 'addition':
+					self[a.parameter] += a.amount * a.automation.generatedBuffer[i];
+					break;
+				case 'substraction':
+					self[a.parameter] -= a.amount * a.automation.generatedBuffer[i];
+					break;
+				case 'additiveModulation':
+					self[a.parameter] += self[a.parameter] * a.amount * a.automation.generatedBuffer[i];
+					break;
+			}
+		}
+
+		self.generate();
+
+		for (n=0; n<channelCount; n++){
+			buffer[i + n] = self.getMix(n) * self.mix + buffer[i + n] * (1 - self.mix);
+		}
+	}
+	for (m=0; m<k; m++){
+		self[self.automation[m].parameter] = def[m];
+	}
+	return buffer;
+}
+Automation.effectAppend = function(buffer){
+	var	self	= this,
+		ch	= self.channelCount,
+		l	= buffer.length,
+		k	= self.automation.length,
+		def	= [],
+		i, n, m, z, a;
+	for (m=0; m<k; m++){
+		def.push([]);
+		for (n=0; n<ch; n++){
+			def[m].push(self.effects[n][self.automation[m].parameter]);
+		}
+	}
+	for (i=0; i<l; i+=ch){
+		for (n=0; n<ch; n++){
+			for (m=0; m<k; m++){
+				a = self.automation[m];
+				self.effects[n][a.parameter] = def[m][n];
+				switch(a.type){
+					case 'modulation':
+						self.effects[n][a.parameter] *= a.amount * a.automation.generatedBuffer[i];
+						break;
+					case 'addition':
+						self.effects[n][a.parameter] += a.amount * a.automation.generatedBuffer[i];
+						break;
+					case 'substraction':
+						self.effects[n][a.parameter] -= a.amount * a.automation.generatedBuffer[i];
+						break;
+					case 'additiveModulation':
+						self.effects[n][a.parameter] += self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[i];
+						break;
+				}
+			}
+			buffer[i + n] = self.effects[n].pushSample(buffer[i + n]) * self.mix + buffer[i + n] * (1 - self.mix);
+		}
+	}
+	for (m=0; m<k; m++){
+		for (n=0; n<ch; n++){
+			self.effects[n][self.automation[m].parameter] = def[m][n];
+		}
+	}
+	return buffer;
+}
+
+audioLib.Automation	= Automation;
 
 audioLib.EffectChain	= EffectChain;
 audioLib.EffectClass	= EffectClass;
