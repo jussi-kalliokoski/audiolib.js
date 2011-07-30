@@ -39,6 +39,15 @@ EffectClass.prototype = {
 			callback.apply(this, arguments);
 			return callback.pushSample.apply(this, arguments);
 		};
+	},
+	removePreProcessing: function(callback){
+		var f;
+		while (f = this.pushSample.pushSample){
+			if (f === callback || !callback){
+				this.pushSample		= f;
+				callback.pushSample	= null;
+			}
+		}
 	}
 };
 
@@ -103,6 +112,12 @@ BufferEffect.prototype = {
 		for (i=0; i<this.effects.length; i++){
 			this.effects[i].addPreProcessing.apply(this.effects[i], arguments);
 		}
+	},
+	removePreProcessing: function(){
+		var i;
+		for (i=0; i<this.effects.length; i++){
+			this.effects[i].removePreProcessing.apply(this.effects[i], arguments);
+		}
 	}
 };
 
@@ -132,6 +147,15 @@ GeneratorClass.prototype = {
 			callback.apply(this, arguments);
 			return callback.generate.apply(this, arguments);
 		};
+	},
+	removePreProcessing: function(callback){
+		var f;
+		while (f = this.generate.generate){
+			if (f === callback || !callback){
+				this.generate		= f;
+				callback.generate	= null;
+			}
+		}
 	}
 };
 
