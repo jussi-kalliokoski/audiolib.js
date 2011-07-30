@@ -72,8 +72,7 @@ function plotPCM(buffer, channelCount){
 	osc.append(buffer);
 	drawBuffer();
 
-	capper.addAutomation('cap', osc2, 0.5, 'addition');
-	capper.cap = 0.5;
+	capper.addAutomation('cap', osc2, 1, 'absoluteAssignment');
 
 	context.strokeStyle = 'red';
 
@@ -81,6 +80,7 @@ function plotPCM(buffer, channelCount){
 	osc2.reset();
 	osc2.generateBuffer(~~(sampleRate * plotTime));
 	osc.append(buffer);
+	osc2.generateBuffer(~~(sampleRate * plotTime));
 	capper.append(buffer);
 	drawBuffer();
 }
