@@ -107,7 +107,7 @@ GeneratorClass.prototype = {
 		for (i=0; i<l; i+=channelCount){
 			this.generate();
 			for (n=0; n<channelCount; n++){
-				buffer[i + n] = this.getMix(n) * this.mix;
+				buffer[i + n] = this.getMix(n) * this.mix + buffer[i + n] * (1 - this.mix);
 			}
 		}
 		return buffer;
