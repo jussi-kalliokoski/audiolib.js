@@ -117,6 +117,7 @@ GeneratorClass.prototype = {
 	append: function(buffer, channelCount){
 		var	l	= buffer.length,
 			i, n;
+		channelCount	= channelCount || 1;
 		for (i=0; i<l; i+=channelCount){
 			this.generate();
 			for (n=0; n<channelCount; n++){
@@ -141,7 +142,7 @@ GeneratorClass.prototype = {
 
 	function effects(name, effect, prototype){
 		if (effect){
-			prototype       = prototype || effect.prototype;
+			prototype	= prototype || effect.prototype;
 			effects[name]	= effect;
 			var	proto	= effect.prototype = new EffectClass();
 			proto.name	= proto.fxid = name;
@@ -165,7 +166,7 @@ GeneratorClass.prototype = {
 (function(names, i){
 	function generators(name, effect, prototype){
 		if (effect){
-			prototype       = prototype || effect.prototype;
+			prototype	= prototype || effect.prototype;
 			generators[name]= effect;
 			var	proto	= effect.prototype = new GeneratorClass();
 			proto.name	= proto.fxid = name;
