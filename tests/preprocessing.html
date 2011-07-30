@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>audiolib.js | Compressor Test</title>
+		<title>audiolib.js | Pre-Processing Test</title>
 		<script src="../lib/audiolib.js"></script>
 		<script src="../plugins/capper.js"></script>
 		<script>
@@ -21,7 +21,7 @@ function plotPCM(buffer, channelCount){
 		osc2		= new audioLib.Oscillator(sampleRate, 19.2),
 		buffer		= new Float32Array(~~(sampleRate * plotTime)),
 		compressor	= new audioLib.Compressor(sampleRate,2),
-		capper		= audioLib.Capper.createBufferBased(sampleRate, 1);
+		capper		= audioLib.Capper.createBufferBased(1, sampleRate, 1);
 
 	osc2.waveShape = 'triangle';
 
@@ -75,6 +75,7 @@ function plotPCM(buffer, channelCount){
 	drawBuffer();
 
 	capper.addPreProcessing(function(){
+	    osc2.generate();
 		this.cap = Math.abs(osc2.getMix());
 	});
 
