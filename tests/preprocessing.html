@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>audiolib.js | Compressor Test</title>
+		<script src="../lib/audiolib.js"></script>
+		<script src="../plugins/capper.js"></script>
+		<script>
+(function(){
+
+function plotPCM(buffer, channelCount){
+	var canvas		= document.getElementById('c'),
+		context		= canvas.getContext('2d'),
+		width		= canvas.width,
+		height		= canvas.height,
+		halfHeight	= height/2,
+		waveScale	= 100, // Pixel height of amplitude 1
+		sampleRate	= 44100,
+		plotTime	= 0.018, // Seconds to plot
+		xscale		= width/(sampleRate*plotTime),
+		osc		= new audioLib.Oscillator(sampleRate, 220),
+		osc2		= new audioLib.Oscillator(sampleRate, 19.2),
+		buffer		= new Float32Array(~~(sampleRate * plotTime)),
+		compressor	= new audioLib.Compressor(sampleRate,2),
+		capper		= audioLib.Capper.createBufferBased(sampleRate, 1);
+
+	osc2.waveShape = 'triangle';
+
+	function drawBuffer(){
+		var i;
+		context.beginPath();
+		for (i=0; i<buffer.length; i++){
+			context.lineTo(i * xscale, halfHeight + buffer[i] * waveScale);
+			buffer[i] = 0;
+		}
+		context.stroke();
+	}
+	
+	// Reference Box, +- 1
+	context.strokeStyle="#33FF33";
+	context.beginPath();
+	context.rect(0,halfHeight-waveScale, width, waveScale*2);
+	context.stroke();
+
+	// Reference Box, += 2
+	context.strokeStyle="#FF0000";
+	context.beginPath();
+	context.rect(0,halfHeight-waveScale*2, width, waveScale*4);
+	context.stroke();
+	
+	
+	// Reference Line, zero
+	context.strokeStyle="#000000";
+	context.beginPath();
+	context.moveTo(0, halfHeight);
+	context.lineTo(width, halfHeight)
+	context.stroke();
+	
+	// Sine wave
+
+	osc.reset();
+	osc2.reset();
+	osc.append(buffer, 1);
+	drawBuffer();
+
+	osc.addPreProcessing(function(){
+		osc2.generate();
+		osc.fm = osc2.getMix();
+	});
+
+	context.strokeStyle = '#ababab';
+
+	osc.reset();
+	osc2.reset();
+	osc.append(buffer, 1);
+	drawBuffer();
+
+	capper.addPreProcessing(function(){
+		this.cap = Math.abs(osc2.getMix());
+	});
+
+	context.strokeStyle = 'red';
+
+	osc.reset();
+	osc2.reset();
+	osc.append(buffer, 1);
+	capper.append(buffer);
+	drawBuffer();
+}
+
+window.onload = function(){
+	setTimeout(function(){
+		plotPCM();
+	}, 2000);
+};
+
+}());
+
+		</script>
+	</head>
+	<body>
+		<h1>Pre-Processing</h1>
+		<p>
+			This test shows 3 waveforms:
+			<ul>
+				<li>A sine wave of 220Hz in <span style="color:black;">Black</span></li>
+				<li>A sine wave of 220Hz frequency modulated by a sine LFO of 19.2Hz in <span style="color:#ababab;">Grey</span></li>
+				<li>A frequency modulated sine wave of 220Hz processed with <em>audioLib.Capper</em> of LFO controlled capping in <span style="color:red;">Red</span></li>
+			</ul>
+			Pre-Processing allows user to add complicated or simple automation of parameters to effects and generators.
+		</p>
+		<canvas id=c width=1000 height=420></canvas>
+	</body>
+</html>
