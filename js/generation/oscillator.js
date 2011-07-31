@@ -184,7 +184,7 @@ Oscillator.createMixWave = function(name, waveshapes){
 		for (i=0; i<l; i++){
 			smpl += this[waveshapes[i].shape]() * waveshapes[i].mix;
 		}
-		return mix;
+		return smpl;
 	});
 };
 
