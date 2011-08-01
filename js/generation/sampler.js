@@ -46,7 +46,7 @@ Sampler.prototype = {
 			speed	= frequency / self.pitch,
 			rate	= self.sampleRate,
 			start	= rate * self.delayStart,
-			end	= self.sampleSize - rate * self.delayEnd,
+			end	= self.sampleSize - rate * self.delayEnd - 1,
 			note	= {
 				f:	frequency,
 				p:	start,
