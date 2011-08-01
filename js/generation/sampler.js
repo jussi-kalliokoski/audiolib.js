@@ -98,7 +98,7 @@ Sampler.prototype = {
 */
 	load: function(data, resample){
 		var	self	= this,
-			samples	= self.samples = Sampler.splitChannels(data.data, data.channelCount),
+			samples	= self.samples = Sampler.deinterleave(data.data, data.channelCount),
 			i;
 		if (resample){
 			for (i=0; i<samples.length; i++){
@@ -195,7 +195,7 @@ Sampler.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or
  * @return {Array} An array containing the resulting sample buffers.
 */
 
-Sampler.splitChannels	= function(buffer, channelCount){
+Sampler.interleave = function(buffer, channelCount){
 	var	l	= buffer.length,
 		size	= l / channelCount,
 		ret	= [],
@@ -215,7 +215,7 @@ Sampler.splitChannels	= function(buffer, channelCount){
  * @param {Array} buffers The buffers to join.
 */
 
-Sampler.joinChannels	= function(buffers){
+Sampler.deinterleave = function(buffers){
 	var	channelCount	= buffers.length,
 		l		= buffers[0].length,
 		buffer		= new Float32Array(l * channelCount),
