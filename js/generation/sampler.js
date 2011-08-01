@@ -43,7 +43,7 @@ Sampler.prototype = {
 	noteOn: function(frequency){
 		frequency	= isNaN(frequency) ? this.pitch : frequency;
 		var	self	= this,
-			speed	= frequency / self.pitch,
+			speed	= frequency / self.pitch * 2,
 			rate	= self.sampleRate,
 			start	= rate * self.delayStart,
 			end	= self.sampleSize - rate * self.delayEnd - 1,
