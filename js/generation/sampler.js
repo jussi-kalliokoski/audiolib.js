@@ -227,3 +227,22 @@ Sampler.interleave = function(buffers){
 	}
 	return buffer;
 };
+
+/**
+ * Mixes two or more buffers down to one.
+ *
+ * @param {Array} buffer The buffer to append the others to.
+ * @param {Array} bufferX The buffers to append from.
+*/
+
+Sampler.mix = function(buffer){
+	var	buffers	= [].slice.call(arguments, 1),
+		l	= buffer.length,
+		i, c;
+	for (c=0; c<buffers.length; c++){
+		for (i=0; i<l; i++){
+			buffer[i] += buffer[c][i];
+		}
+	}
+	return buffer;
+};
