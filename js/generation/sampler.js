@@ -195,7 +195,7 @@ Sampler.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or
  * @return {Array} An array containing the resulting sample buffers.
 */
 
-Sampler.interleave = function(buffer, channelCount){
+Sampler.deinterleave = function(buffer, channelCount){
 	var	l	= buffer.length,
 		size	= l / channelCount,
 		ret	= [],
@@ -215,7 +215,7 @@ Sampler.interleave = function(buffer, channelCount){
  * @param {Array} buffers The buffers to join.
 */
 
-Sampler.deinterleave = function(buffers){
+Sampler.interleave = function(buffers){
 	var	channelCount	= buffers.length,
 		l		= buffers[0].length,
 		buffer		= new Float32Array(l * channelCount),
