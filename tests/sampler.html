@@ -5,22 +5,19 @@
 		<script>
 (function(){
 
-var	
-	sample	= new Float32Array(100000),
-	sampler,
+var	osc, sampler, sampler2,
+	noteLength, length, baseWav,
+	baseBuffer, baseWav,
 	dev, sampleRate;
-
-for (dev=0; dev<100000; dev+=2){
-	sample[dev] = sample[dev+1] = Math.random() * 0.3;
-}
 
 function audioProcess(buffer, channelCount){
 	var	l	= buffer.length,
 		i, n;
 	for (i=0; i<l; i+=channelCount){
-		sampler.generate();
+		samplerPCM.generate();
+		samplerDirect.generate();
 		for (n=0; n<channelCount; n++){
-			buffer[n + i] = sampler.getMix(n);
+			buffer[n + i] = samplerPCM.getMix(n)+samplerDirect.getMix(n);
 		}
 	}
 }
@@ -29,22 +26,43 @@ window.onload	= function(){
 	setTimeout(function(){
 		dev		= audioLib.AudioDevice(audioProcess, 2);
 		sampleRate	= dev.sampleRate;
-		sampler		= new audioLib.Sampler(sampleRate);
-		sampler.load({sampleRate: 44100, channelCount: 2, data: sample});
+		samplerPCM	= new audioLib.Sampler(sampleRate, 440);
+		samplerDirect	= new audioLib.Sampler(sampleRate, 440);
+		osc		= new audioLib.Oscillator(sampleRate, 440);
+		noteLength	= 2; // note duration is noteLength / channels
+		length		= noteLength*sampleRate;
+		baseBuffer	= osc.append(new Float32Array(length), 2);
+		baseWav		= audioLib.PCMData.encode({data: baseBuffer, channelCount: 2, sampleRate: sampleRate});
+		samplerPCM.loadWav(baseWav);
+		samplerDirect.load({data:baseBuffer, channelCount: 2, sampleRate: sampleRate}, false);
 	}, 2000);
 };
 
-window.play	= function(frequency){
-	console.log(sampler.noteOn(frequency));
-}
+window.play440	= function(){
+	dev.writeBuffer(baseBuffer);
+};
+
+window.sample	= function(frequency){
+	samplerPCM.noteOn(frequency);
+};
+
+window.sample2	= function(frequency){
+	samplerDirect.noteOn(frequency);
+};
 
 }());
 
 		</script>
 	</head>
 	<body>
-		<label for="f">Frequency</label>
+		<p>This test generates a 1-second 440Hz tone, encodes it into PCM data, and loads it into audioLib.Sampler. A second sampler is fed the direct (non-encoded) sample.</p>
+		<button onclick="play440()">Play Synthesized 440Hz</button>
+		<button onclick="sample(440)">Play PCM-encoded/decoded 440Hz Sample</button>
+		<button onclick="sample2(440)">Play Direct 440Hz Sample</button>
+		<br><br>
+		<label for="f">Sampler Frequency</label>
 		<input id="f" value="440">
-		<button onclick="play(document.getElementById('f').value)">Play</button>
+		<button onclick="sample(document.getElementById('f').value)">Resample PCM'ed</button>
+		<button onclick="sample2(document.getElementById('f').value)">Resample Direct</button>
 	</body>
 </html>
