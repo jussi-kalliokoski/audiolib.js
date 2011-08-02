@@ -32,7 +32,7 @@ window.onload	= function(){
 		noteLength	= 2; // note duration is noteLength / channels
 		length		= noteLength*sampleRate;
 		baseBuffer	= osc.append(new Float32Array(length), 2);
-		baseWav		= audioLib.PCMData.encode({data: baseBuffer, channelCount: 2, sampleRate: sampleRate});
+		baseWav		= audioLib.PCMData.encode({data: baseBuffer, channelCount: 2, sampleRate: sampleRate, bytesPerSample: 2});
 		samplerPCM.loadWav(baseWav);
 		samplerDirect.load({data:baseBuffer, channelCount: 2, sampleRate: sampleRate}, false);
 	}, 2000);
