@@ -6,6 +6,7 @@
 // Controls
 audioLib.ADSREnvelope		= ADSREnvelope;
 audioLib.StepSequencer		= StepSequencer;
+audioLib.UIControl		= UIControl;
 
 //Effects
 audioLib.BiquadFilter	= BiquadFilter;
@@ -224,7 +225,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer']));
+}(['Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
 
 function Codec(name, codec){
 	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
