@@ -237,11 +237,11 @@ Sampler.interleave = function(buffers){
 
 Sampler.mix = function(buffer){
 	var	buffers	= [].slice.call(arguments, 1),
-		l	= buffer.length,
-		i, c;
+		l, i, c;
 	for (c=0; c<buffers.length; c++){
+		l = Math.max(buffer.length, buffers[c].length);
 		for (i=0; i<l; i++){
-			buffer[i] += buffer[c][i];
+			buffer[i] += buffers[c][i];
 		}
 	}
 	return buffer;
