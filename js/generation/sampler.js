@@ -38,9 +38,10 @@ Sampler.prototype = {
  * Adds a new voice to the sampler and disbands voices that go past the maxVoices limit.
  *
  * @param {Number} frequency Determines the frequency the voice should be played at, relative to the Sampler's pitch. (Optional)
+ * @param {Number} velocity The relative volume of the voice. (Optional)
  * @return {Voice} The voice object created.
 */
-	noteOn: function(frequency){
+	noteOn: function(frequency, velocity){
 		frequency	= isNaN(frequency) ? this.pitch : frequency;
 		var	self	= this,
 			speed	= frequency / self.pitch,
@@ -51,7 +52,8 @@ Sampler.prototype = {
 				f:	frequency,
 				p:	start,
 				s:	speed,
-				l:	end
+				l:	end,
+				v:	isNaN(velocity) ? 1 : velocity
 			};
 		self.voices.push(note);
 		while (self.voices.length > self.maxVoices){
@@ -85,7 +87,7 @@ Sampler.prototype = {
 		ch = ch || 0;
 		if (this.samples[ch]){
 			for (i=0; i<voices.length; i++){
-				smpl	+= Sampler.interpolate(this.samples[ch], voices[i].p);
+				smpl	+= Sampler.interpolate(this.samples[ch], voices[i].p) * voices[i].v;
 			}
 		}
 		return smpl;
