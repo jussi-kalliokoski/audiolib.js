@@ -43,7 +43,7 @@ Sampler.prototype = {
 	noteOn: function(frequency){
 		frequency	= isNaN(frequency) ? this.pitch : frequency;
 		var	self	= this,
-			speed	= frequency / self.pitch * 2,
+			speed	= frequency / self.pitch,
 			rate	= self.sampleRate,
 			start	= rate * self.delayStart,
 			end	= self.sampleSize - rate * self.delayEnd - 1,
@@ -203,7 +203,7 @@ Sampler.deinterleave = function(buffer, channelCount){
 	for (i=0; i<channelCount; i++){
 		ret[i] = new Float32Array(size);
 		for (n=0; n<size; n++){
-			ret[i][n] = buffer[i * channelCount + n];
+			ret[i][n] = buffer[n * channelCount + i];
 		}
 	}
 	return ret;
