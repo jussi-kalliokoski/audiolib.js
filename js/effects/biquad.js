@@ -2,25 +2,30 @@
 
 /**
  * Parent constructor for Biquad Filter Effects
+ * http://en.wikipedia.org/wiki/Digital_biquad_filter
  * 
  * @constructor
  * @this {BiquadFilter}
  * @param {number} samplerate Sample Rate (hz).
- * @param {number} a0 (Optional) Bit resolution of output signal. Defaults to 8.
+ * @param {number} b0 Biquadratic difference equation parameter
+ * @param {number} b1 Biquadratic difference equation parameter
+ * @param {number} b2 Biquadratic difference equation parameter
+ * @param {number} a1 Biquadratic difference equation parameter
+ * @param {number} a2 Biquadratic difference equation parameter
 */
-function BiquadFilter(sampleRate, a0, a1, a2, b1, b2){
+function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
 	var	self	= this,
 		sample	= 0.0;
 	self.inputs	= [0,0];
 	self.outputs	= [0,0];
 	self.sampleRate	= sampleRate;
-	self.coefs	= { a0:a0, a1:a1, a2:a2, b1:b1, b2:b2 };
+	self.coefs	= { b0:b0, b1:b1, b2:b2, a1:a1, a2:a2 };
 
 	self.pushSample = function(s){
 		var c = self.coefs,
 			i = self.inputs,
 			o = self.outputs;
-		sample = c.a0 * s + c.a1 * i[0] + c.a2 * i[1] - c.b1 * o[0] - c.b2 * o[1];
+		sample = c.b0 * s + c.b1 * i[0] + c.b2 * i[1] - c.a1 * o[0] - c.a2 * o[1];
 		i.pop();
 		i.unshift(s);
 		o.pop();
