@@ -16,7 +16,7 @@ function plotPCM(buffer, channelCount){
 		halfHeight	= height/2,
 		waveScale	= 100, // Pixel height of amplitude 1
 		sampleRate	= 44100,
-		plotTime	= 0.01, // Seconds to plot
+		plotTime	= 2, // Seconds to plot
 		xscale		= width/(sampleRate*plotTime),
 		osc		= new audioLib.Oscillator(sampleRate, 220),
 		osc2		= new audioLib.Oscillator(sampleRate, 3500),
@@ -25,7 +25,7 @@ function plotPCM(buffer, channelCount){
 		hpf		= new audioLib.BiquadFilter.HighPass(sampleRate, 1200, 0.6),
 		bpfh		= new audioLib.BiquadFilter.BandPass(sampleRate, 3333, 1),
 		bpfl		= new audioLib.BiquadFilter.BandPass(sampleRate, 250, 1),
-		fft		= new audioLib.FFT(sampleRate, 256);
+		fft		= new audioLib.FFT(sampleRate, 4096);
 		names	   = {lp:lpf, hp:hpf, ap:apf, bph:bpfh, bpl:bpfl};
 	 
 	function setup(){
