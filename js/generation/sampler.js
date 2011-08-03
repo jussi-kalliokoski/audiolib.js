@@ -178,7 +178,7 @@ interpolation('linear');
 Sampler.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or toRate */, toRate, toFrequency){
 	var
 		argc		= arguments.length,
-		speed		= argc === 2 ? fromRate : argc === 3 ? toRate / fromFrequency : toRate / fromRate * toFrequency / fromFrequency,
+		speed		= argc === 2 ? fromRate : argc === 3 ? fromRate / fromFrequency : toRate / fromRate * toFrequency / fromFrequency,
 		l		= buffer.length,
 		length		= Math.ceil(l / speed),
 		newBuffer	= new Float32Array(length),
