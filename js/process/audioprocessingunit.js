@@ -1,3 +1,9 @@
+/**
+ * A helper class for buffer-based audio analyzers, such as FFT.
+ *
+ * @param {Number} bufferSize Size of the buffer (a power of 2)
+*/
+
 function AudioProcessingUnit(bufferSize){
 	var k;
 	for (k in AudioProcessingUnit.prototype){
