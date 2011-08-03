@@ -59,13 +59,15 @@ window.playReverb	= function(frequency, wet, dry){
 		</script>
 	</head>
 	<body>
+		<h1>Reverb Test</h1>
 		<label for="f">Frequency</label>
 		<input id="f" value="440">
 		<label for="w">Wet</label>
-		<input id="w" value="0.6">
+		<input id="w" value="0.5">
 		<label for="d">Dry</label>
-		<input id="d" value="0.65"><br>
+		<input id="d" value="0.55"><br>
 		<button onclick="play(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value)">Play</button>
 		<button onclick="playReverb(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value)">Play Reverb</button>
+		<p>Be patient, sample may take a few seconds to load. Note: Wet/Dry do not have to total to 1.</p>
 	</body>
 </html>
