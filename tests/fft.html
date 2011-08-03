@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>audiolib.js | Biquad Filter Test</title>
+		<script src="../lib/audiolib.js"></script>
+		<script>
+(function(){
+	
+var filter;
+
+function plotPCM(buffer, channelCount){
+	var canvas	  = document.getElementById('c'),
+		context		= canvas.getContext('2d'),
+		width		= canvas.width,
+		height		= canvas.height,
+		halfHeight	= height/2,
+		waveScale	= 100, // Pixel height of amplitude 1
+		sampleRate	= 44100,
+		plotTime	= 0.01, // Seconds to plot
+		xscale		= width/(sampleRate*plotTime),
+		osc		= new audioLib.Oscillator(sampleRate, 220),
+		osc2		= new audioLib.Oscillator(sampleRate, 3500),
+		lpf		= new audioLib.BiquadFilter.LowPass(sampleRate, 1200, 0.6),
+		apf		= new audioLib.BiquadFilter.AllPass(sampleRate, 300, 0.6),
+		hpf		= new audioLib.BiquadFilter.HighPass(sampleRate, 1200, 0.6),
+		bpfh		= new audioLib.BiquadFilter.BandPass(sampleRate, 3333, 1),
+		bpfl		= new audioLib.BiquadFilter.BandPass(sampleRate, 250, 1),
+		fft		= new audioLib.FFT(sampleRate, 256);
+		names	   = {lp:lpf, hp:hpf, ap:apf, bph:bpfh, bpl:bpfl};
+	 
+	function setup(){
+		context.clearRect ( 0, 0, width, height);
+		// Reference Box, +- 1
+		context.strokeStyle="#33FF33";
+		context.beginPath();
+		context.rect(0,halfHeight-waveScale, width, waveScale*2);
+		context.stroke();
+	
+		// Reference Line, zero
+		context.strokeStyle="#000000";
+		context.beginPath();
+		context.moveTo(0, halfHeight);
+		context.lineTo(width, halfHeight)
+		context.stroke();
+		
+		// Sine wave sum
+		context.beginPath();
+		context.moveTo(0, halfHeight);
+		osc.reset();
+		osc2.reset();
+		for(var i=0, max=sampleRate*plotTime; i<max; i++){
+			
+			context.lineTo(i*xscale, halfHeight + (osc.getMix()+osc2.getMix()) * waveScale);
+			osc.generate();
+			osc2.generate();
+		}
+		context.stroke();
+		
+		osc.reset();
+		osc2.reset();
+		context.strokeStyle="#0000FF";
+		context.beginPath();
+		context.moveTo(0, halfHeight);
+	}
+	setup();
+	
+	filter = function(type, param){
+		setup();
+		var filter = names[type];
+		filter.reset();
+		fft.reset();
+		
+		for(var i=0, max=sampleRate*plotTime; i<max; i++){
+			fft.pushSample(filter.pushSample((osc.getMix()+osc2.getMix())));
+			osc.generate();
+			osc2.generate();
+		}
+
+		for (i=0; i<fft.spectrum.length; i++){
+			context.lineTo(i / fft.spectrum.length * width, fft.spectrum[i] * waveScale);
+		}
+
+		context.stroke();
+	};
+			
+}
+
+window.onload = function(){
+	setTimeout(function(){
+		plotPCM();
+	}, 2000);
+};
+window.hp = function(){filter('hp')};
+window.lp = function(){filter('lp')};
+window.ap = function(){filter('ap')};
+window.bph = function(){filter('bph')};
+window.bpl = function(){filter('bpl')};
+
+}());
+
+		</script>
+	</head>
+	<body>
+		<h1>Biquad Filter Test</h1>
+		<p>
+			Original signal: sum of 2 sine waves (220Hz and 3500Hz)
+		</p>
+		<button onclick="hp()">High-Pass</button><span> Cutoff: 1200, Q: 0.6</span><br>
+		<button onclick="lp()">Low-Pass</button><span> Cutoff: 1200, Q: 0.6</span><br>
+		<button onclick="ap()">All-Pass</button><span> f0: 300, Q: 0.6</span><br>
+		<button onclick="bpl()">Band-Pass Low</button><span> centerFreq: 250, bandwidth: 1 octave</span><br>
+		<button onclick="bph()">Band-Pass High</button><span> centerFreq: 3333, bandwidth: 1 octave</span><br>
+		<canvas id=c width=1000 height=420></canvas>
+	</body>
+</html>
