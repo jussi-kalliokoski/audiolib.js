@@ -8,6 +8,7 @@ audioLib.ADSREnvelope		= ADSREnvelope;
 audioLib.StepSequencer		= StepSequencer;
 audioLib.UIControl		= UIControl;
 
+
 //Effects
 audioLib.BiquadFilter	= BiquadFilter;
 audioLib.BitCrusher	= BitCrusher;
@@ -25,6 +26,11 @@ audioLib.Reverb		= Freeverb;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
+
+
+//Processing
+audioLib.AudioProcessingUnit = AudioProcessingUnit;
+
 
 function EffectClass(){
 }
@@ -211,6 +217,8 @@ GeneratorClass.prototype = {
 	effects('BiquadLowPassFilter', BiquadFilter.LowPass);
 	effects('BiquadAllPassFilter', BiquadFilter.AllPass);
 	effects('BiquadBandPassFilter', BiquadFilter.BandPass);
+	effects('FFT', audioLib.FourierTransform.FFT);
+	audioLib.FFT = audioLib.FourierTransform.FFT;
 }(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb']));
 
 (function(names, i){
