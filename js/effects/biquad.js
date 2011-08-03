@@ -1,7 +1,7 @@
 // Adapted from http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
 
 /**
- * Parent constructor for Biquad Filter Effects
+ * A Custom Biquad Filter Effect
  * http://en.wikipedia.org/wiki/Digital_biquad_filter
  * 
  * @constructor
@@ -14,34 +14,52 @@
  * @param {number} a2 Biquadratic difference equation parameter
 */
 function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
-	var	self	= this,
-		sample	= 0.0;
-	self.inputs	= [0,0];
-	self.outputs	= [0,0];
-	self.sampleRate	= sampleRate;
-	self.coefs	= { b0:b0, b1:b1, b2:b2, a1:a1, a2:a2 };
+	this.reset.apply(this, arguments)
+}
 
-	self.pushSample = function(s){
-		var c = self.coefs,
-			i = self.inputs,
-			o = self.outputs;
-		sample = c.b0 * s + c.b1 * i[0] + c.b2 * i[1] - c.a1 * o[0] - c.a2 * o[1];
+/**
+ * A generic Biquad Filter class, used internally to create BiquadFilter classes.
+ * @constructor
+ * @this BiquadFilterClass
+*/
+BiquadFilter.BiquadFilterClass = function BiquadFilterClass(){
+	var k;
+	for (k in BiquadFilterClass.prototype){
+		if (BiquadFilterClass.prototype.hasOwnProperty){
+			this[k] = this[k];
+		}
+	}
+};
+
+BiquadFilter.BiquadFilterClass.prototype = {
+	sampleRate:	44100,
+	sample:		0,
+	inputs:		null,
+	outputs:	null,
+	coefs:		null,
+	pushSample: function(s){
+		var	c	= this.coefs,
+			i	= this.inputs,
+			o	= this.outputs;
+		this.sample = c.b0 * s + c.b1 * i[0] + c.b2 * i[1] - c.a1 * o[0] - c.a2 * o[1];
 		i.pop();
 		i.unshift(s);
 		o.pop();
-		o.unshift(sample);
-
-		return sample;
-	};
-	self.getMix = function(){
-		return sample;
-	};
-
-	self.reset = function(){
-		self.inputs = [0,0];
-		self.outputs = [0,0];
-	};
-}
+		o.unshift(this.sample);
+		return this.sample;
+	},
+	getMix: function(){
+		return this.sample;
+	},
+	reset: function(sampleRate, b0, b1, b2, a1, a2){
+		this.inputs = [0,0];
+		this.outputs = [0,0];
+		this.sampleRate = isNaN(sampleRate) ? this.sampleRate : sampleRate;
+		if (arguments.length > 1){
+			this.coefs	= { b0:b0, b1:b1, b2:b2, a1:a1, a2:a2 };
+		}
+	}
+};
 
 /**
  * Creates a Biquad Low-Pass Filter Effect
@@ -63,8 +81,8 @@ BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
 		a0	=   1 + alpha,
 		a1	=  -2*cosw0,
 		a2	=   1 - alpha;
-	return new BiquadFilter(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
-}
+	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
+};
 
 /**
  * Creates a Biquad High-Pass Filter Effect
@@ -86,8 +104,8 @@ BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
 		a0	=   1 + alpha,
 		a1	=  -2*cosw0,
 		a2	=   1 - alpha;
-	return new audioLib.BiquadFilter(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
-}
+	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
+};
 
 /**
  * Creates a Biquad All-Pass Filter Effect
@@ -109,8 +127,8 @@ BiquadFilter.AllPass = function(sampleRate, f0, Q){
 		a0	=  b2,
 		a1	=  b1,
 		a2	=  b0;
-	return new audioLib.BiquadFilter(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
-}
+	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
+};
 
 /**
  * Creates a Biquad Band-Pass Filter Effect
@@ -133,5 +151,11 @@ BiquadFilter.BandPass = function(sampleRate, centerFreq, bandwidthInOctaves){
 		a0	= 1 + alpha,
 		a1	= -2 * cosw0,
 		a2	= 1 - alpha;
-	return new audioLib.BiquadFilter(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
+	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
+};
+
+(function(classes, i){
+for (i=0; i<classes.length; i++){
+	classes[i].prototype = new BiquadFilter.BiquadFilterClass();
 }
+}([BiquadFilter, BiquadFilter.LowPass, BiquadFilter.HighPass, BiquadFilter.AllPass, BiquadFilter.BandPass]));

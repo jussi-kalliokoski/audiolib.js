@@ -199,11 +199,18 @@ GeneratorClass.prototype = {
 		return effects[name];
 	}
 
+
+
 	audioLib.effects = effects;
 
 	for (i=0; i<names.length; i++){
 		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
+
+	effects('BiquadHighPassFilter', BiquadFilter.HighPass);
+	effects('BiquadLowPassFilter', BiquadFilter.LowPass);
+	effects('BiquadAllPassFilter', BiquadFilter.AllPass);
+	effects('BiquadBandPassFilter', BiquadFilter.BandPass);
 }(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb']));
 
 (function(names, i){
