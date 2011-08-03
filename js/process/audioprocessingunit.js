@@ -14,6 +14,7 @@ AudioProcessingUnit.prototype = {
 		this.bufferPos = (this.bufferPos + 1) % this.buffer.length;
 		this.bufferPos === 0 && this.process(this.buffer);
 		this.buffer[this.bufferPos] = s;
+		return s;
 	},
 	getMix: function(){
 		return this.buffer[this.bufferPos];
