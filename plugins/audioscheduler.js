@@ -1,6 +1,10 @@
-// Requires AudioDevice
+(function myPlugin(){
 
-this.AudioDevice.createScheduled = function(callback){
+function initPlugin(audioLib){
+
+(function(audioLib){
+
+audioLib.AudioDevice.createScheduled = function(callback){
 	var	schedule	= [],
 		previousCall	= 0,
 		dev;
@@ -36,3 +40,15 @@ this.AudioDevice.createScheduled = function(callback){
 	dev.chunkSize = 1;
 	return dev;
 };
+
+}(audioLib));
+audioLib.plugins('DeviceScheduler', myPlugin);
+}
+
+if (typeof audioLib === 'undefined' && typeof exports !== 'undefined'){
+	exports.init = initPlugin;
+} else {
+	initPlugin(audioLib);
+}
+
+}());
