@@ -32,6 +32,9 @@ audioLib.Sampler	= Sampler;
 audioLib.AudioProcessingUnit = AudioProcessingUnit;
 
 
+audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
+
+
 function EffectClass(){
 }
 
@@ -301,12 +304,12 @@ Automation.generatorAppend = function(buffer, channelCount){
 		l	= buffer.length,
 		k	= self.automation.length,
 		def	= [],
-		i, n, m, a;
+		z, i, n, m, a;
 	channelCount	= channelCount || 1;
 	for (m=0; m<k; m++){
 		def.push(self[self.automation[m].parameter]);
 	}
-	for (i=0; i<l; i+=channelCount){
+	for (i=0, z=0; i<l; i+=channelCount, z++){
 		for (m=0; m<k; m++){
 			self[self.automation[m].parameter] = def[m];
 		}
@@ -314,25 +317,25 @@ Automation.generatorAppend = function(buffer, channelCount){
 			a = self.automation[m];
 			switch(a.type){
 				case 'modulation':
-					self[a.parameter] *= a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] *= a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'addition':
-					self[a.parameter] += a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] += a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'substraction':
-					self[a.parameter] -= a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] -= a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'additiveModulation':
-					self[a.parameter] += self[a.parameter] * a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] += self[a.parameter] * a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'substractiveModulation':
-					self[a.parameter] -= self[a.parameter] * a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] -= self[a.parameter] * a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'assignment':
-					self[a.parameter] = a.amount * a.automation.generatedBuffer[i];
+					self[a.parameter] = a.amount * a.automation.generatedBuffer[z];
 					break;
 				case 'absoluteAssignment':
-					self[a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[i]);
+					self[a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[z]);
 					break;
 			}
 		}
@@ -409,8 +412,6 @@ audioLib.BufferEffect	= BufferEffect;
 audioLib.GeneratorClass	= GeneratorClass;
 audioLib.codecs		= audioLib.Codec = Codec;
 audioLib.plugins	= Plugin;
-
-audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 
 audioLib.version	= '0.4.7';
 
