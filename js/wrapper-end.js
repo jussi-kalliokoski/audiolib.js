@@ -357,39 +357,39 @@ Automation.effectAppend = function(buffer){
 		l	= buffer.length,
 		k	= self.automation.length,
 		def	= [],
-		i, n, m, z, a;
+		i, n, m, z, a, x;
 	for (m=0; m<k; m++){
 		def.push([]);
 		for (n=0; n<ch; n++){
 			def[m].push(self.effects[n][self.automation[m].parameter]);
 		}
 	}
-	for (i=0; i<l; i+=ch){
+	for (x=0, i=0; i<l; i+=ch, x++){
 		for (n=0; n<ch; n++){
 			for (m=0; m<k; m++){
 				a = self.automation[m];
 				self.effects[n][a.parameter] = def[m][n];
 				switch(a.type){
 					case 'modulation':
-						self.effects[n][a.parameter] *= a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] *= a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'addition':
-						self.effects[n][a.parameter] += a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] += a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'substraction':
-						self.effects[n][a.parameter] -= a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] -= a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'additiveModulation':
-						self.effects[n][a.parameter] += self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] += self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'substractiveModulation':
-						self.effects[n][a.parameter] -= self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] -= self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'assignment':
-						self.effects[n][a.parameter] = a.amount * a.automation.generatedBuffer[i];
+						self.effects[n][a.parameter] = a.amount * a.automation.generatedBuffer[x];
 						break;
 					case 'absoluteAssignment':
-						self.effects[n][a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[i]);
+						self.effects[n][a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[x]);
 						break;
 				}
 			}
