@@ -141,9 +141,9 @@ proto = Oscillator.prototype = {
  * Returns wavetable output of the Oscillator.
  * @return {Float32} Sample.
 */
-	// Requires Sampler
+	// Requires Sink
 	wavetable: function(){
-		return audioLib.Sampler.interpolate(this.wavetable, this._p * this.wavetable.length);
+		return audioLib.Sink.interpolate(this.wavetable, this._p * this.wavetable.length);
 	},
 	waveShapes: []
 };

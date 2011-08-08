@@ -65,11 +65,11 @@ Delay.prototype = {
  * @param {Uint} time The new time value for the Delay.
  * @return {AudioBuffer} The new delay line audio buffer.
 */
-// Requires Sampler
+// Requires Sink
 	resample: function(time){
 		var	self	= this,
 			ratio	= self.time / time;
-		self.buffer	= audioLib.Sampler.resample(self.buffer, time);
+		self.buffer	= audioLib.Sink.resample(self.buffer, time);
 		self.time	= time;
 		self.bufferPos	= Math.round(ratio * self.bufferPos);
 		return self.buffer;
@@ -78,7 +78,7 @@ Delay.prototype = {
  * Resets the delay line, to recover from sample rate changes or such.
  *
  * @param {Number} sampleRate The new sample rate. (Optional)
- * @param {Boolean} resample Determines whether to resample and apply the old buffer. (Requires Sampler)
+ * @param {Boolean} resample Determines whether to resample and apply the old buffer. (Requires Sink)
  * @return {AudioBuffer} The new delay line audio buffer.
 */
 	reset: function(sampleRate, resample){
@@ -91,7 +91,7 @@ Delay.prototype = {
 		self.bufferPos	= Math.round(ratio * self.bufferPos);
 		self._rstf	= 1 / 1000 * sampleRate;
 		if (resample){
-			buf = audioLib.Sampler.resample(buf, ratio);
+			buf = audioLib.Sink.resample(buf, ratio);
 			for (i=0; i<buf.length && i<self.buffer.length; i++){
 				self.buffer[i] = buf[i];
 			}

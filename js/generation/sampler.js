@@ -87,7 +87,7 @@ Sampler.prototype = {
 		ch = ch || 0;
 		if (this.samples[ch]){
 			for (i=0; i<voices.length; i++){
-				smpl	+= Sampler.interpolate(this.samples[ch], voices[i].p) * voices[i].v;
+				smpl	+= audioLib.Sink.interpolate(this.samples[ch], voices[i].p) * voices[i].v;
 			}
 		}
 		return smpl;
@@ -100,11 +100,11 @@ Sampler.prototype = {
 */
 	load: function(data, resample){
 		var	self	= this,
-			samples	= self.samples = Sampler.deinterleave(data.data, data.channelCount),
+			samples	= self.samples = audioLib.Sink.deinterleave(data.data, data.channelCount),
 			i;
 		if (resample){
 			for (i=0; i<samples.length; i++){
-				samples[i] = Sampler.resample(samples[i], data.sampleRate, self.sampleRate);
+				samples[i] = audioLib.Sink.resample(samples[i], data.sampleRate, self.sampleRate);
 			}
 		}
 		self.sample	= data.data;
@@ -112,139 +112,4 @@ Sampler.prototype = {
 		self.data	= data;
 		self.sampleSize = samples[0].length;
 	}
-};
-
-(function(){
-
-/**
- * If method is supplied, adds a new interpolation method to Sampler.interpolation, otherwise sets the default interpolation method (Sampler.interpolate) to the specified property of Sampler.interpolate.
- *
- * @param {String} name The name of the interpolation method to get / set.
- * @param {Function} method The interpolation method. (Optional)
-*/
-
-function interpolation(name, method){
-	if (name && method){
-		interpolation[name] = method;
-	} else if (name && interpolation[name] instanceof Function){
-		Sampler.interpolate = interpolation[name];
-	}
-	return interpolation[name];
-}
-
-Sampler.interpolation = interpolation;
-
-
-/**
- * Interpolates a fractal part position in an array to a sample. (Linear interpolation)
- *
- * @param {Array} arr The sample buffer.
- * @param {number} pos The position to interpolate from.
- * @return {Float32} The interpolated sample.
-*/
-interpolation('linear', function(arr, pos){
-	var	first	= Math.floor(pos),
-		second	= first + 1,
-		frac	= pos - first;
-	second		= second < arr.length ? second : 0;
-	return arr[first] * (1 - frac) + arr[second] * frac;
-});
-
-/**
- * Interpolates a fractal part position in an array to a sample. (Nearest neighbour interpolation)
- *
- * @param {Array} arr The sample buffer.
- * @param {number} pos The position to interpolate from.
- * @return {Float32} The interpolated sample.
-*/
-interpolation('nearest', function(arr, pos){
-	return pos >= arr.length - 0.5 ? arr[0] : arr[Math.round(pos)];
-});
-
-interpolation('linear');
-
-}());
-
-
-/**
- * Resamples a sample buffer from a frequency to a frequency and / or from a sample rate to a sample rate.
- *
- * @param {Float32Array} buffer The sample buffer to resample.
- * @param {number} fromRate The original sample rate of the buffer, or if the last argument, the speed ratio to convert with.
- * @param {number} fromFrequency The original frequency of the buffer, or if the last argument, used as toRate and the secondary comparison will not be made.
- * @param {number} toRate The sample rate of the created buffer.
- * @param {number} toFrequency The frequency of the created buffer.
-*/
-Sampler.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or toRate */, toRate, toFrequency){
-	var
-		argc		= arguments.length,
-		speed		= argc === 2 ? fromRate : argc === 3 ? fromRate / fromFrequency : toRate / fromRate * toFrequency / fromFrequency,
-		l		= buffer.length,
-		length		= Math.ceil(l / speed),
-		newBuffer	= new Float32Array(length),
-		i, n;
-	for (i=0, n=0; i<l; i += speed){
-		newBuffer[n++] = Sampler.interpolate(buffer, i);
-	}
-	return newBuffer;
-};
-
-/**
- * Splits a sample buffer into those of different channels.
- *
- * @param {Float32Array} buffer The sample buffer to split.
- * @param {number} channelCount The number of channels to split to.
- * @return {Array} An array containing the resulting sample buffers.
-*/
-
-Sampler.deinterleave = function(buffer, channelCount){
-	var	l	= buffer.length,
-		size	= l / channelCount,
-		ret	= [],
-		i, n;
-	for (i=0; i<channelCount; i++){
-		ret[i] = new Float32Array(size);
-		for (n=0; n<size; n++){
-			ret[i][n] = buffer[n * channelCount + i];
-		}
-	}
-	return ret;
-};
-
-/**
- * Joins an array of sample buffers in a single buffer.
- *
- * @param {Array} buffers The buffers to join.
-*/
-
-Sampler.interleave = function(buffers){
-	var	channelCount	= buffers.length,
-		l		= buffers[0].length,
-		buffer		= new Float32Array(l * channelCount),
-		i, n;
-	for (i=0; i<channelCount; i++){
-		for (n=0; n<l; n++){
-			buffer[i + n * channelCount] = buffers[i][n];
-		}
-	}
-	return buffer;
-};
-
-/**
- * Mixes two or more buffers down to one.
- *
- * @param {Array} buffer The buffer to append the others to.
- * @param {Array} bufferX The buffers to append from.
-*/
-
-Sampler.mix = function(buffer){
-	var	buffers	= [].slice.call(arguments, 1),
-		l, i, c;
-	for (c=0; c<buffers.length; c++){
-		l = Math.max(buffer.length, buffers[c].length);
-		for (i=0; i<l; i++){
-			buffer[i] += buffers[c][i];
-		}
-	}
-	return buffer;
 };

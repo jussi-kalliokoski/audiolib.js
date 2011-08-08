@@ -410,6 +410,8 @@ audioLib.GeneratorClass	= GeneratorClass;
 audioLib.codecs		= audioLib.Codec = Codec;
 audioLib.plugins	= Plugin;
 
+audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
+
 audioLib.version	= '0.4.7';
 
 return audioLib;
