@@ -177,13 +177,9 @@ GeneratorClass.prototype = {
 	addAutomation: function(){
 		return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
 	},
-	generateBuffer: function(length){
+	generateBuffer: function(length, chCount){
 		this.generatedBuffer = new Float32Array(length);
-		var i;
-		for (i=0; i<length; i++){
-			this.generate();
-			this.generatedBuffer[i] = this.getMix();
-		}
+		this.append(this.generatedBuffer, chCount || 1);
 	}
 };
 
