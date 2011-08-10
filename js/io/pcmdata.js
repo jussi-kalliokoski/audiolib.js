@@ -49,7 +49,7 @@ MIT License
 	}
 
 	// The main function creates all the functions used.
-	function Binary(bitCount, signed, /* false === unsigned */ isFloat, from /* false === to */){
+	function Binary(bitCount, signed, /* false === unsigned */ isQ, from /* false === to */){
 
 		// This is all just for major optimization benefits.
 		var	pow			= Math.pow,
@@ -64,7 +64,7 @@ MIT License
 			invIntMask		= 1 / intMask;
 
 		return from ?
-			isFloat ?
+			isQ ?
 				signed ? function(num, bigEndian){
 					num = floor(num < 0 ? num * semiMask + bitMask : num * intMask);
 					return convertToBinary(
@@ -94,7 +94,7 @@ MIT License
 					);
 				}
 		:
-			isFloat ?
+			isQ ?
 				signed ? function(str, bigEndian){
 					var num = convertFromBinary(str, bigEndian);
 					return num > intMask ? (num - bitMask) * invSemiMask : num * invIntMask;
@@ -114,17 +114,17 @@ MIT License
 	Binary.convertFromBinary	= convertFromBinary;
 	// these are deprecated because JS doesn't support 64 bit uint, so the conversion can't be performed.
 /*
-	Binary.fromFloat64		= Binary(64, y, y, y);
-	Binary.toFloat64		= Binary(64, y, y, n);
+	Binary.fromQ64			= Binary(64, y, y, y);
+	Binary.toQ64			= Binary(64, y, y, n);
 */
-	Binary.fromFloat32		= Binary(32, y, y, y);
-	Binary.toFloat32		= Binary(32, y, y, n);
-	Binary.fromFloat24		= Binary(24, y, y, y);
-	Binary.toFloat24		= Binary(24, y, y, n);
-	Binary.fromFloat16		= Binary(16, y, y, y);
-	Binary.toFloat16		= Binary(16, y, y, n);
-	Binary.fromFloat8		= Binary(8, y, y, y);
-	Binary.toFloat8			= Binary(8, y, y, n);
+	Binary.fromQ32			= Binary(32, y, y, y);
+	Binary.toQ32			= Binary(32, y, y, n);
+	Binary.fromQ24			= Binary(24, y, y, y);
+	Binary.toQ24			= Binary(24, y, y, n);
+	Binary.fromQ16			= Binary(16, y, y, y);
+	Binary.toQ16			= Binary(16, y, y, n);
+	Binary.fromQ8			= Binary( 8, y, y, y);
+	Binary.toQ8			= Binary( 8, y, y, n);
 	Binary.fromInt32		= Binary(32, y, n, y);
 	Binary.toInt32			= Binary(32, y, n, n);
 	Binary.fromInt16		= Binary(16, y, n, y);
@@ -203,13 +203,13 @@ PCMData.decodeFrame = function(frame, bitCount, result){
 			result[bitCount] = (buffer[bitCount] - 127.5) * 127.5;
 		}
 	} else {
-		(new Stream(frame)).readBuffer(result, bitCount, 'Float');
+		(new Stream(frame)).readBuffer(result, bitCount, 'Q');
 	}
 	return result;
 };
 
 PCMData.encodeFrame = function(frame, bitCount){
-	var	properWriter	= Binary[(bitCount === 8 ? 'fromUint' : 'fromFloat') + bitCount],
+	var	properWriter	= Binary[(bitCount === 8 ? 'fromUint' : 'fromQ') + bitCount],
 		l		= frame.length,
 		r		= '',
 		i;
