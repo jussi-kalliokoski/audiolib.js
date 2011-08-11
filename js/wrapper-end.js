@@ -29,7 +29,8 @@ audioLib.Sampler	= Sampler;
 
 
 //Processing
-audioLib.AudioProcessingUnit = AudioProcessingUnit;
+audioLib.AudioProcessingUnit	= AudioProcessingUnit;
+audioLib.FFT			= FFT;
 
 
 audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
@@ -216,9 +217,7 @@ GeneratorClass.prototype = {
 	effects('BiquadLowPassFilter', BiquadFilter.LowPass);
 	effects('BiquadAllPassFilter', BiquadFilter.AllPass);
 	effects('BiquadBandPassFilter', BiquadFilter.BandPass);
-	effects('FFT', audioLib.FourierTransform.FFT);
-	audioLib.FFT = audioLib.FourierTransform.FFT;
-}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb']));
+}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb', 'FFT']));
 
 (function(names, i){
 	function generators(name, effect, prototype){
