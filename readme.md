@@ -151,6 +151,7 @@ Demos
 
 * [JSMad](http://jsmad.org/)
 * [Orbisyn](http://niiden.com/orbisyn/)
+* [jams.no.de](http://jams.no.de)
 
 Libraries bundled with audiolib.js
 ----------------------------------
@@ -163,7 +164,7 @@ Libraries bundled with audiolib.js
 Related libraries
 -----------------
 
-* [XAudioJS](https://github.com/grantgalitz/XAudioJS) is an alternative audio sink with built-in resampling and a Flash fallback.
+* [XAudioJS](https://github.com/grantgalitz/XAudioJS) is an alternative audio sink with built-in resampling and a Flash fallback. More developer-controlled output environment, that might be more sane for example games.
 * [dynamicaudio.js](http://github.com/bfirsh/dynamicaudio.js) is a Flash fallback for Mozilla Audio Data API.
 * [Audiolet](https://github.com/oampo/Audiolet) is a graph-based audio routing framework with a lot of nice stuff.
 * [DSP.js](https://github.com/corbanbrook/dsp.js) is an extensive DSP toolkit originally designed for the Mozilla Audio Data API.
