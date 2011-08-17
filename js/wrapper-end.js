@@ -26,6 +26,7 @@ audioLib.Reverb		= Freeverb;
 //Geneneration
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
+audioLib.Noise		= Noise;
 
 
 //Processing
@@ -240,7 +241,7 @@ GeneratorClass.prototype = {
 	for (i=0; i<names.length; i++){
 		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
+}(['Oscillator', 'Sampler', 'Noise', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
 
 function Codec(name, codec){
 	var nameCamel = name[0].toUpperCase() + name.substr(1).toLowerCase();
