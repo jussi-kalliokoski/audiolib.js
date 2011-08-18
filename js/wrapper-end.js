@@ -63,6 +63,9 @@ EffectClass.prototype = {
 				callback.pushSample	= null;
 			}
 		}
+	},
+	setParam: function(param, value){
+		this[param] = value;
 	}
 };
 
@@ -136,6 +139,13 @@ BufferEffect.prototype = {
 	},
 	addAutomation: function(){
 		return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
+	},
+	setParam: function(param, value){
+		var	l	= this.effects.length,
+			i;
+		for (i=0; i<l; i++){
+			this.effects[i].setParam(param, value);
+		}
 	}
 };
 
@@ -182,6 +192,9 @@ GeneratorClass.prototype = {
 	generateBuffer: function(length, chCount){
 		this.generatedBuffer = new Float32Array(length);
 		this.append(this.generatedBuffer, chCount || 1);
+	},
+	setParam: function(param, value){
+		this[param] = value;
 	}
 };
 
@@ -276,6 +289,33 @@ function Plugin(name, plugin){
 
 __defineConst(Plugin, '_pluginList', [], false);
 
+function AutomationClass(parameter, automation, amount, type){
+	this.parameter	= parameter;
+	this.automation	= automation;
+	this.amount	= isNaN(amount) ? this.amount : amount;
+	this.setType(type);
+}
+
+AutomationClass.prototype = {
+	parameter:	'',
+	automation:	null,
+	amount:		1,
+	type:		'modulation',
+	mode:		null,
+	setType: function(type){
+		if (type){
+			if (typeof type === 'function'){
+				this.type = type.name || 'custom';
+				this.mode = type;
+			}
+			this.type	= type;
+			this.mode	= Automation.modes[type];
+		} else {
+			this.mode	= this.mode || Automation.modes[this.type];
+		}
+	}
+};
+
 function Automation(fx, parameter, automation, amount, type){
 	if (!fx.automation){
 		fx.automation = [];
@@ -285,12 +325,7 @@ function Automation(fx, parameter, automation, amount, type){
 			fx.append = Automation.effectAppend;
 		}
 	}
-	var automation = {
-		parameter:	parameter,
-		automation:	automation,
-		amount:		isNaN(amount) ? 1 : amount,
-		type:		type || 'modulation'
-	};
+	var automation = new AutomationClass(parameter, automation, amount, type);
 	fx.automation.push(automation);
 	return automation;
 }
@@ -311,29 +346,7 @@ Automation.generatorAppend = function(buffer, channelCount){
 		}
 		for (m=0; m<k; m++){
 			a = self.automation[m];
-			switch(a.type){
-				case 'modulation':
-					self[a.parameter] *= a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'addition':
-					self[a.parameter] += a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'substraction':
-					self[a.parameter] -= a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'additiveModulation':
-					self[a.parameter] += self[a.parameter] * a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'substractiveModulation':
-					self[a.parameter] -= self[a.parameter] * a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'assignment':
-					self[a.parameter] = a.amount * a.automation.generatedBuffer[z];
-					break;
-				case 'absoluteAssignment':
-					self[a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[z]);
-					break;
-			}
+			a.mode(self, a.parameter, a.amount * a.automation.generatedBuffer[z]);
 		}
 
 		self.generate();
@@ -365,29 +378,7 @@ Automation.effectAppend = function(buffer){
 			for (m=0; m<k; m++){
 				a = self.automation[m];
 				self.effects[n][a.parameter] = def[m][n];
-				switch(a.type){
-					case 'modulation':
-						self.effects[n][a.parameter] *= a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'addition':
-						self.effects[n][a.parameter] += a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'substraction':
-						self.effects[n][a.parameter] -= a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'additiveModulation':
-						self.effects[n][a.parameter] += self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'substractiveModulation':
-						self.effects[n][a.parameter] -= self.effects[n][a.parameter] * a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'assignment':
-						self.effects[n][a.parameter] = a.amount * a.automation.generatedBuffer[x];
-						break;
-					case 'absoluteAssignment':
-						self.effects[n][a.parameter] = Math.abs(a.amount * a.automation.generatedBuffer[x]);
-						break;
-				}
+				a.mode(self.effects[n], a.parameter, a.amount * a.automation.generatedBuffer[x]);
 			}
 			buffer[i + n] = self.effects[n].pushSample(buffer[i + n]) * self.mix + buffer[i + n] * (1 - self.mix);
 		}
@@ -399,6 +390,32 @@ Automation.effectAppend = function(buffer){
 	}
 	return buffer;
 }
+
+Automation.modes = {
+	modulation: function(fx, param, value){
+		fx.setParam(param, fx[param] * value);
+	},
+	addition: function(fx, param, value){
+		fx.setParam(param, fx[param] + value);
+	},
+	substraction: function(fx, param, value){
+		fx.setParam(param, fx[param] - value);
+	},
+	additiveModulation: function(fx, param, value){
+		fx.setParam(param, fx[param] + fx[param] * value);
+	},
+	substractiveModulation: function(fx, param, value){
+		fx.setParam(param, fx[param] - fx[param] * value);
+	},
+	assignment: function(fx, param, value){
+		fx.setParam(param, value);
+	},
+	absoluteAssignment: function(fx, param, value){
+		fx.setParam(param, Math.abs(value));
+	},
+};
+
+Automation.__constructror = AutomationClass;
 
 audioLib.Automation	= Automation;
 
