@@ -12,18 +12,25 @@ EFFECT extensions are used as effects to be applied either on audio buffers or p
 EFFECT
 ------
 
-EFFECT is a class interface for a single-channel effect, that operates on a "single sample in, single sample out" basis. The EFFECT interface interacts with BUFFEREFFECT interface in such a manner that the usage as buffer-based multi-channel effects is automatically provided, and is not in the hands of the plugin developer to implement. The EFFECT interface is specified as follows:
+EFFECT is a class interface for a single-channel effect, that operates on a "single sample in, single sample out" basis. The EFFECT interface interacts with BUFFEREFFECT interface in such a manner that the usage as buffer-based multi-channel effects is automatically provided, and is not in the hands of the plugin developer to implement.
+
+This is, unless your effect is by nature multi-channel. You can give a hint of such behaviour by defining the ``` channelCount ``` of your effect's prototype to something other than 1.
+
+The EFFECT interface is specified as follows:
 
 ```
 
 class interface EFFECT
 {
-	public Float32 pushSample(Float32 sample);
-	public Float32 getMix();
-	public __constructor__(sampleRate, /* plugin specific arguments */);
+	public Float32 pushSample(Float32 sample, channel=0 /* only applicable on multichannel effects */);
+	public Float32 getMix(channel=0);
+	public __constructor__(sampleRate, channelCount /* only applicable on multichannel effects */, /* plugin specific arguments */);
+
+	/* This is up to the plugin developer only if the effect is a multi-channel one. */
+	public readonly Uint channelCount;
 
 	/* Functionality provided in the EFFECT class automatically, does not concern the plugin developer. */
-	public String name
+	public String name;
 	public readonly String fxid;
 	public readonly String type;
 	public readonly Boolean sink;
@@ -34,9 +41,9 @@ class interface EFFECT
 
 ```
 
- ``` pushSample ``` should take in a single sample, process it and return the result.
+ ``` pushSample ``` should take in a single sample, process it according to the channel provided. Unless a multi-channel effect, this should return the result.
 
- ``` getMix ``` should return the previously returned value of pushSample, without processing or moving in the sample-time.
+ ``` getMix ``` should return the previously returned value of pushSample, without processing or moving in the sample-time. In the case of a multi-channel effect, this should also take in the argument channel that specifies for which channel to return the result for.
 
  ``` __constructor__ ``` is not an actual property of the EFFECT, but describes how the EFFECT constructor should be created. The constructor should take sample rate as the first argument, the rest of the arguments are freely specified by the plugin author.
 
