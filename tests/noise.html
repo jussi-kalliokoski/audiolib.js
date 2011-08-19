@@ -5,11 +5,13 @@
 		<script src="../lib/audiolib.js"></script>
 		<script>
 var	bufferSize	= 4096,
-	sampleRate	= 44100;
+	sampleRate	= 44100,
+	playTime	= 1,
+	playSize	= ~~(playTime * sampleRate);
 
 function plot(color){
 	color		= color || 'white';
-	var	buffer	= new Float32Array(bufferSize),
+	var	buffer	= new Float32Array(playSize),
 		noise	= new audioLib.Noise(sampleRate, color),
 		fft	= new audioLib.FFT(sampleRate, bufferSize / 2),
 		signal	= new audioLib.Oscillator(sampleRate, 440),
@@ -19,18 +21,19 @@ function plot(color){
 		h	= c.height,
 		semiH	= h / 2,
 		hSize	= bufferSize / 2,
+		wSize	= w / bufferSize,
 		i;
+
 	ctx.clearRect(0, 0, w, h);
 	ctx.save();
 	ctx.translate(0, semiH);
-	ctx.scale(bufferSize / w, 1);
 
 	ctx.beginPath();
 	ctx.moveTo(0, 0);
 	ctx.lineTo(0, bufferSize);
 	ctx.stroke();
 
-	for (i=0; i<bufferSize; i++){
+	for (i=0; i<playSize; i++){
 		noise.generate();
 		buffer[i] = fft.pushSample(noise.getMix());
 	}
@@ -38,7 +41,7 @@ function plot(color){
 	ctx.strokeStyle = '#ff0000';
 	ctx.beginPath();
 	for (i=0; i<bufferSize; i++){
-		ctx.lineTo(i, buffer[i] * semiH);
+		ctx.lineTo(i * wSize, buffer[i] * semiH);
 	}
 	ctx.stroke();
 
@@ -46,7 +49,7 @@ function plot(color){
 	ctx.strokeStyle = '#0000ff';
 	ctx.beginPath();
 	for (i=0; i<hSize / 4; i++){
-		ctx.lineTo(i * 4, -fft.spectrum[i] * semiH * (semiH / 16));
+		ctx.lineTo(i * 8 * wSize, -fft.spectrum[i] * semiH * (semiH / 16));
 	}
 	ctx.stroke();
 

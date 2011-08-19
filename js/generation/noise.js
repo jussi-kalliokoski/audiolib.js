@@ -1,5 +1,5 @@
 function Noise(){
-	this.reset();
+	this.reset.apply(this, arguments);
 }
 
 Noise.prototype = {
@@ -56,8 +56,7 @@ Noise.prototype = {
 		return 0.55 * (this.b0 + this.b1 + this.b2 + this.b3 + this.b4 + this.b5);
 	},
 	brown: function(){
-		var	w	= this.white(),
-			fc	= 100;
+		var	w	= this.white();
 		this.brownQ	= (this.q1 * w + this.q0 * this.brownQ);
 		return 6.2 * this.brownQ;
 	}
