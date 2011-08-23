@@ -7,11 +7,11 @@
  * @param {boolean} isRightChannel Controls the addition of stereo spread. Defaults to false.
  * @param {Object} tuning (Optional) Freeverb tuning overwrite object
 */
-function Freeverb(sampleRate, channelCount, tuning){
+function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride){
 	var	self		= this;
 	self.sampleRate		= sampleRate;
 	self.channelCount	= channelCount || self.channelCount;
-	self.tuning		= tuning || this.tuning;
+	self.tuning		= tuningOverride || this.tuning;
 	
 	self.sample	= (function(){
 		var	sample	= [],
@@ -25,18 +25,17 @@ function Freeverb(sampleRate, channelCount, tuning){
 	self.CFs	= (function(){
 		var 	combs	= [],
 			channel	= [],
-			num	= self.tuning.numcombs,
-			damp	= self.tuning.initialdamp * self.tuning.scaledamp,
-			feed	= self.tuning.initialroom * self.tuning.scaleroom + self.tuning.offsetroom,
-			sizes	= self.tuning.combs,
+			num	= self.tuning.combCount,
+			damp	= self.damping * self.tuning.scaleDamping,
+			feed	= self.roomSize * self.tuning.scaleRoom + self.tuning.offsetRoom,
+			sizes	= self.tuning.combTuning,
 			i, c;
 		for(c=0; c<self.channelCount; c++){
 			for(i=0; i<num; i++){
-				channel.push(new audioLib.CombFilter(self.sampleRate, sizes[i] + c * self.tuning.stereospread, feed, damp));
+				channel.push(new audioLib.CombFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed, damp));
 			}
 			combs.push(channel);
 			channel = [];
-			console.log(c * self.tuning.stereospread);
 		}
 		console.log(self.tuning);
 		return combs;
@@ -46,13 +45,13 @@ function Freeverb(sampleRate, channelCount, tuning){
 	self.APFs	= (function(){
 		var 	apfs	= [],
 			channel	= [],
-			num	= self.tuning.numallpasses,
-			feed	= self.tuning.allpassfb,
-			sizes	= self.tuning.allpasses,
+			num	= self.tuning.allPassCount,
+			feed	= self.tuning.allPassFeedback,
+			sizes	= self.tuning.allPassTuning,
 			i, c;
 		for(c=0; c<self.channelCount; c++){
 			for(i=0; i<num; i++){
-				channel.push(new Freeverb.AllPassFilter(self.sampleRate, sizes[i] + c * self.tuning.stereospread, feed));
+				channel.push(new Freeverb.AllPassFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed));
 			}
 			apfs.push(channel);
 			channel = [];
@@ -67,28 +66,30 @@ Freeverb.prototype = {
 	channelCount: 	2,
 	sample:		[0.0, 0.0],
 
-	wet:		0.5,
-	dry:		0.55,
+	wet:		1,
+	dry:		0.45,
+	damping:	0.5,
+	roomSize:	0.5,
 
 	tuning: {
-		numcombs:	8,
-		combs:		[1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617],
+		combCount:		8,
+		combTuning:		[1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617],
 
-		numallpasses:	4,
-		allpasses:	[556, 441, 341, 225],
-		allpassfb:	0.5,
+		allPassCount:		4,
+		allPassTuning:		[556, 441, 341, 225],
+		allPassFeedback:	0.5,
 
-		fixedgain:	0.015,
-		scaledamp:	0.4,
-		scaleroom:	0.28,
-		offsetroom:	0.7,
-		initialroom:	0.5,
-		initialdamp:	0.5,
-		stereospread:	23
+		fixedGain:		0.035,
+		scaleDamping:		0.4,
+
+		scaleRoom:		0.28,
+		offsetRoom:		0.7,
+		
+		stereoSpread:		23
 	},
 
 	pushSample: function(s, channel){
-		var	input	= s * this.tuning.fixedgain,
+		var	input	= s * this.tuning.fixedGain,
 			output	= 0,
 			i;
 		for(i=0; i < this.numCFs; i++){
@@ -105,15 +106,45 @@ Freeverb.prototype = {
 	},
 
 	reset: function(){
-		var	i;		
-		for(i=0; i < this.numCFs; i++){
-			this.CFs[i].reset();
-		}
-		for(i=0; i < this.numAPFs; i++){
-			this.APFs[i].reset();
-		}
-		for(i=0; i < this.channelCount; i++){
-			this.sample[i] = 0.0;
+		var	i,
+			c;
+		for(c=0; c < this.channelCount; c++){
+			for(i=0; i < this.numCFs; i++){
+				this.CFs[c][i].reset();
+			}
+			for(i=0; i < this.numAPFs; i++){
+				this.APFs[c][i].reset();
+			}
+			this.sample[c] = 0.0;
+		}		
+	},
+
+	setParam: function(param, value){
+		var	combFeed,
+			combDamp,
+			i,
+			c;
+		switch (param){
+		case 'roomSize':
+			this.roomSize	= value;
+			combFeed	= this.roomSize * this.tuning.scaleRoom + this.tuning.offsetRoom;
+			for(c=0; c < this.channelCount; c++){
+				for(i=0; i < this.numCFs; i++){
+					this.CFs[c][i].setParam('feedback', combFeed);
+				}
+			}
+			break;
+		case 'damping':
+			this.damping	= value;
+			combDamp	= this.damping * this.tuning.scaleDamping;
+			for(c=0; c < this.channelCount; c++){
+				for(i=0; i < this.numCFs; i++){
+					this.CFs[c][i].setParam('damping', combDamp);
+				}
+			}
+			break;
+		default:
+			this[param] = value;
 		}
 	}
 

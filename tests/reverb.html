@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>audiolib.js | Reverb Test</title>
 		<script src="../lib/audiolib.js"></script>
 		<script src="samples/freeverb.js"></script>
 		<script>
@@ -35,27 +36,35 @@ window.onload	= function(){
 		reverb		= new audioLib.Reverb(sampleRate, 2);
 		
 		var sample = audioLib.PCMData.decode(atob(freeverb.sample));
-		
-		//sample = (sampleRate === 44100) ? sample : audioLib.Sampler.resample(sample, 44100, sampleRate);
-		//sampler.loadWav(atob(freeverb.sample), true);
 		sampler.load(sample, (sampleRate === 44100 ? false : true));
-		//if(sampleRate !== 44100) sampler.load(audioLib.Sampler.resample(sampler.sample, 44100, sampleRate))
+
 	}, 2000);
 };
 
-window.play	= function(frequency, wet, dry){
+window.play	= function(frequency){
 	activeEffect = effect.none;
-	reverb.wet = wet;
-	reverb.dry = dry;
 	console.log(sampler.noteOn(frequency));
-}
+};
 
-window.playReverb	= function(frequency, wet, dry){
-	activeEffect = effect.reverb;
-	reverb.wet = wet;
-	reverb.dry = dry;
+window.playReverb	= function(frequency, wet, dry, roomSize, damping){
+	wet 		= parseFloat(wet);
+	dry 		= parseFloat(dry);
+	roomSize	= parseFloat(roomSize);
+	damping		= parseFloat(damping);
+	activeEffect	= effect.reverb;
+	reverb.setParam('wet', wet);
+	reverb.setParam('dry', dry);
+	if(roomSize !== reverb.roomSize) {
+		reverb.setParam('roomSize', roomSize);
+	}
+	if(damping !== reverb.damping) {
+		reverb.setParam('damping', damping);
+	}
 	console.log(sampler.noteOn(frequency));
-}
+};
+window.reset	= function(){
+	reverb.reset();
+};
 
 }());
 
@@ -64,13 +73,20 @@ window.playReverb	= function(frequency, wet, dry){
 	<body>
 		<h1>Reverb Test</h1>
 		<label for="f">Frequency</label>
-		<input id="f" value="440">
+		<input id="f" value="440"><br>
 		<label for="w">Wet</label>
-		<input id="w" value="0.5">
+		<input id="w" value="1">
 		<label for="d">Dry</label>
-		<input id="d" value="0.55"><br>
-		<button onclick="play(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value)">Play</button>
-		<button onclick="playReverb(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value)">Play Reverb</button>
-		<p>Be patient, sample may take a few seconds to load. Note: Wet/Dry do not have to total to 1.</p>
+		<input id="d" value="0.45"><span> Note: Wet/Dry do not have to total to 1</span><br>
+		<label for="rs">Room Size</label>
+		<input id="rs" value="0.5"><br>
+		<label for="dmp">Damping</label>
+		<input id="dmp" value="0.5"><br>
+
+		<button onclick="play(document.getElementById('f').value)">Play</button>
+		<button onclick="playReverb(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value,document.getElementById('rs').value,document.getElementById('dmp').value)">Play Reverb</button>
+		<p>Be patient, sample may take a few seconds to load.</p><br><br>
+		<span>Did you set roomSize > 1? Fun huh?</span><br>
+		<button onclick="reset()">Reverb reset</button>
 	</body>
 </html>
