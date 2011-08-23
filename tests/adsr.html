@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>ADSR Envelope test</title>
 		<script src=../lib/audiolib.js></script>
 		<script>
 function testADSREnvelope(){
 	var	canvas		= document.getElementById('c'),
+		bufferSize	= +document.getElementById('bufSize').value,
+		timed		= !!document.getElementById('timed').value,
+		buffer		= audioLib.Float32Array(bufferSize),
 		context		= canvas.getContext('2d'),
 		width		= canvas.width,
-		height		= canvas.height;
+		height		= canvas.height,
+		plotWidth	= width / bufferSize,
+		adsr = new audioLib.ADSREnvelope(bufferSize, 50, 200, 0.4, 270),
+		i;
 	canvas.width = width;
 
-	var i, adsr = new audioLib.ADSREnvelope(width, 50, 200, 0.4, 270);
 	adsr.release = 270;
 	context.beginPath();
 	adsr.triggerGate(true);
-	for (i=0; i<width; i++){
-		if (i === width / 2){
-			adsr.triggerGate(false);
-		}
-		context.lineTo(i, height - adsr.generate() * height);
+	if (timed){
+		adsr.sustainTime = 250;
+		adsr.releaseTime = 300; // Yes, the results are supposed to differ.
+	} else {
+		i = 0;
+		adsr.addPreProcessing(function pp(){
+			if (i++ === bufferSize / 2){
+				this.removePreProcessing(pp);
+				this.triggerGate(false);
+			}
+		});
+	}
+	adsr.append(buffer, 1);
+	for (i=0; i<bufferSize; i++){
+		context.lineTo(i * plotWidth, height - buffer[i] * height);
 	}
 	context.stroke();
 }
@@ -26,6 +42,12 @@ window.onload = testADSREnvelope;
 		</script>
 	</head>
 	<body>
+		<h1>ADSR Envelope</h1>
+		<p><em>ADSR Envelope</em> is a component that generates a pattern based on time and gating.</p>
+		<label for="bufSize">Buffer Size</label><br/>
+		<input id="bufSize" type="number" value="4096" /><br/>
+		<input id="timed" type="checkbox" /> <label for="timed">Timed</label><br/>
+		<button onclick="testADSREnvelope();">Plot</button><br/>
 		<canvas id=c width=800 height=600></canvas>
 	</body>
 </html>
