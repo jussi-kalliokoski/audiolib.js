@@ -14,7 +14,11 @@
 function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride){
 	var	self		= this;
 	self.sampleRate		= sampleRate;
-	self.channelCount	= channelCount || self.channelCount;
+	self.channelCount	= isNaN(channelCount) ? self.channelCount : channelCount;
+	self.wet		= isNaN(wet) ? self.wet: wet;
+	self.dry		= isNaN(dry) ? self.dry: dry;
+	self.roomSize		= isNaN(roomSize) ? self.roomSize: roomSize;
+	self.damping		= isNaN(damping) ? self.damping: damping;
 	self.tuning		= tuningOverride || this.tuning;
 	
 	self.sample	= (function(){
