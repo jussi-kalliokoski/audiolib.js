@@ -66,7 +66,7 @@ Freeverb.prototype = {
 	channelCount: 	2,
 	sample:		[0.0, 0.0],
 
-	wet:		1,
+	wet:		0.6,
 	dry:		0.45,
 	damping:	0.5,
 	roomSize:	0.5,
@@ -79,7 +79,7 @@ Freeverb.prototype = {
 		allPassTuning:		[556, 441, 341, 225],
 		allPassFeedback:	0.5,
 
-		fixedGain:		0.035,
+		fixedGain:		0.015,
 		scaleDamping:		0.4,
 
 		scaleRoom:		0.28,
@@ -161,34 +161,37 @@ Freeverb.prototype = {
  * @param {number} feedback (Optional) Amount of feedback (0.0-1.0). Defaults to 0.5 (Freeverb default)
 */
 Freeverb.AllPassFilter = function(sampleRate, delaySize, feedback){
-	var	self	= this,
-		sample  = 0.0,
-		index	= 0;
+	var	self	= this;
 	self.sampleRate	= sampleRate;
 	self.buffer	= new Float32Array(isNaN(delaySize) ? 500 : delaySize);
 	self.bufferSize	= self.buffer.length;
-	self.feedback	= isNaN(feedback) ? 0.5 : feedback;
-
-	self.pushSample	= function(s){
-		var bufOut		= self.buffer[index];
-		sample			= -s + bufOut;
-		self.buffer[index++]	= s + bufOut * self.feedback;
-		if (index >= self.bufferSize) {
-			index = 0;
-		}
-		return sample;
-	};
-	
-	self.getMix = function(){
-		return sample;
-	};
-	
-	self.reset = function(){		
-		index	= 0;
-		sample	= 0.0;
-		self.buffer = new Float32Array(self.bufferSize);
-	};
+	self.feedback	= isNaN(feedback) ? self.feedback : feedback;
 };
+
+Freeverb.AllPassFilter.prototype = {
+	sample:		0.0,
+	index:		0,
+	feedback:	0.5,
+
+	pushSample: function(s){
+		var	self		= this;
+			bufOut		= self.buffer[self.index];
+		self.sample		= -s + bufOut;
+		self.buffer[self.index++] = s + bufOut * self.feedback;
+		if (self.index >= self.bufferSize) {
+			self.index = 0;
+		}
+		return self.sample;
+	},
+	getMix: function(){
+		return this.sample;
+	},
+	reset: function(){
+		this.index	= 0;
+		this.sample	= 0.0;
+		this.buffer	= new Float32Array(this.bufferSize);
+	}
+}
 
 
 
