@@ -7,7 +7,7 @@
 function testADSREnvelope(){
 	var	canvas		= document.getElementById('c'),
 		bufferSize	= +document.getElementById('bufSize').value,
-		timed		= !!document.getElementById('timed').value,
+		timed		= !!document.getElementById('timed').checked,
 		buffer		= audioLib.Float32Array(bufferSize),
 		context		= canvas.getContext('2d'),
 		width		= canvas.width,
