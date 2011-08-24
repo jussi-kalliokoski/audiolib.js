@@ -75,13 +75,13 @@ window.reset	= function(){
 		<label for="f">Frequency</label>
 		<input id="f" value="440"><br>
 		<label for="w">Wet</label>
-		<input id="w" value="1">
+		<input id="w" value="0.5">
 		<label for="d">Dry</label>
-		<input id="d" value="0.45"><span> Note: Wet/Dry do not have to total to 1</span><br>
+		<input id="d" value="0.55"><span> Note: Wet/Dry do not have to total to 1</span><br>
 		<label for="rs">Room Size</label>
-		<input id="rs" value="0.5"><br>
+		<input id="rs" value="0.5"> (0.0 - 1.0) <br>
 		<label for="dmp">Damping</label>
-		<input id="dmp" value="0.5"><br>
+		<input id="dmp" value="0.2223"> (0.0 - 1.0)<br>
 
 		<button onclick="play(document.getElementById('f').value)">Play</button>
 		<button onclick="playReverb(document.getElementById('f').value,document.getElementById('w').value,document.getElementById('d').value,document.getElementById('rs').value,document.getElementById('dmp').value)">Play Reverb</button>
