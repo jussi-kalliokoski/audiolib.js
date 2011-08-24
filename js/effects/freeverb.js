@@ -4,8 +4,12 @@
  * @constructor
  * @this {Freeverb}
  * @param {number} samplerate Sample Rate (hz).
- * @param {boolean} isRightChannel Controls the addition of stereo spread. Defaults to false.
- * @param {Object} tuning (Optional) Freeverb tuning overwrite object
+ * @param {number} channelCount (Optional)  Channel count. Defaults to 2.
+ * @param {number} wet (Optional)  The gain of the reverb signal output. Defaults to 0.5.
+ * @param {number} dry (Optional)  The gain of the original signal output. Defaults to 0.55.
+ * @param {number} roomSize (Optional)  The size of the simulated reverb area. Defaults to 0.5. (0.0 - 1.0)
+ * @param {number} damping (Optional) Reverberation damping parameter. Defaults to 0.2223. (0.0 - 1.0)
+ * @param {Object} tuningOverride (Optional) Freeverb tuning overwrite object
 */
 function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride){
 	var	self		= this;
@@ -37,10 +41,9 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 			combs.push(channel);
 			channel = [];
 		}
-		console.log(self.tuning);
 		return combs;
 	}());
-	self.numCFs	= self.CFs.length;
+	self.numCFs	= self.CFs[0].length;
 	
 	self.APFs	= (function(){
 		var 	apfs	= [],
@@ -58,17 +61,16 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 		}
 		return apfs;
 	}());
-	self.numAPFs	= self.APFs.length;
-	console.log(self);
+	self.numAPFs	= self.APFs[0].length;
 }
 
 Freeverb.prototype = {
 	channelCount: 	2,
 	sample:		[0.0, 0.0],
 
-	wet:		0.6,
-	dry:		0.45,
-	damping:	0.5,
+	wet:		0.5,
+	dry:		0.55,
+	damping:	0.2223,
 	roomSize:	0.5,
 
 	tuning: {
@@ -80,7 +82,7 @@ Freeverb.prototype = {
 		allPassFeedback:	0.5,
 
 		fixedGain:		0.015,
-		scaleDamping:		0.4,
+		scaleDamping:		0.9,
 
 		scaleRoom:		0.28,
 		offsetRoom:		0.7,

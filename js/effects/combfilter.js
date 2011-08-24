@@ -48,7 +48,6 @@ CombFilter.prototype = {
 	setParam: function(param, value){
 		switch (param){
 		case 'damping':
-			console.log(value);
 			this.damping	= value;
 			this.invDamping	= 1 - value;
 			break;
