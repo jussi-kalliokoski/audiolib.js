@@ -19,7 +19,7 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 	self.dry		= isNaN(dry) ? self.dry: dry;
 	self.roomSize		= isNaN(roomSize) ? self.roomSize: roomSize;
 	self.damping		= isNaN(damping) ? self.damping: damping;
-	self.tuning		= tuningOverride || this.tuning;
+	self.tuning		= new Freeverb.Tuning(tuningOverride || self.tuning);
 	
 	self.sample	= (function(){
 		var	sample	= [],
@@ -78,20 +78,6 @@ Freeverb.prototype = {
 	roomSize:	0.5,
 
 	tuning: {
-		combCount:		8,
-		combTuning:		[1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617],
-
-		allPassCount:		4,
-		allPassTuning:		[556, 441, 341, 225],
-		allPassFeedback:	0.5,
-
-		fixedGain:		0.015,
-		scaleDamping:		0.9,
-
-		scaleRoom:		0.28,
-		offsetRoom:		0.7,
-		
-		stereoSpread:		23
 	},
 
 	pushSample: function(s, channel){
@@ -158,6 +144,42 @@ Freeverb.prototype = {
 };
 
 /**
+ * Creates a Freeverb tuning configurement object.
+ *
+ * @constructor
+ * @this {Freeverb.Tuning}
+ * @param {Object} overrides The object containing the values to be overwritten.
+*/
+
+Freeverb.Tuning = function FreeverbTuning(overrides){
+	var k;
+	if (overrides){
+		for (k in overrides){
+			if (overrides.hasOwnProperty(k)){
+				this[k] = overrides[k];
+			}
+		}
+	}
+};
+
+Freeverb.Tuning.prototype = {
+	combCount:		8,
+	combTuning:		[1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617],
+
+	allPassCount:		4,
+	allPassTuning:		[556, 441, 341, 225],
+	allPassFeedback:	0.5,
+
+	fixedGain:		0.015,
+	scaleDamping:		0.9,
+
+	scaleRoom:		0.28,
+	offsetRoom:		0.7,
+	
+	stereoSpread:		23
+};
+
+/**
  * Creates an All-Pass Filter Effect, based on the Freeverb APF.
  * 
  * @constructor
@@ -166,7 +188,7 @@ Freeverb.prototype = {
  * @param {number} delaySize Size (in samples) of the delay line buffer.
  * @param {number} feedback (Optional) Amount of feedback (0.0-1.0). Defaults to 0.5 (Freeverb default)
 */
-Freeverb.AllPassFilter = function(sampleRate, delaySize, feedback){
+Freeverb.AllPassFilter = function AllPassFilter(sampleRate, delaySize, feedback){
 	var	self	= this;
 	self.sampleRate	= sampleRate;
 	self.buffer	= new Float32Array(isNaN(delaySize) ? 500 : delaySize);
@@ -198,6 +220,3 @@ Freeverb.AllPassFilter.prototype = {
 		this.buffer	= new Float32Array(this.bufferSize);
 	}
 }
-
-
-
