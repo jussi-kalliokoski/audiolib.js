@@ -78,3 +78,27 @@ function __enum(obj, callback, unignoreInherited){
 }
 
 __defineConst(audioLib, '__enum', __enum);
+
+function __class(name, constructor, args){
+	var	i, cls;
+	if (!args){
+		args	= [];
+		i	= /^\s*function\s*\w*\s*\(([^\)]+)/.exec(constructor);
+		if (i){
+			i[1].replace(/[a-z$_]+/ig, function(i){
+				args.push(i);
+			});
+		} else {
+			for (i=0; i<constructor.length; i++){
+				args[i] = Array(i+2).join('_');
+			}
+		}
+	}
+	cls = Function('var __q;return function ' + name + '(' + args.join() + '){var i; if(__q){__q=!__q}else if(this instanceof ' + name +')this.__CLASSCONSTRUCTOR.apply(this,arguments);else{__q=!__q;i=new ' + name + ';i.__CLASSCONSTRUCTOR.apply(i,arguments);return i}};')();
+	cls.prototype = constructor.prototype;
+	cls.prototype.__CLASSCONSTRUCTOR = constructor;
+	__extend(cls, constructor);
+	return cls;
+}
+
+__defineConst(audioLib, '__class', __class);

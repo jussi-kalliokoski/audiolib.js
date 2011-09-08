@@ -223,16 +223,16 @@ GeneratorClass.prototype = {
 		return new audioLib.BufferEffect(this, channelCount, [].slice.call(arguments, 1));
 	}
 
-	function effects(name, effect, prototype){
+	function effects(name, effect, prototype, argNames){
 		if (effect){
 			prototype	= prototype || effect.prototype;
-			effects[name]	= effect;
 			var	proto	= effect.prototype = new EffectClass();
 			proto.name	= proto.fxid = name;
+			effects[name]	= __class(name, effect, argNames);
 			effects[name].createBufferBased = createBufferBased;
-			for (name in prototype){
-				if (prototype.hasOwnProperty(name)){
-					proto[name] = prototype[name];
+			for (argNames in prototype){
+				if (prototype.hasOwnProperty(argNames)){
+					proto[argNames] = prototype[argNames];
 				}
 			}
 		}
@@ -244,7 +244,7 @@ GeneratorClass.prototype = {
 	audioLib.effects = effects;
 
 	for (i=0; i<names.length; i++){
-		effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
+		audioLib[names[i]] = effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 
 	effects('BiquadHighPassFilter', BiquadFilter.HighPass);
@@ -254,15 +254,15 @@ GeneratorClass.prototype = {
 }(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb', 'FFT']));
 
 (function(names, i){
-	function generators(name, effect, prototype){
+	function generators(name, effect, prototype, argNames){
 		if (effect){
 			prototype	= prototype || effect.prototype;
-			generators[name]= effect;
 			var	proto	= effect.prototype = new GeneratorClass();
 			proto.name	= proto.fxid = name;
-			for (name in prototype){
-				if (prototype.hasOwnProperty(name)){
-					proto[name] = prototype[name];
+			generators[name]= __class(name, effect, argNames);
+			for (argNames in prototype){
+				if (prototype.hasOwnProperty(argNames)){
+					proto[argNames] = prototype[argNames];
 				}
 			}
 		}
@@ -272,7 +272,7 @@ GeneratorClass.prototype = {
 	audioLib.generators = generators;
 
 	for (i=0; i<names.length; i++){
-		generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
+		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 }(['Oscillator', 'Sampler', 'Noise', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
 
