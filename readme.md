@@ -23,15 +23,15 @@ audioLib.Sink.backgroundWork = true;
 
 // Effects
 
-var del = new audioLib.Delay(sampleRate, delay, feedback);
+var del = audioLib.Delay(sampleRate, delay, feedback);
 
-var flt = new audioLib.IIRFilter(sampleRate, cutoffFreq, resonance);
+var flt = audioLib.IIRFilter(sampleRate, cutoffFreq, resonance);
 
-var flt = new audioLib.LP12Filter(sampleRate, cutoffFreq, resonance);
+var flt = audioLib.LP12Filter(sampleRate, cutoffFreq, resonance);
 
-var flt = new audioLib.LowPassFilter(sampleRate, cutoffFreq, resonance);
+var flt = audioLib.Reverb(sampleRate, channelCount, wet, dry, roomSize, damping);
 
-var dist = new audioLib.Distortion(sampleRate);
+var dist = audioLib.BiquadFilter(sampleRate), b0, b1, b2, a1, a2);
 
 // to feed a new input sample
 effect.pushSample(sample);
@@ -40,7 +40,7 @@ sample = effect.getMix();
 
 // Synthesis
 
-var osc = new audioLib.Oscillator(sampleRate, frequency);
+var osc = audioLib.Oscillator(sampleRate, frequency);
 
 // to generate a new sample
 osc.generate(fm1, fm2, ..., fmX);
@@ -49,11 +49,11 @@ osc.getMix();
 
 // Sampler
 
-var sampler = new audioLib.Sampler(sampleRate, sampleBuffer, defaultPitch);
+var sampler = audioLib.Sampler(sampleRate, sampleBuffer, defaultPitch);
 
 // Envelopes
 
-var adsr = new audioLib.ADSREnvelope(sampleRate, attack, decay, sustain, release);
+var adsr = audioLib.ADSREnvelope(sampleRate, attack, decay, sustain, release);
 
 // to trigger the gate
 adsr.triggerGate(isOpen);
