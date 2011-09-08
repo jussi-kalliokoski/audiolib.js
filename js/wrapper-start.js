@@ -85,7 +85,7 @@ function __class(name, constructor, args){
 		args	= [];
 		i	= /^\s*function\s*\w*\s*\(([^\)]+)/.exec(constructor);
 		if (i){
-			i[1].replace(/[a-z$_]+/ig, function(i){
+			i[1].replace(/[a-z$_0-9]+/ig, function(i){
 				args.push(i);
 			});
 		} else {
