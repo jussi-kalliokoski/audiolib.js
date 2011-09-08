@@ -488,14 +488,14 @@ Sink.doInterval		= function(callback, timeout){
 		try{
 			prev	= new BlobBuilder();
 			prev.append('setInterval(function(){ postMessage("tic"); }, ' + timeout + ');');
-			id	= window.URL.createObjectURL(prev.getBlob());
+			id	= (window.MozURL || window.webkitURL || window.MSURL || window.OURL || window.URL).createObjectURL(prev.getBlob());
 			timer	= new Worker(id);
 			timer.onmessage = function(){
 				callback();
 			};
 			return function(){
 				timer.terminate();
-				window.URL.revokeObjectURL(id);
+				(window.MozURL || window.webkitURL || window.MSURL || window.OURL || window.URL).revokeObjectURL(id);
 			};
 		} catch(e){};
 	}
