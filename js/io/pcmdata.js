@@ -10,7 +10,6 @@ binary.js repository also includes stream.js
 MIT License
 */
 
-
 (function(global, Math){
 
 	var	fromCharCode	= String.fromCharCode,

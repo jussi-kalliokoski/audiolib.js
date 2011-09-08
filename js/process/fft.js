@@ -102,7 +102,6 @@ FFT.prototype = {
 return FFT;
 
 }());
-
 (function(proto){
 
 proto.resetFFT = proto.reset;
