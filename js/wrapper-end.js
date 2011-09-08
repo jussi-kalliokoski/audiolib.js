@@ -480,7 +480,7 @@ audioLib.GeneratorClass			= GeneratorClass;
 audioLib.codecs				= audioLib.Codec = Codec;
 audioLib.plugins			= Plugin;
 
-audioLib.version			= '0.4.7';
+audioLib.version			= '0.5.0';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math, Object, Array);
