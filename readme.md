@@ -18,9 +18,6 @@ var dev = audioLib.Sink(function(sampleBuffer){
 // Writing buffers:
 dev.writeBuffer(buffer);
 
-// If you want your application to work as a background tab in Firefox 5+, do this before creating the device:
-audioLib.Sink.backgroundWork = true;
-
 // Effects
 
 var del = audioLib.Delay(sampleRate, delay, feedback);
