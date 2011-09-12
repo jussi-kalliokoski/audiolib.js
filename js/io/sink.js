@@ -482,7 +482,7 @@ Sink.sinks		= Sink.devices = sinks;
 Sink.Recording		= Recording;
 
 Sink.doInterval		= function(callback, timeout){
-	var	BlobBuilder	= window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder || window.BlobBuilder,
+	var	BlobBuilder	= typeof window === 'undefined' ? undefined : window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder || window.BlobBuilder,
 		timer, id, prev;
 	if ((Sink.doInterval.backgroundWork || Sink.devices.moz.backgroundWork) && BlobBuilder){
 		try{
