@@ -19,6 +19,7 @@ audioLib.Delay		= Delay;
 audioLib.Distortion	= Distortion;
 audioLib.GainController	= GainController;
 audioLib.IIRFilter	= IIRFilter;
+audioLib.Limiter	= Limiter;
 audioLib.LP12Filter	= LP12Filter;
 audioLib.Reverb		= Freeverb;
 
@@ -30,6 +31,7 @@ audioLib.Noise		= Noise;
 
 
 //Processing
+audioLib.Amplitude		= Amplitude;
 audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 audioLib.FFT			= FFT;
 
@@ -251,7 +253,7 @@ GeneratorClass.prototype = {
 	effects('BiquadLowPassFilter', BiquadFilter.LowPass);
 	effects('BiquadAllPassFilter', BiquadFilter.AllPass);
 	effects('BiquadBandPassFilter', BiquadFilter.BandPass);
-}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Reverb', 'FFT']));
+}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'Limiter', 'LP12Filter', 'Reverb', 'Amplitude', 'FFT']));
 
 (function(names, i){
 	function generators(name, effect, prototype, argNames){
