@@ -7,3 +7,15 @@ all:
 
 integrate:
 	cd integration && sh integrate.sh
+
+update:
+	./build update all
+
+wrappers:
+	./build update wrappers
+
+package:
+	./build update package
+
+docs:
+	./build update docs
