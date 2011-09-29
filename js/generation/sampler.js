@@ -1,3 +1,5 @@
+//#generator Sampler
+
 /**
  * Creates a new Sampler.
  *
@@ -6,6 +8,7 @@
  * @param {Number} sampleRate The samplerate to operate the Sampler on.
  * @param {Number} pitch The pitch of the Sampler. (Optional)
 */
+
 function Sampler(sampleRate, pitch){
 	var	self	= this;
 	self.voices	= [];

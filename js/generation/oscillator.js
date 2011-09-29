@@ -1,3 +1,5 @@
+//#generator Oscillator
+
 /**
  * Creates a new Oscillator.
  *
@@ -5,7 +7,9 @@
  * @this {Oscillator}
  * @param {Number} sampleRate The samplerate to operate the Oscillator on.
  * @param {Number} frequency The frequency of the Oscillator. (Optional)
-*/function Oscillator(sampleRate, freq)
+*/
+
+function Oscillator(sampleRate, freq)
 {
 	var	self	= this;
 	self.frequency	= isNaN(freq) ? 440 : freq;

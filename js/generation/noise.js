@@ -1,3 +1,5 @@
+//#generator Noise
+
 function Noise(){
 	this.reset.apply(this, arguments);
 }

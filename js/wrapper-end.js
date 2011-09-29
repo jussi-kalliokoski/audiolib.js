@@ -4,36 +4,30 @@
 */
 
 // Controls
-audioLib.ADSREnvelope		= ADSREnvelope;
-audioLib.StepSequencer		= StepSequencer;
-audioLib.UIControl		= UIControl;
+audioLib.ADSREnvelope	= ADSREnvelope;
+audioLib.StepSequencer	= StepSequencer;
+audioLib.UIControl	= UIControl;
 
-
-//Effects
-audioLib.BiquadFilter	= BiquadFilter;
+// Effects
 audioLib.BitCrusher	= BitCrusher;
 audioLib.Chorus		= Chorus;
 audioLib.CombFilter	= CombFilter;
 audioLib.Compressor	= Compressor;
-audioLib.Delay		= Delay;
 audioLib.Distortion	= Distortion;
 audioLib.GainController	= GainController;
 audioLib.IIRFilter	= IIRFilter;
-audioLib.Limiter	= Limiter;
-audioLib.LP12Filter	= LP12Filter;
 audioLib.Reverb		= Freeverb;
+audioLib.delay		= delay;
 
-
-//Geneneration
+// Geneneration
+audioLib.Noise		= Noise;
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
-audioLib.Noise		= Noise;
 
-
-//Processing
-audioLib.Amplitude		= Amplitude;
+// Processing
+audioLib.Amplitude	= Amplitude;
+audioLib.FFT		= FFT;
 audioLib.AudioProcessingUnit	= AudioProcessingUnit;
-audioLib.FFT			= FFT;
 
 
 audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
@@ -67,11 +61,11 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 		audioLib[names[i]] = effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 
-	effects('BiquadHighPassFilter', BiquadFilter.HighPass);
-	effects('BiquadLowPassFilter', BiquadFilter.LowPass);
-	effects('BiquadAllPassFilter', BiquadFilter.AllPass);
-	effects('BiquadBandPassFilter', BiquadFilter.BandPass);
-}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'Limiter', 'LP12Filter', 'Reverb', 'Amplitude', 'FFT']));
+	effects('BiquadAllPassFilter',	BiquadFilter.AllPass);
+	effects('BiquadBandPassFilter',	BiquadFilter.BandPass);
+	effects('BiquadHighPassFilter',	BiquadFilter.HighPass);
+	effects('BiquadLowPassFilter',	BiquadFilter.LowPass);
+}(['BitCrusher,BitCrusher', 'Chorus,Chorus', 'CombFilter,CombFilter', 'Compressor,Compressor', 'Distortion,Distortion', 'GainController,GainController', 'IIRFilter,IIRFilter', 'Reverb,Freeverb', 'delay,delay', 'Amplitude,Amplitude', 'FFT,FFT']));
 
 (function(names, i){
 	function generators(name, effect, prototype, argNames){
@@ -94,7 +88,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	for (i=0; i<names.length; i++){
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Oscillator', 'Sampler', 'Noise', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
+}(['Noise,Noise', 'Oscillator,Oscillator', 'Sampler,Sampler', 'ADSREnvelope,ADSREnvelope', 'StepSequencer,StepSequencer', 'UIControl,UIControl']));
 
 Codec('wav', audioLib.PCMData);
 

@@ -1,3 +1,5 @@
+//#effect Reverb Freeverb
+
 /**
  * Creates a Reverb Effect, based on the Freeverb algorithm
  * 

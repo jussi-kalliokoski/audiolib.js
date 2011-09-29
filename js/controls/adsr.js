@@ -1,3 +1,4 @@
+//#control ADSREnvelope
 /**
  * Creates an ADSR envelope.
  *

@@ -1,4 +1,5 @@
 // Depends on oscillator.
+//#effect Chorus
 
 /**
  * Creates a Chorus effect.

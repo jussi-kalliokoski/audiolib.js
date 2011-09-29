@@ -1,4 +1,5 @@
 // Adapted from http://www.musicdsp.org/archive.php?classid=4#139
+//#effect BitCrusher
 
 /**
  * Creates a Bit Crusher Effect

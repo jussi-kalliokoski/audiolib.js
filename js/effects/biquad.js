@@ -1,4 +1,5 @@
 // Adapted from http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
+/* TODO: Figure out build script options for this. */
 
 /**
  * A Custom Biquad Filter Effect
@@ -61,6 +62,7 @@ BiquadFilter.BiquadFilterClass.prototype = {
 	}
 };
 
+//#subeffect BiquadFilter LowPass BiquadLowPassFilter
 /**
  * Creates a Biquad Low-Pass Filter Effect
  * 
@@ -84,6 +86,7 @@ BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
+//#subeffect BiquadFilter HighPass BiquadHighPassFilter
 /**
  * Creates a Biquad High-Pass Filter Effect
  * 
@@ -107,6 +110,7 @@ BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
+//#subeffect BiquadFilter AllPass BiquadAllPassFilter
 /**
  * Creates a Biquad All-Pass Filter Effect
  * 
@@ -130,6 +134,7 @@ BiquadFilter.AllPass = function(sampleRate, f0, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
+//#subeffect BiquadFilter BandPass BiquadBandPassFilter
 /**
  * Creates a Biquad Band-Pass Filter Effect
  * 
