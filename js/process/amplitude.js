@@ -1,3 +1,4 @@
+//#processor Amplitude
 /**
  * Creates an amplitude meter, outputting the amplitude value of the input.
  *

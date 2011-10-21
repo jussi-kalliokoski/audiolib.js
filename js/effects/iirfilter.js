@@ -1,4 +1,5 @@
 // Adapted from Corban Brook's dsp.js
+//#effect IIRFilter
 
 /**
  * Creates a IIRFilter effect.

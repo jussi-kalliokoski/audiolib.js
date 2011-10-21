@@ -1,3 +1,5 @@
+//#effect GainController
+
 /**
  * Creates a Gain Controller effect.
  *

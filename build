@@ -1,0 +1,286 @@
+#!/usr/bin/env node
+
+/* vim: setf javascript */
+
+var	sys		= require('sys');
+
+function print(){
+	[].slice.call(arguments).forEach(function(a){
+		sys.puts(a);
+	});
+}
+
+process.on('uncaughtException', function(e){
+	print(e.toString());
+	process.exit(1);
+});
+
+function _path(){
+	return [].slice.call(arguments).map(function(a){return/^(.+)\/?$/.exec(a)[1]}).join('/');
+}
+
+function __extend(obj){
+	var	args	= arguments,
+		l	= args.length,
+		i, n;
+	for (i=1; i<l; i++){
+		for (n in args[i]){
+			if (args[i].hasOwnProperty(n)){
+				obj[n] = args[i][n];
+			}
+		}
+	}
+	return obj;
+}
+
+var	paramon		= require('paramon');
+var	fs		= require('fs');
+var	Builder		= require('script-builder');
+
+function ls(path, r){
+	path	= path instanceof Array ? _path.apply(null, path) : path;
+	path	= fs.readdirSync(path);
+	if (r){
+		for (var i=0; i<path.length; i++){
+			if (!r.exec(path[i])){
+				path.splice(i--, 1);
+			}
+		}
+	}
+	return path;
+}
+
+function read(path, encoding){
+	path		= path instanceof Array ? _path.apply(null, path) : path;
+	encoding	= encoding || 'UTF-8';
+	return fs.readFileSync(path, encoding);
+}
+
+function save(path, data, encoding){
+	path		= path instanceof Array ? _path.apply(null, path) : path;
+	encoding	= encoding || 'UTF-8';
+	return fs.writeFileSync(path, data, encoding);
+}
+
+var __define = (function(){
+
+	if (Object.defineProperty){
+		return Object.defineProperty;
+	} else if (Object.prototype.__defineGetter__){
+		return function(obj, prop, desc){
+			desc.get && obj.__defineGetter__(prop, desc.get);
+			desc.set && obj.__defineSetter__(prop, desc.set);
+		}
+	}
+
+}());
+
+function __defineConst(obj, prop, value, enumerable){
+	if (__define){
+		__define(obj, prop, {
+			get: function(){
+				return value;
+			},
+			enumerable: !!enumerable
+		});
+	} else {
+		// Cheap...
+		obj[prop] = value;
+	}
+}
+
+function logicalMods(obj, name, value){
+	if (arguments.length < 3){
+		value	= obj[name];
+	}
+	var	pos	= ['major', 'minor', 'patch'];
+	__define(obj, name, {
+		set: function(val){
+			var	op	= typeof val === 'string' ? val.split(' ') : val;
+			var	r	= typeof value === 'string' ? value.split('.') : value;
+			var	n	= [];
+			if (op && op instanceof Array){
+				op.slice(1).forEach(function(o){
+					o = pos.indexOf(o);
+					o !== -1 && n.push(o);
+				});
+				!n.length && n.push(0);
+				n.forEach(function(n){
+					switch(op[0]){
+					case 'increment':
+						typeof r === 'number' ? r++ : r[n]++;
+						val = r instanceof Array ? r.join('.') : r;
+						break;
+					case 'decrement':
+						typeof r === 'number' ? r-- : r[n]--;
+						val = r instanceof Array ? r.join('.') : r;
+						break;
+					}
+				});
+			}
+			value = val;
+		},
+		get: function(){
+			return value;
+		},
+	});
+}
+
+var ArrayStuff = (function f(){
+var a	= Array.prototype;
+a.copy	= function(){return this.slice();};
+a.smap	= function(s, r){
+	return this.map(function(t){
+		var x = r ? r.exec(t) : [t];
+		return s.replace(/\$([0-9]+)/g, function(q,n){
+			return x[n];
+		});
+	});
+};
+a.table	= function(tabwidth){
+	tabwidth	= isNaN(+tabwidth) ? 8 : +tabwidth;
+	var	w	= [];
+	this.forEach(function(r){
+		r.forEach(function(c, i){
+			w[i] = Math.max(Math.ceil(c.length / tabwidth), w[i] || 0);
+		});
+	});
+	return this.map(function(r){
+		var	l	= r.length - 1,
+			s	= '',
+			i;
+		for (i=0; i<l; i++){
+			s += r[i] + Array(1 + w[i] - Math.floor(r[i].length / tabwidth)).join('\t');
+		}
+		return s + r[i];
+	}).join('\n');
+};
+return f;
+}());
+
+var createSettings = (function(settings){
+return function(){
+	var s =  __extend({}, settings);
+	logicalMods(s, 'version');
+	return s;
+};
+}(JSON.parse(read('templates/variables.json'))));
+
+Builder.context(ArrayStuff);
+
+function builderContext(s){
+	s		= s || createSettings();
+
+	var	builder	= Builder.Builder(s);
+
+	function group(name){
+		arguments.length > 1 && group.apply(this, [].slice.call(arguments, 1));
+		var g	= builder.variables[name + 's'] = [];
+		var sg	= builder.variables['sub' + name + 's'] = [];
+		builder.instructions.push({
+			name:	name,
+			exec:	function(args){
+				args = args.split(/\s+/g);
+				args[1] = args[1] || args[0];
+				builder.variables[name + 's'].push(args);
+			}
+		});
+		builder.instructions.push({
+			name:	'sub' + name,
+			exec:	function(args){
+				args = args.split(/\s+/g);
+				args[2] = args[2] || args[0] + args[1];
+				builder.variables['sub' + name + 's'].push(args);
+			}
+		});
+	}
+
+	group('generator', 'effect', 'control', 'processor');
+
+	builder.group = group;
+	return builder;
+}
+
+
+if (process.argv.length < 3){
+	throw "Try build -h for help.";
+}
+
+var	args	= paramon.readFormat(process.argv, {
+	name:	'build',
+	usage:	'command [options]',
+	params:	[
+		{
+			name:	'update',
+			args:	['update', '-u'],
+			desc:	'Update target (wrappers).',
+			minParams: 1,
+			maxParams: -1,
+		},
+		{
+			name:	'config',
+			args:	['config', '-c'],
+			desc:	'Modify or review config settings.',
+			minParams: 1,
+			maxParams: -1,
+		}
+	],
+});
+
+args['$!stray'].forEach(function(e){
+	print('Unknown build command "' + e + '".');
+	process.exit();
+});
+
+if (args.config){
+	var settings = createSettings();
+	if (args.config.length > 1){
+		settings[args.config[0]] = args.config.slice(1).join(' ');
+		save('templates/variables.json', JSON.stringify(settings, null, '\t'));
+	}
+	print(settings[args.config[0]]);
+	process.exit();
+}
+
+var updatables = {
+	wrappers: function(){
+		var builder = builderContext();
+		ls('js', /^\w+$/).forEach(function(dir){
+			ls(['js', dir], /\.js$/i).forEach(function(f){
+				builder.run(read(['js', dir, f]), _path(dir, f));
+			});
+		});
+
+		save('js/wrapper-start.js', builder.run(read('templates/wrapper-start.js')));
+		save('js/wrapper-end.js', builder.run(read('templates/wrapper-end.js')));
+		print('Wrappers updated.');
+	},
+	'package': function(){
+		var builder = builderContext();
+		save('package.json', builder.run(read('templates/package.json')));
+		print('package.json updated.');
+	},
+	'docs': function(){
+		// TODO: Create a doc generator script?
+		print('Building the docs is not possible the yet. Wanna contribute?');
+	},
+};
+
+if (args.update){
+	args.update.forEach(function(e){
+		e = e.toLowerCase();
+		var k;
+		if (e === 'all') {
+			for (k in updatables){
+				if (updatables.hasOwnProperty(k)){
+					updatables[k]();
+				}
+			}
+		} else if (e in updatables) {
+			updatables[e]();
+		} else {
+			throw 'Unknown update target "' + e + '".';
+		}
+	});
+	process.exit();
+}

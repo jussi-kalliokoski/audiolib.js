@@ -1,4 +1,5 @@
 // Requires IIRFilter
+//#effect Distortion
 
 /**
  * Creates a Distortion effect.

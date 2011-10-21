@@ -4,29 +4,16 @@
 */
 
 // Controls
-audioLib.ADSREnvelope	= ADSREnvelope;
-audioLib.StepSequencer	= StepSequencer;
-audioLib.UIControl	= UIControl;
+//#echo @controls.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
 
 // Effects
-audioLib.BitCrusher	= BitCrusher;
-audioLib.Chorus		= Chorus;
-audioLib.CombFilter	= CombFilter;
-audioLib.Compressor	= Compressor;
-audioLib.Distortion	= Distortion;
-audioLib.GainController	= GainController;
-audioLib.IIRFilter	= IIRFilter;
-audioLib.Reverb		= Freeverb;
-audioLib.delay		= delay;
+//#echo @effects.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
 
 // Geneneration
-audioLib.Noise		= Noise;
-audioLib.Oscillator	= Oscillator;
-audioLib.Sampler	= Sampler;
+//#echo @generators.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
 
 // Processing
-audioLib.Amplitude	= Amplitude;
-audioLib.FFT		= FFT;
+//#echo @processors.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
 audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 
 
@@ -61,11 +48,11 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 		audioLib[names[i]] = effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 
-	effects('BiquadAllPassFilter',	BiquadFilter.AllPass);
-	effects('BiquadBandPassFilter',	BiquadFilter.BandPass);
-	effects('BiquadHighPassFilter',	BiquadFilter.HighPass);
-	effects('BiquadLowPassFilter',	BiquadFilter.LowPass);
-}(['BitCrusher,BitCrusher', 'Chorus,Chorus', 'CombFilter,CombFilter', 'Compressor,Compressor', 'Distortion,Distortion', 'GainController,GainController', 'IIRFilter,IIRFilter', 'Reverb,Freeverb', 'delay,delay', 'Amplitude,Amplitude', 'FFT,FFT']));
+/*#echo @subeffects.copy().sort().concat(@subprocessors.copy().sort()).map(function(e){
+	return ["effects('" + e[2] + "',", e[0] + '.' + e[1] + ');'];
+}).table().split('\n').map(function(e){return '\t' + e}).join('\n');
+*/
+}([/*#echo @effects.copy().sort().concat(@processors.copy().sort()).smap("'$0'").join(', ') */]));
 
 (function(names, i){
 	function generators(name, effect, prototype, argNames){
@@ -88,7 +75,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	for (i=0; i<names.length; i++){
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Noise,Noise', 'Oscillator,Oscillator', 'Sampler,Sampler', 'ADSREnvelope,ADSREnvelope', 'StepSequencer,StepSequencer', 'UIControl,UIControl']));
+}([/*#echo @generators.copy().sort().concat(@controls.copy().sort()).smap("'$0'").join(', ') */]));
 
 Codec('wav', audioLib.PCMData);
 
@@ -100,7 +87,7 @@ audioLib.GeneratorClass			= GeneratorClass;
 audioLib.codecs				= audioLib.Codec = Codec;
 audioLib.plugins			= Plugin;
 
-audioLib.version			= '0.5.0';
+audioLib.version			= '/*#echo @version*/';
 
 audioLib.BufferEffect.prototype.addAutomation	=
 audioLib.EffectClass.prototype.addAutomation	=

@@ -1,3 +1,4 @@
+//#effect CombFilter
 
 /**
  * Creates a Comb Filter effect.

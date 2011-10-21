@@ -1,3 +1,5 @@
+//#effect Compressor
+
 /**
  * Creates a Compressor Effect
  * 

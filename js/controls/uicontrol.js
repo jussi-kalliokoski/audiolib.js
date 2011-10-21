@@ -1,3 +1,4 @@
+//#control UIControl
 /**
  * UIControl is a tool for creating smooth, latency-balanced UI controls to interact with audio.
  *
