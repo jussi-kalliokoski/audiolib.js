@@ -1,6 +1,5 @@
 // Adapted from http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
-/* TODO: Figure out build script options for this. */
-
+//#effect BiquadFilter
 /**
  * A Custom Biquad Filter Effect
  * http://en.wikipedia.org/wiki/Digital_biquad_filter

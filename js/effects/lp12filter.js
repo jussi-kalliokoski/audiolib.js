@@ -1,4 +1,5 @@
 // Adapted from Corban Brook's dsp.js
+//#effect LP12Filter
 
 /**
  * Creates a LP12Filter effect.

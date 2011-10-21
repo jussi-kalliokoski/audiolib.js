@@ -1,4 +1,4 @@
-//#effect delay
+//#effect Delay
 
 /**
  * Creates a Delay effect.

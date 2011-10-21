@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-/* vim: setf javascript */
+/* vim: set filetype=javascript */
 
 var	sys		= require('sys');
 

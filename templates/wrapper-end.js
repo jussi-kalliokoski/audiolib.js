@@ -52,7 +52,9 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	return ["effects('" + e[2] + "',", e[0] + '.' + e[1] + ');'];
 }).table().split('\n').map(function(e){return '\t' + e}).join('\n');
 */
-}([/*#echo @effects.copy().sort().concat(@processors.copy().sort()).smap("'$0'").join(', ') */]));
+}([/*#echo @effects.copy().sort().concat(@processors.copy().sort()).map(function(e){
+	return "'" + e[0] + "'";
+}).join(', ') */]));
 
 (function(names, i){
 	function generators(name, effect, prototype, argNames){
@@ -75,7 +77,9 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	for (i=0; i<names.length; i++){
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}([/*#echo @generators.copy().sort().concat(@controls.copy().sort()).smap("'$0'").join(', ') */]));
+}([/*#echo @generators.copy().sort().concat(@controls.copy().sort()).map(function(e){
+	return "'" + e[0] + "'";
+}).join(', ') */]));
 
 Codec('wav', audioLib.PCMData);
 
