@@ -42,12 +42,13 @@ function Automation(fx, parameter, automation, amount, type){
 	return automation;
 }
 
-Automation.generatorAppend = function(buffer, channelCount){
+Automation.generatorAppend = function(buffer, channelCount, out){
 	var	self	= this,
 		l	= buffer.length,
 		k	= self.automation.length,
 		def	= [],
 		z, i, n, m, a;
+	out		= out || buffer;
 	channelCount	= channelCount || self.channelCount;
 	for (m=0; m<k; m++){
 		def.push(self[self.automation[m].parameter]);
@@ -64,21 +65,22 @@ Automation.generatorAppend = function(buffer, channelCount){
 		self.generate();
 
 		for (n=0; n<channelCount; n++){
-			buffer[i + n] = self.getMix(n) * self.mix + buffer[i + n];
+			out[i + n] = self.getMix(n) * self.mix + buffer[i + n];
 		}
 	}
 	for (m=0; m<k; m++){
 		self[self.automation[m].parameter] = def[m];
 	}
-	return buffer;
+	return out;
 };
 
-Automation.effectAppend = function(buffer, channelCount){
+Automation.effectAppend = function(buffer, channelCount, out){
 	var	self	= this,
 		l	= buffer.length,
 		k	= self.automation.length,
 		def	= [],
 		z, i, n, m, a;
+	out		= out || buffer;
 	channelCount	= channelCount || self.channelCount;
 	for (m=0; m<k; m++){
 		def.push(self[self.automation[m].parameter]);
@@ -94,22 +96,23 @@ Automation.effectAppend = function(buffer, channelCount){
 
 		for (n=0; n<channelCount; n++){
 			self.pushSample(buffer[i + n], n);
-			buffer[i + n] = self.getMix(n) * self.mix + buffer[i + n] * (1 - self.mix);
+			out[i + n] = self.getMix(n) * self.mix + buffer[i + n] * (1 - self.mix);
 		}
 	}
 	for (m=0; m<k; m++){
 		self[self.automation[m].parameter] = def[m];
 	}
-	return buffer;
+	return out;
 };
 
-Automation.bufferEffectAppend = function(buffer, channelCount){
+Automation.bufferEffectAppend = function(buffer, channelCount, out){
 	var	self	= this,
 		ch	= channelCount || self.channelCount,
 		l	= buffer.length,
 		k	= self.automation.length,
 		def	= [],
 		i, n, m, z, a, x;
+	out		= out || buffer;
 	for (m=0; m<k; m++){
 		def.push([]);
 		for (n=0; n<ch; n++){
@@ -123,7 +126,7 @@ Automation.bufferEffectAppend = function(buffer, channelCount){
 				self.effects[n][a.parameter] = def[m][n];
 				a.mode(self.effects[n], a.parameter, a.amount * a.automation.generatedBuffer[x]);
 			}
-			buffer[i + n] = self.effects[n].pushSample(buffer[i + n]) * self.mix + buffer[i + n] * (1 - self.mix);
+			out[i + n] = self.effects[n].pushSample(buffer[i + n]) * self.mix + buffer[i + n] * (1 - self.mix);
 		}
 	}
 	for (m=0; m<k; m++){
@@ -131,7 +134,7 @@ Automation.bufferEffectAppend = function(buffer, channelCount){
 			self.effects[n][self.automation[m].parameter] = def[m][n];
 		}
 	}
-	return buffer;
+	return out;
 };
 
 Automation.modes = {

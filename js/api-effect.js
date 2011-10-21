@@ -7,17 +7,18 @@ EffectClass.prototype = {
 	source:		true,
 	mix:		0.5,
 	channelCount:	1,
-	append: function(buffer, channelCount){
+	append: function(buffer, channelCount, out){
 		var	l	= buffer.length,
 			i, n;
+		out		= out || buffer;
 		channelCount	= channelCount || this.channelCount;
 		for (i=0; i<l; i+=channelCount){
 			for (n=0; n<channelCount; n++){
 				this.pushSample(buffer[i + n], n);
-				buffer[i + n] = this.getMix(n) * this.mix + buffer[i + n] * (1 - this.mix);
+				out[i + n] = this.getMix(n) * this.mix + buffer[i + n] * (1 - this.mix);
 			}
 		}
-		return buffer;
+		return out;
 	},
 	join:	function(){
 		return EffectChain.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));

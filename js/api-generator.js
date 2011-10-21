@@ -7,17 +7,18 @@ GeneratorClass.prototype = {
 	mix:			1,
 	generatedBuffer:	null,
 	channelCount:		1,
-	append: function(buffer, channelCount){
+	append: function(buffer, channelCount, out){
 		var	l	= buffer.length,
 			i, n;
+		out		= out || buffer;
 		channelCount	= channelCount || this.channelCount;
 		for (i=0; i<l; i+=channelCount){
 			this.generate();
 			for (n=0; n<channelCount; n++){
-				buffer[i + n] = this.getMix(n) * this.mix + buffer[i + n];
+				out[i + n] = this.getMix(n) * this.mix + buffer[i + n];
 			}
 		}
-		return buffer;
+		return out;
 	},
 	addPreProcessing: function(callback){
 		callback.generate = this.generate;

@@ -16,18 +16,19 @@ BufferEffect.prototype = {
 	mix:		0.5,
 	type:		'buffereffect',
 	channelCount:	2,
-	append:	function(buffer){
+	append:	function(buffer, channelCount, out){
 		var	self	= this,
-			ch	= self.channelCount,
 			l	= buffer.length,
 			i, n;
-		for (i=0; i<l; i+=ch){
-			for (n=0; n<ch; n++){
+		channelCount	= channelCount || self.channelCount;
+		out		= out || buffer;
+		for (i=0; i<l; i+=channelCount){
+			for (n=0; n<channelCount; n++){
 				self.effects[n].pushSample(buffer[i + n], 0);
-				buffer[i + n] = self.effects[n].getMix(0) * self.mix + buffer[i + n] * (1 - self.mix);
+				out[i + n] = self.effects[n].getMix(0) * self.mix + buffer[i + n] * (1 - self.mix);
 			}
 		}
-		return buffer;
+		return out;
 	},
 	join:	function(){
 		return BufferEffectChain.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));
