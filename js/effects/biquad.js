@@ -1,17 +1,18 @@
-// Adapted from http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
-//#effect BiquadFilter
 /**
  * A Custom Biquad Filter Effect
  * http://en.wikipedia.org/wiki/Digital_biquad_filter
+ * Adapted from http://www.musicdsp.org/files/Audio-EQ-Cookbook.txt
  * 
- * @constructor
- * @this {BiquadFilter}
- * @param {number} samplerate Sample Rate (hz).
+ * @effect
+ *
+ * @arg =sampleRate
  * @param {number} b0 Biquadratic difference equation parameter
  * @param {number} b1 Biquadratic difference equation parameter
  * @param {number} b2 Biquadratic difference equation parameter
  * @param {number} a1 Biquadratic difference equation parameter
  * @param {number} a2 Biquadratic difference equation parameter
+ *
+ * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
 */
 function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
 	this.reset.apply(this, arguments)
@@ -65,11 +66,16 @@ BiquadFilter.BiquadFilterClass.prototype = {
 /**
  * Creates a Biquad Low-Pass Filter Effect
  * 
- * @constructor
- * @this {BiquadFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} cutoff Low-pass cutoff frequency (hz).
- * @param {number} Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
+ * @name LowPass
+ * @subeffect BiquadFilter BiquadLowPassFilter
+ *
+ * @arg =sampleRate
+ * @arg =cutoff
+ * @arg =Q
+ *
+ * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz cutoff Low-pass cutoff frequency.
+ * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
 BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
 	var	w0	= 2* Math.PI*cutoff/sampleRate,
@@ -85,15 +91,19 @@ BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
-//#subeffect BiquadFilter HighPass BiquadHighPassFilter
 /**
  * Creates a Biquad High-Pass Filter Effect
  * 
- * @constructor
- * @this {BiquadFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} cutoff High-pass cutoff frequency (hz).
- * @param {number} Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
+ * @name HighPass
+ * @subeffect BiquadFilter BiquadHighPassFilter
+ *
+ * @arg =sampleRate
+ * @arg =cutoff
+ * @arg =Q
+ *
+ * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz cutoff High-pass cutoff frequency.
+ * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
 BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
 	var	w0	= 2* Math.PI*cutoff/sampleRate,
@@ -109,15 +119,19 @@ BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
-//#subeffect BiquadFilter AllPass BiquadAllPassFilter
 /**
  * Creates a Biquad All-Pass Filter Effect
  * 
- * @constructor
- * @this {BiquadFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} f0 Significant frequency: filter will cause a phase shift of 180deg at f0 (hz).
- * @param {number} Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
+ * @name AllPass
+ * @subeffect BiquadFilter BiquadAllPassFilter
+ *
+ * @arg =sampleRate
+ * @arg =cutoff
+ * @arg =Q
+ *
+ * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:0.0 f0 Significant frequency: filter will cause a phase shift of 180deg at f0.
+ * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
 BiquadFilter.AllPass = function(sampleRate, f0, Q){
 	var	w0	= 2* Math.PI*f0/sampleRate,
@@ -133,15 +147,19 @@ BiquadFilter.AllPass = function(sampleRate, f0, Q){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
-//#subeffect BiquadFilter BandPass BiquadBandPassFilter
 /**
  * Creates a Biquad Band-Pass Filter Effect
  * 
- * @constructor
- * @this {BiquadFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} centerFreq Center frequency of filter: 0dB gain at center peak
- * @param {number} bandwidthInOctaves Bandwitdth of the filter (between -3dB points), specified in octaves
+ * @name BandPass
+ * @subeffect BiquadFilter BiquadBandPassFilter
+ *
+ * @arg =sampleRate
+ * @arg =centerFreq
+ * @arg =bandwidthInOctaves
+ *
+ * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:0.0 centerFreq Center frequency of filter: 0dB gain at center peak
+ * @param type:Float units:octaves min:0 bandwidthInOctaves Bandwidth of the filter (between -3dB points).
 */
 BiquadFilter.BandPass = function(sampleRate, centerFreq, bandwidthInOctaves){
 	var	w0	= 2* Math.PI*centerFreq/sampleRate,

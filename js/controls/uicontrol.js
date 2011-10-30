@@ -1,11 +1,13 @@
-//#control UIControl
 /**
  * UIControl is a tool for creating smooth, latency-balanced UI controls to interact with audio.
  *
- * @constructor
- * @this {UIControl}
- * @param {Number} sampleRate The sample rate of the UI control.
- * @param {Number} value The initial value of the UI control.
+ * @control
+ *
+ * @arg =!sampleRate
+ * @arg =!value
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Number default:1 value The value of the UI control.
 */
 function UIControl(sampleRate, value){
 	this.sampleRate	= isNaN(sampleRate) ? this.sampleRate : sampleRate;
@@ -14,13 +16,11 @@ function UIControl(sampleRate, value){
 }
 
 UIControl.prototype = {
-	/** The sample rate of the UI control */
 	sampleRate:	44100,
-	/** The value of the UI control */
 	value:		1,
-	/** The internal schedule array of the UI control */
+	/* The internal schedule array of the UI control */
 	schedule:	null,
-	/** The internal clock of the UI control, indicating the previous time of a buffer callback */
+	/* The internal clock of the UI control, indicating the previous time of a buffer callback */
 	clock:		0,
 /**
  * Returns the current value of the UI control

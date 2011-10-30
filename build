@@ -10,10 +10,10 @@ function print(){
 	});
 }
 
-process.on('uncaughtException', function(e){
+/*process.on('uncaughtException', function(e){
 	print(e.toString());
 	process.exit(1);
-});
+});*/
 
 function _path(){
 	return [].slice.call(arguments).map(function(a){return/^(.+)\/?$/.exec(a)[1]}).join('/');
@@ -171,7 +171,12 @@ Builder.context(ArrayStuff);
 function builderContext(s){
 	s		= s || createSettings();
 
+	Builder.Comment.prototype.toString = function(){
+		return this.assignName || this.name || Object.prototype.toString.call(this);
+	};
+
 	var	builder	= Builder.Builder(s);
+	var cp	= Builder.CommentParser();
 
 	function group(name){
 		arguments.length > 1 && group.apply(this, [].slice.call(arguments, 1));
@@ -182,15 +187,36 @@ function builderContext(s){
 			exec:	function(args){
 				args = args.split(/\s+/g);
 				args[1] = args[1] || args[0];
-				builder.variables[name + 's'].push(args);
+				builder.variables[name + 's'].push({name: args[0], assignName: args[1]});
 			}
-		});
-		builder.instructions.push({
+		}, {
 			name:	'sub' + name,
 			exec:	function(args){
 				args = args.split(/\s+/g);
 				args[2] = args[2] || args[0] + args[1];
-				builder.variables['sub' + name + 's'].push(args);
+				builder.variables['sub' + name + 's'].push({subOf: args[0], name: args[1], assignName: args[2], toString: Builder.Comment.prototype.toString});
+			}
+		});
+		cp.commands.push({
+			name:	name,
+			exec:	function(args){
+				args = args ? args.split(/\s+/g) : [];
+				this.assignName = args[0];
+				!this.assignName && this.onfinish(function(){
+					this.assignName = this.name;
+				});
+				builder.variables[name + 's'].push(this);
+			}
+		}, {
+			name:	'sub' + name,
+			exec:	function(args){
+				args = args ? args.split(/\s+/g) : [];
+				this.subOf = args[0];
+				this.assignName = args[1];
+				!this.name && !this.assignName && this.onfinish(function(){
+					this.assignName = args[0] + this.name;
+				});
+				builder.variables['sub' + name + 's'].push(this);
 			}
 		});
 	}
@@ -198,6 +224,9 @@ function builderContext(s){
 	group('generator', 'effect', 'control', 'processor');
 
 	builder.group = group;
+
+	builder.addPostProcessor(cp);
+
 	return builder;
 }
 
@@ -261,6 +290,13 @@ var updatables = {
 		print('package.json updated.');
 	},
 	'docs': function(){
+		var builder = builderContext();
+		ls('js', /^\w+$/).forEach(function(dir){
+			ls(['js', dir], /\.js$/i).forEach(function(f){
+				builder.run(read(['js', dir, f]), _path(dir, f));
+			});
+		});
+
 		// TODO: Create a doc generator script?
 		print('Building the docs is not possible the yet. Wanna contribute?');
 	},

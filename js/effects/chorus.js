@@ -1,15 +1,18 @@
-// Depends on oscillator.
-//#effect Chorus
-
 /**
  * Creates a Chorus effect.
+ * Depends on [[Oscillator]]
  *
- * @constructor
- * @this {Chorus}
- * @param {number} sampleRate Sample Rate (hz).
- * @param {number} delayTime (Optional) Delay time (ms).
- * @param {number} depth (Optional) Depth.
- * @param {number} freq (Optional) Frequency (hz) of the LFO.
+ * @effect
+ *
+ * @arg =!sampleRate
+ * @arg =!delayTime
+ * @arg =!depth
+ * @arg =!freq
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:ms min:0.0 delayTime Delay time of the chorus.
+ * @param type:UInt depth Depth of the Chorus.
+ * @param type:Float units:Hz min:0.0 freq The frequency of the LFO running the Chorus.
 */
 function Chorus(sampleRate, delayTime, depth, freq){
 	var	self		= this,

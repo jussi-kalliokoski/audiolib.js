@@ -1,5 +1,13 @@
-//#generator Noise
-
+/**
+ * @generator
+ *
+ * @arg =!sampleRate
+ * @arg =!color
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:String default:white color The color of the noise.
+ * @param type:Float default:0 value The current value of the noise.
+*/
 function Noise(){
 	this.reset.apply(this, arguments);
 }

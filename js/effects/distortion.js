@@ -1,12 +1,14 @@
-// Requires IIRFilter
-//#effect Distortion
-
 /**
  * Creates a Distortion effect.
+ * Requires [[IIRFilter]]
+ * 
+ * @effect
  *
- * @constructor
- * @this {Distortion}
- * @param {number} sampleRate Sample Rate (hz).
+ * @arg =!sampleRate
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float default:4 gain The gain value of the Distortion.
+ * @param type:Float default:1 master The master volume value of the distortion.
 */
 function Distortion(sampleRate) // Based on the famous TubeScreamer.
 {

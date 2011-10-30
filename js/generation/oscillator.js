@@ -1,12 +1,17 @@
-//#generator Oscillator
-
 /**
  * Creates a new Oscillator.
  *
- * @constructor
- * @this {Oscillator}
- * @param {Number} sampleRate The samplerate to operate the Oscillator on.
- * @param {Number} frequency The frequency of the Oscillator. (Optional)
+ * @generator
+ *
+ * @arg =!sampleRate
+ * @arg =!frequency
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:0 default:440 frequency The frequency of the Oscillator.
+ * @param type:Float min:0.0 max:1.0 default:0.0 phaseOffset The phase offset of the Oscillator.
+ * @param type:Float min:0.0 max:1.0 default:0.5 pulseWidth The pulse width of the Oscillator.
+ * @param type:String|UInt default:sine waveShape The wave shape of the Oscillator.
+ * @param type:Float default:0 fm The frequency modulation of the Oscillator.
 */
 
 function Oscillator(sampleRate, freq)
@@ -21,25 +26,15 @@ function Oscillator(sampleRate, freq)
 (function(FullPI, waveshapeNames, proto, i){
 
 proto = Oscillator.prototype = {
-	/** Determines the sample rate on which the Oscillator operates */
-	sampleRate:	1,
-	/** Determines the frequency of the Oscillator */
+	sampleRate:	44100,
 	frequency:	440,
-	/** Phase of the Oscillator */
-	phase:		0,
-	/** Phase offset of the Oscillator */
 	phaseOffset:	0,
-	/** Pulse width of the Oscillator */
 	pulseWidth:	0.5,
-	/** Frequency modulation of the Oscillator */
 	fm:		0,
-	/** Wave shape of the Oscillator */
 	waveShape:	'sine',
-/**
- * The relative of phase of the Oscillator (pulsewidth, phase offset, etc applied).
- *
- * @private
-*/
+	/* Phase of the Oscillator */
+	phase:		0,
+/* The relative of phase of the Oscillator (pulsewidth, phase offset, etc applied). */
 	_p:		0,
 
 /**
@@ -74,7 +69,7 @@ proto = Oscillator.prototype = {
 /**
  * Resets the Oscillator phase (AND RELATIVE PHASE) to a specified value.
  *
- * @param {Float32} phase The phase to reset the values to. (Optional, defaults to 0).
+ * @arg {Float32} phase The phase to reset the values to. (Optional, defaults to 0).
 */
 	reset: function(p){
 		this.phase = this._p = isNaN(p) ? 0 : p;
@@ -82,7 +77,7 @@ proto = Oscillator.prototype = {
 /**
  * Specifies a wavetable for the Oscillator.
  *
- * @param {AudioBuffer} wavetable The wavetable to be assigned to the Oscillator.
+ * @arg{AudioBuffer} wavetable The wavetable to be assigned to the Oscillator.
  * @return {Boolean} Succesfulness of the operation.
 */
 	setWavetable: function(wt){
@@ -160,8 +155,8 @@ for(i=0; i<waveshapeNames.length; i++){
 /**
  * Creates a new wave shape and attaches it to Oscillator.prototype by a specified name.
  *
- * @param {String} name The name of the wave shape.
- * @param {Function} algorithm The algorithm for the wave shape. If omitted, no changes are made.
+ * @arg {String} name The name of the wave shape.
+ * @arg {Function} algorithm The algorithm for the wave shape. If omitted, no changes are made.
  * @return {Function} The algorithm assigned to Oscillator.prototype by the specified name.
 */
 
@@ -175,8 +170,8 @@ Oscillator.WaveShape = function(name, algorithm){
 /**
  * Creates a new wave shape that mixes existing wave shapes into a new waveshape and attaches it to Oscillator.prototype by a specified name.
  *
- * @param {String} name The name of the wave shape.
- * @param {Array} waveshapes Array of the wave shapes to mix, wave shapes represented as objects where .shape is the name of the wave shape and .mix is the volume of the wave shape.
+ * @arg {String} name The name of the wave shape.
+ * @arg {Array} waveshapes Array of the wave shapes to mix, wave shapes represented as objects where .shape is the name of the wave shape and .mix is the volume of the wave shape.
  * @return {Function} The algorithm created.
 */
 

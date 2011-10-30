@@ -1,12 +1,13 @@
-//#effect GainController
-
 /**
  * Creates a Gain Controller effect.
  *
- * @constructor
- * @this GainController
- * @param {Number} sampleRate The sample rate for the gain controller.
- * @param {Number} gain The gain for the gain controller.
+ * @effect
+ *
+ * @arg =!sampleRate
+ * @arg =!gain
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:UInt default:1 gain The gain for the gain controller.
 */
 function GainController(sampleRate, gain){
 	this.sampleRate	= isNaN(sampleRate) ? this.sampleRate : sampleRate;
@@ -14,16 +15,14 @@ function GainController(sampleRate, gain){
 }
 
 GainController.prototype = {
-	/** The sample rate of the gain controller */
 	sampleRate:	44100,
-	/** The gain parameter of the gain controller */
 	gain:		1,
-	/** The current output sample of the gain controller */
+	/* The current output sample of the gain controller */
 	sample:		0,
 /**
  * Processes provided sample, moves the gain controller one sample forward in the sample time.
  *
- * @param {Number} s The input sample for the gain controller.
+ * @arg {Number} s The input sample for the gain controller.
  * @return {Number} The current output sample of the controller.
 */
 	pushSample:	function(s){

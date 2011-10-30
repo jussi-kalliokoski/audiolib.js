@@ -1,12 +1,15 @@
-//#processor Amplitude
 /**
  * Creates an amplitude meter, outputting the amplitude value of the input.
  *
- * @constructor
- * @this Limiter
- * @param {Number} sampleRate The sample rate of the amplitude meter.
- * @param {Number} attack The speed on which the amplitude metering reacts.
- * @param {Number} decay The speed on which the amplitude metering cools down.
+ * @processor
+ *
+ * @arg =!sampleRate
+ * @arg =!attack
+ * @arg =!decay
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float min:0.0 max:1.0 default:0.01 attack The speed on which the amplitude metering reacts.
+ * @param type:Float min:0.0 max:1.0 default:0.01 decay The speed on which the amplitude metering cools down.
 */
 function Amplitude(sampleRate, attack, decay){
 	this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
@@ -15,13 +18,10 @@ function Amplitude(sampleRate, attack, decay){
 }
 
 Amplitude.prototype = {
-	/** The sample rate of the effect. */
 	sampleRate:	44100,
-	/** The speed on which the amplitude metering reacts. */
 	attack:		0.01,
-	/** The speed on which the amplitude metering cools down. */
 	release:	0.01,
-	/** The current output of the effect. */
+	/* The current output of the effect. */
 	sample:		0,
 /**
  * Processes a sample, moving the effect one sample further in sample-time.

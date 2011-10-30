@@ -1,13 +1,14 @@
-// Adapted from http://www.musicdsp.org/archive.php?classid=4#139
-//#effect BitCrusher
-
 /**
- * Creates a Bit Crusher Effect
+ * Creates a Bit Crusher Effect.
+ * Adapted from http://www.musicdsp.org/archive.php?classid=4#139
  * 
- * @constructor
- * @this {BitCrusher}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} bits (Optional) Bit resolution of output signal. Defaults to 8.
+ * @effect
+ *
+ * @arg =!sampleRate
+ * @arg =!bits
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:UInt units:bits default:8 bits Bit resolution of output signal.
 */
 function BitCrusher(sampleRate, bits){
 	var	self	= this,

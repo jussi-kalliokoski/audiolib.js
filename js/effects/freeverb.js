@@ -1,17 +1,22 @@
-//#effect Reverb Freeverb
-
 /**
  * Creates a Reverb Effect, based on the Freeverb algorithm
  * 
- * @constructor
- * @this {Freeverb}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} channelCount (Optional)  Channel count. Defaults to 2.
- * @param {number} wet (Optional)  The gain of the reverb signal output. Defaults to 0.5.
- * @param {number} dry (Optional)  The gain of the original signal output. Defaults to 0.55.
- * @param {number} roomSize (Optional)  The size of the simulated reverb area. Defaults to 0.5. (0.0 - 1.0)
- * @param {number} damping (Optional) Reverberation damping parameter. Defaults to 0.2223. (0.0 - 1.0)
- * @param {Object} tuningOverride (Optional) Freeverb tuning overwrite object
+ * @effect Reverb
+ *
+ * @arg =!sampleRate
+ * @arg =!channelCount
+ * @arg =!wet
+ * @arg =!dry
+ * @arg =!roomSize
+ * @arg =!damping
+ * @arg {Object} !tuningOverride Freeverb tuning overwrite object.
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:UInt min:1 default:2 channelCount The channel count of the Reverb.
+ * @param type:Float default:0.5 wet The gain of the reverb signal output.
+ * @param type:Float default:0.55 dry The gain of the original signal output.
+ * @param type:Float min:0.0 max:1.0 default:0.5 roomSize The size of the simulated reverb area.
+ * @param type:Float min:0.0 max:1.0 default:0.2223 damping Reverberation damping parameter.
 */
 function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride){
 	var	self		= this;
@@ -150,7 +155,7 @@ Freeverb.prototype = {
  *
  * @constructor
  * @this {Freeverb.Tuning}
- * @param {Object} overrides The object containing the values to be overwritten.
+ * @arg {Object} overrides The object containing the values to be overwritten.
 */
 
 Freeverb.Tuning = function FreeverbTuning(overrides){
@@ -184,11 +189,15 @@ Freeverb.Tuning.prototype = {
 /**
  * Creates an All-Pass Filter Effect, based on the Freeverb APF.
  * 
- * @constructor
- * @this {Freeverb.AllPassFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} delaySize Size (in samples) of the delay line buffer.
- * @param {number} feedback (Optional) Amount of feedback (0.0-1.0). Defaults to 0.5 (Freeverb default)
+ * @name AllPassFilter
+ * @subeffect Freeverb FreeverbAllPassFilter
+ *
+ * @arg =!sampleRate
+ * @arg {number} default:500 !delaySize Size (in samples) of the delay line buffer.
+ * @arg =!feedback
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float min:0.0 max:1.0 default:0.5 feedback Amount of feedback.
 */
 Freeverb.AllPassFilter = function AllPassFilter(sampleRate, delaySize, feedback){
 	var	self	= this;

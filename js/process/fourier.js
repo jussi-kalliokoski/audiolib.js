@@ -1,7 +1,3 @@
-/**
- * Adapted from DSP.js https://github.com/corbanbrook/dsp.js/blob/master/dsp.js
-*/
-
 this.FourierTransform = (function(){
 
 var	sin		= Math.sin,
@@ -16,9 +12,10 @@ var	sin		= Math.sin,
 
 /**
  * A general purpose FourierTransform class, from which FFT and others inherit from.
+ * Adapted from DSP.js https://github.com/corbanbrook/dsp.js/blob/master/dsp.js
  *
- * @param {Number} sampleRate The sample rate of the FFT.
- * @param {Number} bufferSize The buffer size of the FFT. Must be a power of 2.
+ * @arg {Number} sampleRate The sample rate of the FFT.
+ * @arg {Number} bufferSize The buffer size of the FFT. Must be a power of 2.
 */
 
 function FourierTransform(sampleRate, bufferSize){

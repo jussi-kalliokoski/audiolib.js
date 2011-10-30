@@ -1,13 +1,18 @@
-//#control StepSequencer
 /**
  * Creates a StepSequencer.
  *
- * @constructor
- * @this {StepSequencer}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} stepLength (Optional) Step Length (ms).
- * @param {Array} steps (Optional) Array of steps (unsigned double) for the sequencer to iterate.
- * @param {number} attack (Optional) Attack.
+ * @control
+ *
+ * @arg =!sampleRate
+ * @arg =!stepLength
+ * @arg =!steps
+ * @arg =!attack
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float min:0 units:ms default:200 stepLength The time a single step of the sequencer lasts.
+ * @param type:Array<Float> default:0 steps Array of steps (positive float) for the sequencer to iterate.
+ * @param type:Float min:0.0 max:1.0 default:0.0 attack The time the linear transition between the steps. Measured in steps.
+ * @param type:Float default:0.0 phase The current phase of the sequencer.
 */
 function StepSequencer(sampleRate, stepLength, steps, attack){
 	var	self	= this,
@@ -20,18 +25,13 @@ function StepSequencer(sampleRate, stepLength, steps, attack){
 }
 
 StepSequencer.prototype = {
-	/** The sample rate of the step sequencer */
 	sampleRate:	44100,
-	/** The length a single step of the step sequencer, in ms */
 	stepLength:	200,
-	/** An array of the steps of the step sequencer */
 	steps:		null,
-	/** The current value of the step sequencer */
-	value:		0,
-	/** Transition time between steps, measured in steps */
 	attack:		0,
-	/** The current phase of the step sequencer */
 	phase:		0,
+	/* The current value of the step sequencer */
+	value:		0,
 
 /**
  * Moves the step sequencer one sample further in sample time.

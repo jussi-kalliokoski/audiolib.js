@@ -1,41 +1,42 @@
 /**
  * Creates a dynamic amplitude limiter.
  *
- * Requires Amplitude.
+ * Requires [[Amplitude]].
+ * 
+ * @effect
  *
- * @constructor
- * @this Limiter
- * @param {Number} sampleRate The sample rate of the limiter.
- * @param {Number} threshold The amplitude threshold after which to start limiting.
- * @param {Number} attack The speed on which the amplitude metering reacts.
- * @param {Number} decay The speed on which the amplitude metering cools down.
+ * @arg =!sampleRate
+ * @arg =!threshold
+ * @arg =!attack
+ * @arg =!release
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float min:0.0 default:0.95 threshold The amplitude threshold after which to start limiting.
+ * @param type:Float min:0.0 default:0.01 attack The speed on which the amplitude metering reacts.
+ * @param type:Float min:0.0 default:0.01 release The speed on which the amplitude metering cools down.
 */
-function Limiter(sampleRate, threshold, attack, decay){
+function Limiter(sampleRate, threshold, attack, release){
 	this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 	this.threshold		= isNaN(threshold) ? this.threshold : threshold;
 	this.attack		= isNaN(attack) ? this.attack : attack;
-	this.decay		= isNaN(decay) ? this.decay : decay;
-	this._amplitude		= new audioLib.Amplitude(this.sampleRate, this.attack, this.decay);
+	this.release		= isNaN(release) ? this.release : release;
+	this._amplitude		= new audioLib.Amplitude(this.sampleRate, this.attack, this.release);
 }
 
 Limiter.prototype = {
-	/** The sample rate of the effect. */
 	sampleRate:	44100,
-	/** The Amplitude meter on which the limiting is based. */
-	__amplitude:	null,
-	/** The amplitude threshold after which to start limiting. */
 	threshold:	0.95,
-	/** The speed on which the amplitude metering reacts. */
 	attack:		0.01,
-	/** The speed on which the amplitude metering cools down. */
 	release:	0.01,
-	/** The current output of the effect. */
+	/* The Amplitude meter on which the limiting is based. */
+	__amplitude:	null,
+	/* The current output of the effect. */
 	sample:		0,
 /**
  * Processes a sample, moving the effect one sample further in sample-time.
  *
- * @param {Float32} sample The sample to process.
- * @param {Uint} channel The channel on which the sample is. (Only if multi-channel)
+ * @arg {Float32} sample The sample to process.
+ * @arg {Uint} channel The channel on which the sample is. (Only if multi-channel)
  * @return {Float32} The current output of the effect. (Only if single-channel)
 */
 	pushSample: function(s){
@@ -46,7 +47,7 @@ Limiter.prototype = {
 /**
  * Returns the current output of the effect.
  *
- * @param {Uint} channel The channel for which to get the sample.
+ * @arg {Uint} channel The channel for which to get the sample.
  * @return {Float32} The current output of the effect.
 */
 	getMix: function(){
@@ -55,8 +56,8 @@ Limiter.prototype = {
 /**
  * Sets a parameter of the effect, making necessary relative calculations.
  *
- * @param {String} param The parameter name.
- * @param {Object} value The new value of the parameter.
+ * @arg {String} param The parameter name.
+ * @arg {Object} value The new value of the parameter.
 */
 	setParam: function(param, value){
 		switch(param){
