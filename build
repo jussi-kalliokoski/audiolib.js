@@ -10,10 +10,10 @@ function print(){
 	});
 }
 
-/*process.on('uncaughtException', function(e){
+process.on('uncaughtException', function(e){
 	print(e.toString());
 	process.exit(1);
-});*/
+});
 
 function _path(){
 	return [].slice.call(arguments).map(function(a){return/^(.+)\/?$/.exec(a)[1]}).join('/');
@@ -205,6 +205,7 @@ function builderContext(s){
 				!this.assignName && this.onfinish(function(){
 					this.assignName = this.name;
 				});
+				this[name] = true;
 				builder.variables[name + 's'].push(this);
 			}
 		}, {
@@ -216,6 +217,8 @@ function builderContext(s){
 				!this.name && !this.assignName && this.onfinish(function(){
 					this.assignName = args[0] + this.name;
 				});
+				this[name] = true;
+				this['sub' + name] = true;
 				builder.variables['sub' + name + 's'].push(this);
 			}
 		});

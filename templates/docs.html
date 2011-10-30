@@ -2,18 +2,103 @@
 <html>
 	<head>
 		<title>audiolib.js documentation</title>
+		<script src="https://raw.github.com/github/github-flavored-markdown/gh-pages/scripts/showdown.js"></script>
+		<style>
+ul.arglist > li > span.type {
+	font-weight:	bold;
+	color:		darkgreen;
+}
+ul.arglist > li > span.optional {
+	font-style:	italic;
+	color:		darkgray;
+}
+ul.arglist > li > span.description{
+	font-style:	italic;
+	margin-left:	5px;
+}
+		</style>
 	</head>
 	<body>
 		<script>
-var documentation = INSERT_DOCUMENTATION_HERE;
+var documentation	= INSERT_DOCUMENTATION_HERE;
+
+var components		= [];
+var effects		= [];
+var processors		= [];
+var generators		= [];
+var controls		= [];
+var markdown		= typeof Showdown === 'undefined' ? null : new Showdown.converter;
+
+function FuncToString(){
+	return this.assignName;
+}
+
+function parseText(text){
+	return (typeof markdown === 'undefined' ? text.split('\n').join('<br/>') : markdown.makeHtml(text)).replace(/\[\[([^\]]+)\]\]/g, function(a, b){
+		return '<a href="' + b + '">' + b + '</a>';
+	});
+}
+
 documentation.forEach(function(func){
 	if (!func.assignName) return;
-	var elem = document.createElement('h1');
+	func.effect && effects.push(func);
+	func.processor && processors.push(func);
+	func.generator && generators.push(func);
+	func.control && controls.push(func);
+	func.toString = FuncToString;
+});
+
+[effects, processors, generators, controls].forEach(function(func){
+	func.sort();
+});
+
+components = components.concat(effects, processors, generators, controls);
+
+components.forEach(function(func){
+	var elem = document.createElement('section');
+	elem.classList.add('component');
+	func.effect && elem.classList.add('effect');
+	func.processor && elem.classList.add('processor');
+	func.generator && elem.classList.add('generator');
+	func.control && elem.classList.add('control');
+
+	var html = '<h2>' + func.assignName + '</h2>';
+	html += '<p>' + parseText(func.text) + '</p>';
+
+	if (func.arglist) {
+		html += '<h3>Arguments</h3>';
+		html += '<ul class="arglist">';
+		func.arglist.forEach(function(arg){
+			var info = arg.assignsToClass ? func.params.filter(function(param){
+				return arg.name === param.name;
+			})[0] || arg : arg;
+			html += '<li';
+			var k;
+			for (k in info) {
+				if (typeof info[k] === 'string') {
+					html += ' data-' + k + '="' + info[k] + '"'
+				}
+			}
+			html += '>';
+			if (arg.optional) html += '<span class="optional">Optional</span> ';
+			if (info.type) html += '<span class="type">' + info.type + '</span> ';
+			html += '<span class="name">' + info.name + '</span> ';
+			html += '<span class="description">' + info.description + '</span> ';
+		});
+		html += '</ul>';
+	}
+
+	var groups = [];
+	['effect', 'processor', 'generator', 'control'].forEach(function(name){
+		func[name] && groups.push(name);
+		func['sub' + name] && groups.push('sub' + name);
+	});
+	if (groups.length) html += '<h3>Groups</h3><ul class="groups"><li>' + groups.join('</li><li>') + '</li></ul>';
+
+	elem.innerHTML = html;
+
+	func.elem = elem;
 	document.body.appendChild(elem);
-	elem.innerHTML = func.assignName;
-	elem = document.createElement('p');
-	document.body.appendChild(elem);
-	elem.innerHTML = func.text;
 });
 		</script>
 	</body>
