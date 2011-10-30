@@ -223,9 +223,81 @@ function builderContext(s){
 
 	group('generator', 'effect', 'control', 'processor');
 
+	cp.commands.push({
+		name: 'param',
+		exec: function(args){
+			if (!args) return;
+			var	params	= this.params = this.params || [],
+				p	= {},
+				s, x;
+			while (s = /^([^\s]+)\s*/.exec(args)){
+				args	= args.substr(s[0].length);
+				s	= s[1];
+
+				x	= /\{(.+)\}/.exec(s);
+				if (x) {
+					p.type = x[1];
+					continue;
+				}
+
+				x	= /(.+):(.*)/.exec(s);
+				if (x) {
+					p[x[1]] = x[2] || true;
+					continue;
+				}
+
+				p.name		= s;
+				p.description	= args;
+				args		= '';
+				break;
+			}
+			params.push(p);
+		}
+	}, {
+		name: 'arg',
+		exec: function(args){
+			if (!args) return;
+			var	arglist	= this.arglist = this.arglist || [],
+				p	= {},
+				s, x;
+			while (s = /^([^\s]+)\s*/.exec(args)){
+				args	= args.substr(s[0].length);
+				s	= s[1];
+
+				x	= /\{(.+)\}/.exec(s);
+				if (x) {
+					p.type = x[1];
+					continue;
+				}
+
+				x	= /(.+):(.*)/.exec(s);
+				if (x) {
+					p[x[1]] = x[2] || true;
+					continue;
+				}
+
+				while (/^[^\w]/.exec(s)) {
+					switch(s[0]) {
+					case '!':
+						p.optional = true; break;
+					case '=':
+						p.assignsToClass = true; break;
+					}
+					s = s.substr(1);
+				}
+				p.name		= s;
+				p.description	= args;
+				args		= '';
+				break;
+			}
+			arglist.push(p);
+		}
+	});
+
 	builder.group = group;
 
 	builder.addPostProcessor(cp);
+	builder.commentParser = cp;
 
 	return builder;
 }
@@ -296,9 +368,9 @@ var updatables = {
 				builder.run(read(['js', dir, f]), _path(dir, f));
 			});
 		});
-
-		// TODO: Create a doc generator script?
-		print('Building the docs is not possible the yet. Wanna contribute?');
+		var docs = JSON.stringify(builder.commentParser.comments, null, '\t');
+		save('lib/docs.html', read('templates/docs.html').split('INSERT_DOCUMENTATION_HERE').join(docs));
+		print('Documentation updated.');
 	},
 };
 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>audiolib.js documentation</title>
+	</head>
+	<body>
+		<script>
+var documentation = INSERT_DOCUMENTATION_HERE;
+documentation.forEach(function(func){
+	if (!func.assignName) return;
+	var elem = document.createElement('h1');
+	document.body.appendChild(elem);
+	elem.innerHTML = func.assignName;
+	elem = document.createElement('p');
+	document.body.appendChild(elem);
+	elem.innerHTML = func.text;
+});
+		</script>
+	</body>
+</html>
