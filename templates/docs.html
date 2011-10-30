@@ -4,6 +4,80 @@
 		<title>audiolib.js documentation</title>
 		<script src="https://raw.github.com/github/github-flavored-markdown/gh-pages/scripts/showdown.js"></script>
 		<style>
+header {
+	position:		absolute;
+	left:			0;
+	top:			0;
+	width:			100%;
+	height:			10%;
+	background-color:	black;
+	box-shadow:		0 0 10px black;
+	color:			white;
+	text-shadow:		0 0 3px rgba(177,177,177,0.7);
+}
+
+header > * {
+	float:		left;
+	position:	relative;
+	margin-left:	10px;
+}
+
+#search {
+	float: right;
+}
+
+nav {
+	position:		absolute;
+	left:			72%;
+	top:			12%;
+	width:			25%;
+	max-height:		86%;
+	background-color:	#f5ee82;
+	color:			black;
+	box-shadow:		0 0 10px #f5ee82;
+	border-radius:		10px;
+}
+
+nav a {
+	display:		block;
+	text-align:		center;
+	border-bottom:		1px solid rgba(0,0,0,0.5);
+	padding-top:		3px;
+	padding-bottom:		3px;
+	color:			black;
+	text-shadow:		0 0 1px rgba(0,0,0,0.5);
+	-webkit-transition:	background-color 0.5s ease-in-out;
+	-moz-transition:	background-color 0.5s ease-in-out;
+	-ms-transition:		background-color 0.5s ease-in-out;
+	-o-transition:		background-color 0.5s ease-in-out;
+	transition:		background-color 0.5s ease-in-out;
+}
+
+nav a:first-child {
+	border-radius: 10px 10px 0 0;
+}
+
+nav a:last-child {
+	border: none;
+	border-radius: 0 0 10px 10px;
+}
+
+nav a:hover {
+	background-color: rgba(0,0,0,0.4);
+}
+
+div.content {
+	position:		absolute;
+	left:			0;
+	top:			12%;
+	width:			50%;
+	height:			86%;
+	padding-right:		10%;
+	padding-left:		10%;
+	overflow:		auto;
+}
+
+
 ul.arglist > li > span.type {
 	font-weight:	bold;
 	color:		darkgreen;
@@ -16,9 +90,24 @@ ul.arglist > li > span.description{
 	font-style:	italic;
 	margin-left:	5px;
 }
+
+section {
+}
+
+section.hidden {
+	display: none;
+}
 		</style>
 	</head>
 	<body>
+		<div class="content">
+		</div>
+		<header>
+			<h1>audiolib.js</h1>
+			<h2>documentation</h2>
+			<input type="search" id="search" placeholder="Search!" />
+		</header>
+		<nav></nav>
 		<script>
 var documentation	= INSERT_DOCUMENTATION_HERE;
 
@@ -75,6 +164,15 @@ documentation.forEach(function(func){
 		methods.push(func);
 	}
 });
+
+var	content	= document.querySelector('div.content');
+var	nav	= document.querySelector('nav');
+function addNav(name) {
+	var elem	= document.createElement('a');
+	elem.href	= name;
+	elem.innerHTML	= name;
+	nav.appendChild(elem);
+}
 
 components.forEach(function(func){
 	var elem = document.createElement('section');
@@ -150,11 +248,34 @@ components.forEach(function(func){
 	});
 	if (groups.length) html += '<h3>Groups</h3><ul class="groups"><li>' + groups.join('</li><li>') + '</li></ul>';
 
+	if (func.generator || func.control) {
+		html += '<div class="inherits">Inherits <a href="Generator">Generator</a>.';
+	}
+
+	if (func.effect || func.processor) {
+		html += '<div class="inherits">Inherits <a href="Effect">Effect</a>.';
+	}
+
 	elem.innerHTML = html;
 
 	func.elem = elem;
-	document.body.appendChild(elem);
+	content.appendChild(elem);
+
+	addNav(func.assignName || func.name);
 });
+
+document.getElementById('search').oninput = function(){
+	var src = this.value.toLowerCase();
+	components.forEach(function(c){
+		if (!src) { c.elem.classList.remove('hidden'); return; }
+		if (c.name.toLowerCase().indexOf(src) !== -1) {
+			c.elem.classList.remove('hidden');
+		} else {
+			c.elem.classList.add('hidden');
+		}
+	});
+	content.scrollTop = 0;
+};
 		</script>
 	</body>
 </html>
