@@ -1,3 +1,15 @@
+/**
+ * Buffer effect class provides a multi-channel interface for single channel effects.
+ *
+ * @class
+ *
+ * @arg type:ComponentClass The component class to create a buffer effect of.
+ * @arg =!channelCount
+ * @arg type=ArgumentArray !args An array of arguments to feed to the created effects.
+ *
+ * @param type:UInt min:2 units=channels channelCount The channel count of the buffer effect.
+ * @param type:Float mix The mix between dry and wet for the effect.
+*/
 function BufferEffect(effect, channelCount, args){
 	this.channelCount	= isNaN(channelCount) ? this.channelCount : channelCount;
 	this.effects		= [];

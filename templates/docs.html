@@ -27,6 +27,7 @@ var effects		= [];
 var processors		= [];
 var generators		= [];
 var controls		= [];
+var classes		= [];
 var markdown		= typeof Showdown === 'undefined' ? null : new Showdown.converter;
 
 function FuncToString(){
@@ -40,11 +41,12 @@ function parseText(text){
 }
 
 documentation.forEach(function(func){
-	if (!func.assignName) return;
+	if (!func.assignName && !func.class) return;
 	func.effect && effects.push(func);
 	func.processor && processors.push(func);
 	func.generator && generators.push(func);
 	func.control && controls.push(func);
+	func.class && classes.push(func);
 	func.toString = FuncToString;
 });
 
@@ -52,7 +54,27 @@ documentation.forEach(function(func){
 	func.sort();
 });
 
-components = components.concat(effects, processors, generators, controls);
+components = components.concat(effects, processors, generators, controls, classes);
+
+function findByParam(arr, name, value) {
+	return arr.filter(function(obj){
+		return obj[name] === value;
+	});
+}
+
+// Just orphans.
+var methods = [];
+
+documentation.forEach(function(func){
+	if (!func.method) return;
+	var parent = func.methodOf && findByParam(components, 'name', func.methodOf)[0];
+	if (parent) {
+		parent.methods = parent.methods || [];
+		parent.methods.push(func);
+	} else {
+		methods.push(func);
+	}
+});
 
 components.forEach(function(func){
 	var elem = document.createElement('section');
@@ -62,16 +84,14 @@ components.forEach(function(func){
 	func.generator && elem.classList.add('generator');
 	func.control && elem.classList.add('control');
 
-	var html = '<h2>' + func.assignName + '</h2>';
+	var html = '<h2>' + (func.assignName || func.name) + '</h2>';
 	html += '<p>' + parseText(func.text) + '</p>';
 
 	if (func.arglist) {
 		html += '<h3>Arguments</h3>';
 		html += '<ul class="arglist">';
 		func.arglist.forEach(function(arg){
-			var info = arg.assignsToClass ? func.params.filter(function(param){
-				return arg.name === param.name;
-			})[0] || arg : arg;
+			var info = arg.assignsToClass ? findByParam(func.params, 'name', arg.name)[0] || arg : arg;
 			html += '<li';
 			var k;
 			for (k in info) {
@@ -86,6 +106,41 @@ components.forEach(function(func){
 			html += '<span class="description">' + info.description + '</span> ';
 		});
 		html += '</ul>';
+	}
+
+	if (func.methods) {
+		html += '<h3>Methods</h3>';
+		func.methods.forEach(function(method){
+			html += '<div class="method"><h4>' + method.name + '</h4><p>' + method.text + '</p>';
+			if (method.arglist) {
+				html += '<h5>Arguments</h5>';
+				html += '<ul class="arglist">';
+				method.arglist.forEach(function(arg){
+					var info = arg.assignsToClass ? findByParam(func.params, 'name', arg.name)[0] || arg : arg;
+					html += '<li';
+					var k;
+					for (k in info) {
+						if (typeof info[k] === 'string') {
+							html += ' data-' + k + '="' + info[k] + '"'
+						}
+					}
+					html += '>';
+					if (arg.optional) html += '<span class="optional">Optional</span> ';
+					if (info.type) html += '<span class="type">' + info.type + '</span> ';
+					html += '<span class="name">' + info.name + '</span> ';
+					html += '<span class="description">' + info.description + '</span> ';
+				});
+				html += '</ul>';
+			}
+
+			if (method.returns) {
+				html += '<div class="return">';
+				if (method.returns.type) html += '<span class="type">' + method.returns.type + '</span> ';
+				html += '<span class="description">' + method.returns.description + '</span> ';
+				html += '</div>';
+			}
+			html += '</div>';
+		});
 	}
 
 	var groups = [];

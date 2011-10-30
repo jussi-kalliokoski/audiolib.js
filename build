@@ -10,11 +10,6 @@ function print(){
 	});
 }
 
-process.on('uncaughtException', function(e){
-	print(e.toString());
-	process.exit(1);
-});
-
 function _path(){
 	return [].slice.call(arguments).map(function(a){return/^(.+)\/?$/.exec(a)[1]}).join('/');
 }
@@ -295,6 +290,42 @@ function builderContext(s){
 			}
 			arglist.push(p);
 		}
+	}, {
+		name: 'return',
+		exec: function(args){
+			if (!args) return;
+			var	p	= {},
+				s, x;
+			while (s = /^([^\s]+)\s*/.exec(args)){
+				args	= args.substr(s[0].length);
+				s	= s[1];
+
+				x	= /\{(.+)\}/.exec(s);
+				if (x) {
+					p.type = x[1];
+					continue;
+				}
+
+				p.description	= args;
+				args		= '';
+				break;
+			}
+			this.returns = p;
+		}
+	}, {
+		name: 'method',
+		exec: function(args){
+			args = args ? args.split(/s+/) : [];
+			this.method = true;
+			if (args[0]) {
+				this.methodOf = args[0];
+			}
+		}
+	}, {
+		name: 'class',
+		exec: function(args){
+			this.class = true;
+		}
 	});
 
 	builder.group = group;
@@ -315,6 +346,12 @@ var	args	= paramon.readFormat(process.argv, {
 	usage:	'command [options]',
 	params:	[
 		{
+			name:	'debug',
+			args:	['--debug', '-d'],
+			desc:	'Run in debug mode (more verbose error messages).',
+			maxParams: 0,
+		},
+		{
 			name:	'update',
 			args:	['update', '-u'],
 			desc:	'Update target (wrappers).',
@@ -329,6 +366,11 @@ var	args	= paramon.readFormat(process.argv, {
 			maxParams: -1,
 		}
 	],
+});
+
+!args.debug && process.on('uncaughtException', function(e){
+	print(e.toString());
+	process.exit(1);
 });
 
 args['$!stray'].forEach(function(e){
@@ -354,6 +396,9 @@ var updatables = {
 				builder.run(read(['js', dir, f]), _path(dir, f));
 			});
 		});
+		ls('js', /^api-(\w+-?)+\.js$/).forEach(function(file){
+			builder.run(read(['js', file]), _path('js', file));
+		});
 
 		save('js/wrapper-start.js', builder.run(read('templates/wrapper-start.js')));
 		save('js/wrapper-end.js', builder.run(read('templates/wrapper-end.js')));
@@ -371,6 +416,10 @@ var updatables = {
 				builder.run(read(['js', dir, f]), _path(dir, f));
 			});
 		});
+		ls('js', /^api-(\w+-?)+\.js$/).forEach(function(file){
+			builder.run(read(['js', file]), _path('js', file));
+		});
+
 		var docs = JSON.stringify(builder.commentParser.comments, null, '\t');
 		save('lib/docs.html', read('templates/docs.html').split('INSERT_DOCUMENTATION_HERE').join(docs));
 		print('Documentation updated.');
