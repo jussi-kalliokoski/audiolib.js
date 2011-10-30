@@ -3,9 +3,9 @@
  *
  * @class
  *
- * @arg type:ComponentClass The component class to create a buffer effect of.
+ * @arg type:ComponentClass effect The component class to create a buffer effect of.
  * @arg =!channelCount
- * @arg type=ArgumentArray !args An array of arguments to feed to the created effects.
+ * @arg type:ArgumentArray !args An array of arguments to feed to the created effects.
  *
  * @param type:UInt min:2 units=channels channelCount The channel count of the buffer effect.
  * @param type:Float mix The mix between dry and wet for the effect.

@@ -105,7 +105,7 @@ section.hidden {
 		<header>
 			<h1>audiolib.js</h1>
 			<h2>documentation</h2>
-			<input type="search" id="search" placeholder="Search!" />
+			<input type="search" id="search" placeholder="Search!" autofocus />
 		</header>
 		<nav></nav>
 		<script>
@@ -268,7 +268,7 @@ document.getElementById('search').oninput = function(){
 	var src = this.value.toLowerCase();
 	components.forEach(function(c){
 		if (!src) { c.elem.classList.remove('hidden'); return; }
-		if (c.name.toLowerCase().indexOf(src) !== -1) {
+		if ((c.assignName || c.name).toLowerCase().indexOf(src) !== -1) {
 			c.elem.classList.remove('hidden');
 		} else {
 			c.elem.classList.add('hidden');

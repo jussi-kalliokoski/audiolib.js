@@ -126,7 +126,7 @@ BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
  * @subeffect BiquadFilter BiquadAllPassFilter
  *
  * @arg =sampleRate
- * @arg =cutoff
+ * @arg =f0
  * @arg =Q
  *
  * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
