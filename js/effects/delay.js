@@ -59,10 +59,13 @@ Delay.prototype = {
 /**
  * Changes the time value of the Delay and resamples the delay line accordingly.
  *
+ * Requires sink.js
+ *
+ * @method Delay
+ *
  * @arg {Uint} time The new time value for the Delay.
  * @return {AudioBuffer} The new delay line audio buffer.
 */
-// Requires Sink
 	resample: function(time){
 		var	self	= this,
 			ratio	= self.time / time;

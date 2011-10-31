@@ -94,4 +94,25 @@ GeneratorClass.prototype = {
 	setParam: function(param, value){
 		this[param] = value;
 	},
+/**
+ * Generates one sample to all available channels, moving the generator one sample forward in the sample time.
+ *
+ * @method Generator
+*/
+	generate: function(){},
+/**
+ * Retrieves the current output of the generator.
+ *
+ * @method Generator
+ *
+ * @arg {UInt} default:0 !channel The channel to retrieve the output of. This is only applicable to multi-channel generators.
+ * @return {Float} The current output of the generator.
+*/
+	getMix: function(){},
+/**
+ * Resets the component to it's initial state, if possible.
+ *
+ * @method Generator
+*/
+	reset: function(){},
 };

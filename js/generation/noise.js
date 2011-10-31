@@ -51,10 +51,24 @@ Noise.prototype = {
 	getMix: function(){
 		return this.value;
 	},
+/**
+ * Returns the white noise output of the noise generator.
+ *
+ * @method Noise
+ *
+ * @return {Float} White noise.
+*/
 	white: function(){
 		var r = Math.random();
 		return (r * this.c1 - this.c4) * this.c3;
 	},
+/**
+ * Returns the pink noise output of the noise generator.
+ *
+ * @method Noise
+ *
+ * @return {Float} Pink noise.
+*/
 	pink: function(){
 		var	w	= this.white();
 		this.b0 = 0.997 * this.b0 + 0.029591 * w;
@@ -65,6 +79,13 @@ Noise.prototype = {
 		this.b5 = 0.250 * this.b5 + 0.255784 * w;
 		return 0.55 * (this.b0 + this.b1 + this.b2 + this.b3 + this.b4 + this.b5);
 	},
+/**
+ * Returns the brown noise output of the noise generator.
+ *
+ * @method Noise
+ *
+ * @return {Float} Brown noise.
+*/
 	brown: function(){
 		var	w	= this.white();
 		this.brownQ	= (this.q1 * w + this.q0 * this.brownQ);

@@ -315,7 +315,7 @@ function builderContext(s){
 	}, {
 		name: 'method',
 		exec: function(args){
-			args = args ? args.split(/s+/) : [];
+			args = args ? args.split(/\s+/g) : [];
 			this.method = true;
 			if (args[0]) {
 				this.methodOf = args[0];

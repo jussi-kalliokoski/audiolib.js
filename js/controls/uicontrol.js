@@ -43,6 +43,8 @@ UIControl.prototype = {
 /**
  * Sets the value of the UI control, latency balanced
  *
+ * @method UIControl
+ *
  * @param {Number} value The new value.
 */
 	setValue:	function(value){

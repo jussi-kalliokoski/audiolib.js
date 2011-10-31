@@ -65,6 +65,8 @@ ADSREnvelope.prototype = {
 /**
  * Sets the state of the envelope's gate.
  *
+ * @method ADSREnvelope
+ * 
  * @arg {Boolean} isOpen The new state of the gate.
 */
 	triggerGate: function(isOpen){

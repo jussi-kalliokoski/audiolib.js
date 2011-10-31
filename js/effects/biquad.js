@@ -6,13 +6,18 @@
  * @effect
  *
  * @arg =sampleRate
+ * @arg =b0
+ * @arg =b1
+ * @arg =b2
+ * @arg =a1
+ * @arg =a2
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
  * @param {number} b0 Biquadratic difference equation parameter
  * @param {number} b1 Biquadratic difference equation parameter
  * @param {number} b2 Biquadratic difference equation parameter
  * @param {number} a1 Biquadratic difference equation parameter
  * @param {number} a2 Biquadratic difference equation parameter
- *
- * @param type:UInt units:Hz sampleRate Sample Rate the apparatus operates on.
 */
 function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
 	this.reset.apply(this, arguments)
@@ -62,7 +67,6 @@ BiquadFilter.BiquadFilterClass.prototype = {
 	}
 };
 
-//#subeffect BiquadFilter LowPass BiquadLowPassFilter
 /**
  * Creates a Biquad Low-Pass Filter Effect
  * 

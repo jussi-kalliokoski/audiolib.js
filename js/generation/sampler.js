@@ -39,8 +39,10 @@ Sampler.prototype = {
 /**
  * Adds a new voice to the sampler and disbands voices that go past the maxVoices limit.
  *
- * @arg {Number} frequency Determines the frequency the voice should be played at, relative to the Sampler's pitch. (Optional)
- * @arg {Number} velocity The relative volume of the voice. (Optional)
+ * @method Sampler
+ *
+ * @arg {Float} min:0.0 !frequency Determines the frequency the voice should be played at, relative to the Sampler's pitch.
+ * @arg {Float} default:1.0 !velocity The relative volume of the voice.
  * @return {Voice} The voice object created.
 */
 	noteOn: function(frequency, velocity){
@@ -97,8 +99,10 @@ Sampler.prototype = {
 /**
  * Load an AudioData object to the sampler and resample if needed.
  *
+ * @method Sampler
+ *
  * @arg {AudioData} data The AudioData object representation of the sample to be loaded.
- * @arg {Boolean} resample Determines whether to resample the sample to match the sample rate of the Sampler.
+ * @arg {Boolean} !resample Determines whether to resample the sample to match the sample rate of the Sampler.
 */
 	load: function(data, resample){
 		var	self	= this,
@@ -113,5 +117,5 @@ Sampler.prototype = {
 		self.samples	= samples;
 		self.data	= data;
 		self.sampleSize = samples[0].length;
-	}
+	},
 };

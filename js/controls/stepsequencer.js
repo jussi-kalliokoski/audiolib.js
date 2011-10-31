@@ -66,7 +66,11 @@ StepSequencer.prototype = {
 	getMix: function(){
 		return this.value;
 	},
-/** Triggers the gate for the step sequencer, resetting its phase to zero. */
+/**
+ * Triggers the gate for the step sequencer, resetting its phase to zero.
+ *
+ * @method StepSequencer
+*/
 	triggerGate: function(){
 		this.phase = 0;
 	}

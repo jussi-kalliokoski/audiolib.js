@@ -53,7 +53,7 @@ proto = Oscillator.prototype = {
 /**
  * Returns the output signal sample of the Oscillator.
  *
- * @return {Float32} The output signal sample.
+ * @return {Float} The output signal sample.
 */
 	getMix: function(){
 		return this[this.waveShape]();
@@ -61,7 +61,7 @@ proto = Oscillator.prototype = {
 /**
  * Returns the relative phase of the Oscillator (pulsewidth, phaseoffset, etc applied).
  *
- * @return {Float32} The relative phase.
+ * @return {Float} The relative phase.
 */
 	getPhase: function(){
 		return this._p;
@@ -69,7 +69,7 @@ proto = Oscillator.prototype = {
 /**
  * Resets the Oscillator phase (AND RELATIVE PHASE) to a specified value.
  *
- * @arg {Float32} phase The phase to reset the values to. (Optional, defaults to 0).
+ * @arg {Float} phase The phase to reset the values to. (Optional, defaults to 0).
 */
 	reset: function(p){
 		this.phase = this._p = isNaN(p) ? 0 : p;
@@ -77,7 +77,9 @@ proto = Oscillator.prototype = {
 /**
  * Specifies a wavetable for the Oscillator.
  *
- * @arg{AudioBuffer} wavetable The wavetable to be assigned to the Oscillator.
+ * @method Oscillator
+ *
+ * @arg {Array<Float>} wavetable The wavetable to be assigned to the Oscillator.
  * @return {Boolean} Succesfulness of the operation.
 */
 	setWavetable: function(wt){
@@ -86,49 +88,73 @@ proto = Oscillator.prototype = {
 	},
 /**
  * Returns sine wave output of the Oscillator.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.0, 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.0, 0.5
 	sine: function(){
 		return Math.sin(this._p * FullPI);
 	},
 /**
  * Returns triangle wave output of the Oscillator, phase zero representing the top of the triangle.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.25, 0.75
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.25, 0.75
 	triangle: function(){
 		return this._p < 0.5 ? 4 * this._p - 1 : 3 - 4 * this._p;
 	},
 /**
  * Returns square wave output of the Oscillator, phase zero being the first position of the positive side.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.0, 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.0, 0.5
 	square: function(){
 		return this._p < 0.5 ? -1 : 1;
 	},
 /**
  * Returns sawtooth wave output of the Oscillator, phase zero representing the negative peak.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.5
 	sawtooth: function(){
 		return 1 - this._p * 2;
 	},
 /**
  * Returns invert sawtooth wave output of the Oscillator, phase zero representing the positive peak.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.5
 	invSawtooth: function(){
 		return this._p * 2 - 1;
 	},
 /**
  * Returns pulse wave output of the Oscillator, phase zero representing slope starting point.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.125, 0.325
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.125, 0.325
 	pulse: function(){
 		return this._p < 0.5 ?
 			this._p < 0.25 ?
@@ -138,9 +164,13 @@ proto = Oscillator.prototype = {
 	},
 /**
  * Returns wavetable output of the Oscillator.
- * @return {Float32} Sample.
+ *
+ * Requires sink.js
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-	// Requires Sink
 	wavetable: function(){
 		return audioLib.Sink.interpolate(this.wavetable, this._p * this.wavetable.length);
 	},

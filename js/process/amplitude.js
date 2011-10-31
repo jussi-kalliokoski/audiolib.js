@@ -26,9 +26,9 @@ Amplitude.prototype = {
 /**
  * Processes a sample, moving the effect one sample further in sample-time.
  *
- * @param {Float32} sample The sample to process.
- * @param {Uint} channel The channel on which the sample is. (Only if multi-channel)
- * @return {Float32} The current output of the effect. (Only if single-channel)
+ * @arg {Float} sample The sample to process.
+ * @arg {UInt} channel The channel on which the sample is. (Only if multi-channel)
+ * @return {Float} The current output of the effect. (Only if single-channel)
 */
 	pushSample: function(s){
 		this.sample = Math.abs((s > this.sample ? this.attack : this.release) * (this.sample - s) + s);
@@ -37,8 +37,8 @@ Amplitude.prototype = {
 /**
  * Returns the current output of the effect.
  *
- * @param {Uint} channel The channel for which to get the sample.
- * @return {Float32} The current output of the effect.
+ * @arg {UInt} channel The channel for which to get the sample.
+ * @return {Float} The current output of the effect.
 */
 	getMix: function(){
 		return this.sample;

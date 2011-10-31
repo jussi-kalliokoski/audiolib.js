@@ -101,4 +101,10 @@ EffectClass.prototype = {
  * @return {Float} The current output of the effect.
 */
 	getMix: function(){},
+/**
+ * Resets the component to it's initial state, if possible.
+ *
+ * @method Effect
+*/
+	reset: function(){},
 };
