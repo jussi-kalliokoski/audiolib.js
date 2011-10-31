@@ -312,7 +312,7 @@ function navigate(name, addState){
 }
 
 function readURL(){
-	var name = /\/([a-z0-9_$]+)$/.exec(location.href);
+	var name = /\/([a-z0-9_$]+)$/i.exec(location.href);
 	return name && name[1];
 }
 
@@ -329,7 +329,7 @@ anchors.forEach(function(a){
 
 window.onpopstate = function(e){
 	var component = readURL();
-	component && navigate(component, true);
+	component && navigate(component);
 };
 
 (function(component){
