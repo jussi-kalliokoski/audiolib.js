@@ -36,6 +36,7 @@ nav {
 	color:			black;
 	box-shadow:		0 0 10px #f5ee82;
 	border-radius:		10px;
+	overflow:		auto;
 }
 
 nav a {
@@ -95,6 +96,21 @@ section {
 }
 
 section.hidden {
+	display: none;
+}
+
+div.infoBox {
+	position:		absolute;
+	width:			auto;
+	height:			auto;
+	padding:		4px;
+	background-color:	#f5ee82;
+	color:			black;
+	box-shadow:		0 0 10px #f5ee82;
+	border-radius:		10px;
+}
+
+div.infoBox.hidden {
 	display: none;
 }
 		</style>
@@ -264,7 +280,8 @@ components.forEach(function(func){
 	addNav(func.assignName || func.name);
 });
 
-document.getElementById('search').oninput = function(){
+var searchbox = document.getElementById('search');
+searchbox.oninput = function(){
 	var src = this.value.toLowerCase();
 	components.forEach(function(c){
 		if (!src) { c.elem.classList.remove('hidden'); return; }
@@ -276,6 +293,56 @@ document.getElementById('search').oninput = function(){
 	});
 	content.scrollTop = 0;
 };
+
+var title = document.title;
+
+function navigate(name, addState){
+	searchbox.value = name;
+	components.forEach(function(c){
+		if ((c.assignName || c.name) === name) {
+			c.elem.classList.remove('hidden');
+		} else {
+			c.elem.classList.add('hidden');
+		}
+	});
+	content.scrollTop = 0;
+	searchbox.focus();
+	searchbox.select();
+	addState && history.pushState({component: name}, title + ' : ' + name, name);
+}
+
+function readURL(){
+	var name = /\/([a-z0-9_$]+)$/.exec(location.href);
+	return name && name[1];
+}
+
+var anchors = [].slice.call(document.getElementsByTagName('a'));
+anchors.forEach(function(a){
+	var component = a.getAttribute('href');
+	if (!/^[a-z0-9_$]+$/i.exec(component)) return;
+
+	a.onclick = function(e){
+		e && e.preventDefault && e.preventDefault();
+		navigate(component, true);
+	};
+});
+
+window.onpopstate = function(e){
+	var component = readURL();
+	component && navigate(component, true);
+};
+
+(function(component){
+	component && navigate(component);
+}(readURL()));
+
+var	infoBox	= document.createElement('div');
+infoBox.classList.add('infobox', 'hidden');
+document.body.appendChild(infoBox);
+
+[].slice.call(document.querySelectorAll('ul.arglist>li')).forEach(function(li){
+	//TODO: Add a mouseover infobox for this, it should explain the min and max values, etc.
+});
 		</script>
 	</body>
 </html>
