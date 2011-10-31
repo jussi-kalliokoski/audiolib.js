@@ -420,6 +420,11 @@ var updatables = {
 			builder.run(read(['js', file]), _path('js', file));
 		});
 
+		builder.commentParser.comments.forEach(function(comment){
+			// This is probably unnecessary payload.
+			delete comment.body;
+		});
+
 		var docs = JSON.stringify(builder.commentParser.comments, null, '\t');
 		save('lib/docs.html', read('templates/docs.html').split('INSERT_DOCUMENTATION_HERE').join(docs));
 		print('Documentation updated.');
