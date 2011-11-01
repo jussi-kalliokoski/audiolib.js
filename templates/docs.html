@@ -23,19 +23,22 @@ header > * {
 }
 
 #search {
-	float: right;
+	float:			right;
+	margin:			8px;
+	padding:		5px;
+	border-radius:		8px;
+	outline:		none;
+	border:			1px solid gray;
 }
 
 nav {
 	position:		absolute;
-	left:			72%;
-	top:			12%;
-	width:			25%;
-	max-height:		86%;
-	background-color:	#f5ee82;
-	color:			black;
-	box-shadow:		0 0 10px #f5ee82;
-	border-radius:		10px;
+	right:			0;
+	top:			10%;
+	width:			28%;
+	height:			90%;
+	color:			white;
+	background-color:	#13161a;
 	overflow:		auto;
 }
 
@@ -45,26 +48,23 @@ nav a {
 	border-bottom:		1px solid rgba(0,0,0,0.5);
 	padding-top:		3px;
 	padding-bottom:		3px;
-	color:			black;
-	text-shadow:		0 0 1px rgba(0,0,0,0.5);
-	-webkit-transition:	background-color 0.5s ease-in-out;
-	-moz-transition:	background-color 0.5s ease-in-out;
-	-ms-transition:		background-color 0.5s ease-in-out;
-	-o-transition:		background-color 0.5s ease-in-out;
-	transition:		background-color 0.5s ease-in-out;
-}
-
-nav a:first-child {
-	border-radius: 10px 10px 0 0;
+	color:			white;
+	text-shadow:		0 0 1px rgba(255,255,255,0.5);
+	background-color:	#272d34;
+	box-shadow:		0 0 10px black inset;
+	-webkit-transition:	box-shadow 0.5s ease-in-out;
+	-moz-transition:	box-shadow 0.5s ease-in-out;
+	-ms-transition:		box-shadow 0.5s ease-in-out;
+	-o-transition:		box-shadow 0.5s ease-in-out;
+	transition:		box-shadow 0.5s ease-in-out;
 }
 
 nav a:last-child {
 	border: none;
-	border-radius: 0 0 10px 10px;
 }
 
 nav a:hover {
-	background-color: rgba(0,0,0,0.4);
+	box-shadow:	0 0 10px #5588dd inset;
 }
 
 div.content {
