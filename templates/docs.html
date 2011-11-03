@@ -48,20 +48,20 @@ nav {
 }
 
 nav a {
+	position:		relative;
 	display:		block;
 	text-align:		center;
 	text-decoration:	none;
-	border-bottom:		1px solid rgba(0,0,0,0.5);
 	padding-top:		3px;
 	padding-bottom:		3px;
 	margin-left:		15px;
 	margin-right:		15px;
-	margin-top:		3px;
+	margin-top:		4px;
 	color:			white;
 	text-shadow:		0 0 1px rgba(255,255,255,0.5);
 	background-color:	#272d34;
 	border-radius:		7px;
-	box-shadow:		0 0 10px black, 0 0 5px rgba(0,0,0,0.7) inset;
+	box-shadow:		0 0 10px black, 0 0 5px rgba(0,0,0,0.8) inset;
 	-webkit-transition:	box-shadow 0.5s ease-in-out;
 	-moz-transition:	box-shadow 0.5s ease-in-out;
 	-ms-transition:		box-shadow 0.5s ease-in-out;
@@ -69,12 +69,9 @@ nav a {
 	transition:		box-shadow 0.5s ease-in-out;
 }
 
-nav a:last-child {
-	border: none;
-}
-
 nav a:hover {
-	box-shadow:	0 0 10px black, 0 0 20px #5588dd inset;
+	box-shadow:	0 0 10px #5588dd, 0 0 20px #5588dd inset;
+	z-index:	1;
 }
 
 div.content {
