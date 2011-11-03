@@ -23,7 +23,7 @@ GeneratorClass.prototype = {
  *
  * @arg {Array<Float>} buffer The buffer to apply the effect to.
  * @arg {UInt} min:1 !channelCount The amount of channels the buffer has.
- * @arg {Array<Float>} default:buffer out The optional output buffer.
+ * @arg {Array<Float>} default:buffer !out The optional output buffer.
  * @return {Array<Float>} The output buffer.
 */
 	append: function(buffer, channelCount, out){

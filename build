@@ -232,13 +232,13 @@ function builderContext(s){
 				args	= args.substr(s[0].length);
 				s	= s[1];
 
-				x	= /\{(.+)\}/.exec(s);
+				x	= /^\{(.+)\}$/.exec(s);
 				if (x) {
 					p.type = x[1];
 					continue;
 				}
 
-				x	= /(.+):(.*)/.exec(s);
+				x	= /^(.+):(.*)$/.exec(s);
 				if (x) {
 					p[x[1]] = x[2] || true;
 					continue;
@@ -262,13 +262,13 @@ function builderContext(s){
 				args	= args.substr(s[0].length);
 				s	= s[1];
 
-				x	= /\{(.+)\}/.exec(s);
+				x	= /^\{(.+)\}$/.exec(s);
 				if (x) {
 					p.type = x[1];
 					continue;
 				}
 
-				x	= /(.+):(.*)/.exec(s);
+				x	= /^(.+):(.*)$/.exec(s);
 				if (x) {
 					p[x[1]] = x[2] || true;
 					continue;
@@ -300,7 +300,7 @@ function builderContext(s){
 				args	= args.substr(s[0].length);
 				s	= s[1];
 
-				x	= /\{(.+)\}/.exec(s);
+				x	= /^\{(.+)\}$/.exec(s);
 				if (x) {
 					p.type = x[1];
 					continue;

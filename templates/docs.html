@@ -15,7 +15,7 @@ header {
 	top:			0;
 	width:			100%;
 	height:			10%;
-	background-color:	black;
+	background-color:	#13161a;
 	box-shadow:		0 0 10px black;
 	color:			white;
 	text-shadow:		0 0 3px rgba(177,177,177,0.7);
@@ -54,10 +54,14 @@ nav a {
 	border-bottom:		1px solid rgba(0,0,0,0.5);
 	padding-top:		3px;
 	padding-bottom:		3px;
+	margin-left:		15px;
+	margin-right:		15px;
+	margin-top:		3px;
 	color:			white;
 	text-shadow:		0 0 1px rgba(255,255,255,0.5);
 	background-color:	#272d34;
-	box-shadow:		0 0 10px black inset;
+	border-radius:		7px;
+	box-shadow:		0 0 10px black, 0 0 5px rgba(0,0,0,0.7) inset;
 	-webkit-transition:	box-shadow 0.5s ease-in-out;
 	-moz-transition:	box-shadow 0.5s ease-in-out;
 	-ms-transition:		box-shadow 0.5s ease-in-out;
@@ -70,7 +74,7 @@ nav a:last-child {
 }
 
 nav a:hover {
-	box-shadow:	0 0 10px #5588dd inset;
+	box-shadow:	0 0 10px black, 0 0 20px #5588dd inset;
 }
 
 div.content {
@@ -85,17 +89,22 @@ div.content {
 }
 
 
-ul.arglist > li > span.type {
+span.type {
 	font-weight:	bold;
 	color:		darkgreen;
 }
-ul.arglist > li > span.optional {
+
+span.optional {
 	font-style:	italic;
 	color:		darkgray;
 }
-ul.arglist > li > span.description{
+span.description{
 	font-style:	italic;
 	margin-left:	5px;
+}
+
+div.method {
+	margin-left:	20px;
 }
 
 section {
@@ -145,8 +154,13 @@ function FuncToString(){
 	return this.assignName;
 }
 
+// Fix HTML stuff (lol)
+function fh(str){
+	return str.replace(/[<>]/g, function(a){return a==='<'?'&lt;':'&gt;'});
+}
+
 function parseText(text){
-	return (typeof markdown === 'undefined' ? text.split('\n').join('<br/>') : markdown.makeHtml(text)).replace(/\[\[([^\]]+)\]\]/g, function(a, b){
+	return (!markdown ? fh(text.split('\n').join('<br/>')) : markdown.makeHtml(text)).replace(/\[\[([^\]]+)\]\]/g, function(a, b){
 		return '<a href="' + b + '">' + b + '</a>';
 	});
 }
@@ -221,9 +235,9 @@ components.forEach(function(func){
 			}
 			html += '>';
 			if (arg.optional) html += '<span class="optional">Optional</span> ';
-			if (info.type) html += '<span class="type">' + info.type + '</span> ';
+			if (info.type) html += '<span class="type">' + fh(info.type) + '</span> ';
 			html += '<span class="name">' + info.name + '</span> ';
-			html += '<span class="description">' + info.description + '</span> ';
+			html += '<span class="description">' + parseText(info.description) + '</span> ';
 		});
 		html += '</ul>';
 	}
@@ -231,7 +245,11 @@ components.forEach(function(func){
 	if (func.methods) {
 		html += '<h3>Methods</h3>';
 		func.methods.forEach(function(method){
-			html += '<div class="method"><h4>' + method.name + '</h4><p>' + method.text + '</p>';
+			html += '<div class="method"><h4>' + method.name + '(';
+			if (method.arglist) {
+				html += method.arglist.map(function(a){ return a.name }).join(', ');
+			}
+			html += ')</h4><p>' + method.text + '</p>';
 			if (method.arglist) {
 				html += '<h5>Arguments</h5>';
 				html += '<ul class="arglist">';
@@ -246,17 +264,18 @@ components.forEach(function(func){
 					}
 					html += '>';
 					if (arg.optional) html += '<span class="optional">Optional</span> ';
-					if (info.type) html += '<span class="type">' + info.type + '</span> ';
+					if (info.type) html += '<span class="type">' + fh(info.type) + '</span> ';
 					html += '<span class="name">' + info.name + '</span> ';
-					html += '<span class="description">' + info.description + '</span> ';
+					html += '<span class="description">' + parseText(info.description) + '</span> ';
 				});
 				html += '</ul>';
 			}
 
 			if (method.returns) {
+				html += '<h5>Returns</h5>';
 				html += '<div class="return">';
-				if (method.returns.type) html += '<span class="type">' + method.returns.type + '</span> ';
-				html += '<span class="description">' + method.returns.description + '</span> ';
+				if (method.returns.type) html += '<span class="type">' + fh(method.returns.type) + '</span> ';
+				html += '<span class="description">' + parseText(method.returns.description) + '</span> ';
 				html += '</div>';
 			}
 			html += '</div>';
