@@ -295,8 +295,9 @@ function builderContext(s){
 		exec: function(args){
 			if (!args) return;
 			var	p	= {},
-				s, x;
+				s, x, desc;
 			while (s = /^([^\s]+)\s*/.exec(args)){
+				desc	= args;
 				args	= args.substr(s[0].length);
 				s	= s[1];
 
@@ -306,7 +307,7 @@ function builderContext(s){
 					continue;
 				}
 
-				p.description	= args;
+				p.description	= desc;
 				args		= '';
 				break;
 			}
