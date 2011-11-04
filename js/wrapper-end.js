@@ -68,7 +68,6 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	effects('BiquadBandPassFilter',	BiquadFilter.BandPass);
 	effects('BiquadHighPassFilter',	BiquadFilter.HighPass);
 	effects('BiquadLowPassFilter',	BiquadFilter.LowPass);
-	effects('BiquadLowPassFilter',	BiquadFilter.LowPass);
 	effects('FreeverbAllPassFilter',Freeverb.AllPassFilter);
 }(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Limiter', 'Reverb', 'Amplitude', 'FFT']));
 
