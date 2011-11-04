@@ -1,12 +1,16 @@
-//#generator Sampler
-
 /**
  * Creates a new Sampler.
  *
- * @constructor
- * @this {Sampler}
- * @param {Number} sampleRate The samplerate to operate the Sampler on.
- * @param {Number} pitch The pitch of the Sampler. (Optional)
+ * @generator
+ *
+ * @arg =!sampleRate
+ * @arg =!pitch
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz default:440 pitch The pitch of the Sampler.
+ * @param type:Float units:s default:0 min:0 delayStart The time offset where to start playing of the sample from.
+ * @param type:float units:s default:0 min:0 delayEnd The time offset from the ending of the sample where to stop playback at.
+ * @param type:UInt default:Infinity maxVoices The maximum amount of voices allowed to be played simultaneously.
 */
 
 function Sampler(sampleRate, pitch){
@@ -17,31 +21,28 @@ function Sampler(sampleRate, pitch){
 }
 
 Sampler.prototype = {
-	/** The sample rate the Sampler operates on. */
-	sampleRate:	1,
-	/** The relative pitch used to compare noteOn pitches to and adjust playback speed. */
+	sampleRate:	44100,
 	pitch:		440,
-	/** Time in seconds to start the playback of the sample from. */
 	delayStart:	0,
-	/** Time in seconds to end the playback of the sample before the end of the sample. */
 	delayEnd:	0,
-	/** The maximum amount of voices allowed to be played simultaneously. */
 	maxVoices:	1 / 0,
-	/** The length of a single channel of the sample loaded into Sampler, in samples. */
+	/* The length of a single channel of the sample loaded into Sampler, in samples. */
 	sampleSize:	0,
-	/** An array containing information of all the voices playing currently. */
+	/* An array containing information of all the voices playing currently. */
 	voices:		null,
-	/** The AudioBuffer representation of the sample used by the sampler. */
+	/* The AudioBuffer representation of the sample used by the sampler. */
 	sample:		null,
-	/** An array containing the sample, resampled and split by channels as AudioBuffers. */
+	/* An array containing the sample, resampled and split by channels as AudioBuffers. */
 	samples:	null,
-	/** An AudioData object representation of the sample used by the sampler. */
+	/* An AudioData object representation of the sample used by the sampler. */
 	data:		null,
 /**
  * Adds a new voice to the sampler and disbands voices that go past the maxVoices limit.
  *
- * @param {Number} frequency Determines the frequency the voice should be played at, relative to the Sampler's pitch. (Optional)
- * @param {Number} velocity The relative volume of the voice. (Optional)
+ * @method Sampler
+ *
+ * @arg {Float} min:0.0 !frequency Determines the frequency the voice should be played at, relative to the Sampler's pitch.
+ * @arg {Float} default:1.0 !velocity The relative volume of the voice.
  * @return {Voice} The voice object created.
 */
 	noteOn: function(frequency, velocity){
@@ -80,7 +81,7 @@ Sampler.prototype = {
 /**
  * Returns the mix of the voices, by a specific channel.
  *
- * @param {Int} channel The number of the channel to be returned. (Optional)
+ * @arg {Int} channel The number of the channel to be returned. (Optional)
  * @return {Float32} The current output of the Sampler's channel number channel.
 */
 	getMix: function(ch){
@@ -98,8 +99,10 @@ Sampler.prototype = {
 /**
  * Load an AudioData object to the sampler and resample if needed.
  *
- * @param {AudioData} data The AudioData object representation of the sample to be loaded.
- * @param {Boolean} resample Determines whether to resample the sample to match the sample rate of the Sampler.
+ * @method Sampler
+ *
+ * @arg {AudioData} data The AudioData object representation of the sample to be loaded.
+ * @arg {Boolean} !resample Determines whether to resample the sample to match the sample rate of the Sampler.
 */
 	load: function(data, resample){
 		var	self	= this,
@@ -114,5 +117,5 @@ Sampler.prototype = {
 		self.samples	= samples;
 		self.data	= data;
 		self.sampleSize = samples[0].length;
-	}
+	},
 };

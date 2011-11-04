@@ -1,15 +1,18 @@
-// Adapted from Corban Brook's dsp.js
-//#effect IIRFilter
-
 /**
  * Creates a IIRFilter effect.
+ * Adapted from Corban Brook's dsp.js
+ * 
+ * @effect
  *
- * @constructor
- * @this {IIRFilter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} cutoff (Optional) The cutoff frequency (hz).
- * @param {number} resonance (Optional) Resonance (unsigned double).
- * @param {number} type (Optional) The type of the filter [uint2] (LowPass, HighPass, BandPass, Notch).
+ * @arg =!sampleRate
+ * @arg =!cutoff
+ * @arg =!resonance
+ * @arg =!type
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:40.0 default:20000 cutoff The cutoff frequency of the IIRFilter.
+ * @param type:Float min:0.0 max:1.0 default:0.1 resonance The resonance of the IIRFilter.
+ * @param type:UInt default:0 type The type of the filter (LowPass, HighPass, BandPass, Notch).
 */
 function IIRFilter(samplerate, cutoff, resonance, type){
 	var	self	= this,
@@ -21,9 +24,9 @@ function IIRFilter(samplerate, cutoff, resonance, type){
 		min	= Math.min,
 		pow	= Math.pow;
 
-	self.cutoff = !cutoff ? 20000 : cutoff; // > 40
+	self.cutoff = isNaN(cutoff) ? 20000 : cutoff; // > 40
 	self.resonance = !resonance ? 0.1 : resonance; // 0.0 - 1.0
-	self.samplerate = samplerate;
+	self.samplerate = isNaN(samplerate) ? 44100 : sampleRate;
 	self.type = type || 0;
 
 	function calcCoeff(){

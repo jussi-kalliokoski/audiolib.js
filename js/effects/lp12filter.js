@@ -1,14 +1,16 @@
-// Adapted from Corban Brook's dsp.js
-//#effect LP12Filter
-
 /**
  * Creates a LP12Filter effect.
+ * Adapted from Corban Brook's dsp.js
+ * 
+ * @effect
  *
- * @constructor
- * @this {LP12Filter}
- * @param {number} samplerate Sample Rate (hz).
- * @param {number} cutoff (Optional) The cutoff frequency (hz).
- * @param {number} resonance (Optional) Resonance (1.0 - 20.0).
+ * @arg =!sampleRate
+ * @arg =!cutoff
+ * @arg =!resonance
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:40 default:20000 cutoff The cutoff frequency of the filter.
+ * @param type:Float min:1.0 max:20.0 default:1 resonance The resonance of the filter.
 */
 function LP12Filter(samplerate, cutoff, resonance){
 	var	self		= this,

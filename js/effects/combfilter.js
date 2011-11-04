@@ -1,14 +1,18 @@
-//#effect CombFilter
-
 /**
  * Creates a Comb Filter effect.
+ * Defaults to Freeverb defaults.
  *
- * @constructor
- * @this {CombFilter}
- * @param {number} sampleRate Sample Rate (hz).
- * @param {number} delaySize Size (in samples) of the delay line buffer.
- * @param {number} feedback (Optional) Amount of feedback (0.0-1.0). Defaults to 0.84 (Freeverb default)
- * @param {number} damping (Optional) Amount of damping (0.0-1.0). Defaults to 0.2 (Freeverb default)
+ * @effect
+ *
+ * @arg =!sampleRate
+ * @arg =!delaySize
+ * @arg =!feedback
+ * @arg =!damping
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:UInt units:samples default:1200 delaySize Size of the delay line buffer.
+ * @param type:Float min:0.0 max:0.0 default:0.84 feedback Amount of feedback for the CombFilter.
+ * @param type:Float min:0.0 max:0.0 default:0.2 damping Amount of damping for the CombFilter.
 */
 function CombFilter(sampleRate, delaySize, feedback, damping){
 	var	self	= this;

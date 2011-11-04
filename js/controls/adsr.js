@@ -1,16 +1,25 @@
-//#control ADSREnvelope
 /**
  * Creates an ADSR envelope.
  *
- * @constructor
- * @this {ADSREnvelope}
- * @param {number} sampleRate Sample Rate (hz).
- * @param {number} attack (Optional) Attack (ms).
- * @param {number} decay (Optional) Decay (ms).
- * @param {number} sustain (Optional) Sustain (unsigned double).
- * @param {number} release (Optional) Release (ms).
- * @param {number} sustainTime (Optional) The time the sustain mode lasts (ms).
- * @param {number} releaseTime (Optional) The time the release mode lasts (ms).
+ * @control
+ *
+ * @arg =!sampleRate
+ * @arg =!attack
+ * @arg =!decay
+ * @arg =!sustain
+ * @arg =!release
+ * @arg =!sustainTime
+ * @arg =!releaseTime
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float min:0 default:50 attack The attack time of the envelope.
+ * @param type:Float min:0 default:50 decay The decay time of the envelope.
+ * @param type:Float min:0.0 max:1.0 sustain The sustain state of the envelope.
+ * @param type:Float min:0 default:50 release The release time of the envelope.
+ * @param type:Float min:0 units:ms default:null sustainTime The time the sustain mode should be sustained before launching release. If null, will wait for triggerGate event.
+ * @param type:Float min:0 units:ms default:null releaseTime The time the release mode should be sustained before relaunching attack. If null, will wait for triggerGate event.
+ * @param type:Bool default:false gate The state of the gate envelope, open being true.
+ * @param type:UInt max:5 default:3 state The current state of the value, determining what the gate will do.
 */
 function ADSREnvelope(sampleRate, attack, decay, sustain, release, sustainTime, releaseTime){
 	this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
@@ -23,31 +32,18 @@ function ADSREnvelope(sampleRate, attack, decay, sustain, release, sustainTime, 
 }
 
 ADSREnvelope.prototype = {
-	/** The sample rate of the envelope */
 	sampleRate:	44100,
-	/** The attack of the envelope, in ms */
 	attack:		50,
-	/** The decay of the envelope, in ms */
 	decay:		50,
-	/** The value for the sustain state of the envelope, 0.0 - 1.0 */
 	sustain:	1,
-	/** The release of the envelope, in ms */
 	release:	50,
-	/** The current value of the envelope */
-	value:		0,
-	/** The current state of the envelope */
-	state:		3,
-	/** The state of the gate of the envelope, open being true */
-	gate:		false,
-	/** The time the sustain phase should be sustained before launching release. If null, will wait for triggerGate. */
 	sustainTime:	null,
-	/** The time the release phase should be sustained before relaunching attack. If null, will wait for triggerGate. */
 	releaseTime:	null,
-/**
- * Private variable for timing the timed sustain and release.
- *
- * @private
-*/
+	gate:		false,
+	state:		3,
+	/* The current value of the envelope */
+	value:		0,
+/* Private variable for timing the timed sustain and release. */
 	_st: 0,
 /**
  * Moves the envelope status one sample further in sample-time.
@@ -69,7 +65,9 @@ ADSREnvelope.prototype = {
 /**
  * Sets the state of the envelope's gate.
  *
- * @param {Boolean} isOpen The new state of the gate.
+ * @method ADSREnvelope
+ * 
+ * @arg {Boolean} isOpen The new state of the gate.
 */
 	triggerGate: function(isOpen){
 		isOpen		= typeof isOpen === 'undefined' ? !this.gate : isOpen;

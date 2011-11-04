@@ -4,16 +4,16 @@
 */
 
 // Controls
-//#echo @controls.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
+//#echo @controls.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
 // Effects
-//#echo @effects.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
+//#echo @effects.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
 // Geneneration
-//#echo @generators.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
+//#echo @generators.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
 // Processing
-//#echo @processors.copy().sort().map(function(e){return ['audioLib.'+e[0],'= '+e[1]+';']}).table() + '\n'
+//#echo @processors.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 
 
@@ -49,11 +49,11 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	}
 
 /*#echo @subeffects.copy().sort().concat(@subprocessors.copy().sort()).map(function(e){
-	return ["effects('" + e[2] + "',", e[0] + '.' + e[1] + ');'];
+	return ["effects('" + e.assignName + "',", e.subOf + '.' + e.name + ');'];
 }).table().split('\n').map(function(e){return '\t' + e}).join('\n');
 */
 }([/*#echo @effects.copy().sort().concat(@processors.copy().sort()).map(function(e){
-	return "'" + e[0] + "'";
+	return "'" + e.assignName + "'";
 }).join(', ') */]));
 
 (function(names, i){
@@ -78,7 +78,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 }([/*#echo @generators.copy().sort().concat(@controls.copy().sort()).map(function(e){
-	return "'" + e[0] + "'";
+	return "'" + e.assignName + "'";
 }).join(', ') */]));
 
 Codec('wav', audioLib.PCMData);

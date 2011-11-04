@@ -1,12 +1,17 @@
-//#generator Oscillator
-
 /**
  * Creates a new Oscillator.
  *
- * @constructor
- * @this {Oscillator}
- * @param {Number} sampleRate The samplerate to operate the Oscillator on.
- * @param {Number} frequency The frequency of the Oscillator. (Optional)
+ * @generator
+ *
+ * @arg =!sampleRate
+ * @arg =!frequency
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:Float units:Hz min:0 default:440 frequency The frequency of the Oscillator.
+ * @param type:Float min:0.0 max:1.0 default:0.0 phaseOffset The phase offset of the Oscillator.
+ * @param type:Float min:0.0 max:1.0 default:0.5 pulseWidth The pulse width of the Oscillator.
+ * @param type:String|UInt default:sine waveShape The wave shape of the Oscillator.
+ * @param type:Float default:0 fm The frequency modulation of the Oscillator.
 */
 
 function Oscillator(sampleRate, freq)
@@ -21,25 +26,15 @@ function Oscillator(sampleRate, freq)
 (function(FullPI, waveshapeNames, proto, i){
 
 proto = Oscillator.prototype = {
-	/** Determines the sample rate on which the Oscillator operates */
-	sampleRate:	1,
-	/** Determines the frequency of the Oscillator */
+	sampleRate:	44100,
 	frequency:	440,
-	/** Phase of the Oscillator */
-	phase:		0,
-	/** Phase offset of the Oscillator */
 	phaseOffset:	0,
-	/** Pulse width of the Oscillator */
 	pulseWidth:	0.5,
-	/** Frequency modulation of the Oscillator */
 	fm:		0,
-	/** Wave shape of the Oscillator */
 	waveShape:	'sine',
-/**
- * The relative of phase of the Oscillator (pulsewidth, phase offset, etc applied).
- *
- * @private
-*/
+	/* Phase of the Oscillator */
+	phase:		0,
+/* The relative of phase of the Oscillator (pulsewidth, phase offset, etc applied). */
 	_p:		0,
 
 /**
@@ -58,7 +53,7 @@ proto = Oscillator.prototype = {
 /**
  * Returns the output signal sample of the Oscillator.
  *
- * @return {Float32} The output signal sample.
+ * @return {Float} The output signal sample.
 */
 	getMix: function(){
 		return this[this.waveShape]();
@@ -66,7 +61,7 @@ proto = Oscillator.prototype = {
 /**
  * Returns the relative phase of the Oscillator (pulsewidth, phaseoffset, etc applied).
  *
- * @return {Float32} The relative phase.
+ * @return {Float} The relative phase.
 */
 	getPhase: function(){
 		return this._p;
@@ -74,7 +69,7 @@ proto = Oscillator.prototype = {
 /**
  * Resets the Oscillator phase (AND RELATIVE PHASE) to a specified value.
  *
- * @param {Float32} phase The phase to reset the values to. (Optional, defaults to 0).
+ * @arg {Float} phase The phase to reset the values to. (Optional, defaults to 0).
 */
 	reset: function(p){
 		this.phase = this._p = isNaN(p) ? 0 : p;
@@ -82,7 +77,9 @@ proto = Oscillator.prototype = {
 /**
  * Specifies a wavetable for the Oscillator.
  *
- * @param {AudioBuffer} wavetable The wavetable to be assigned to the Oscillator.
+ * @method Oscillator
+ *
+ * @arg {Array<Float>} wavetable The wavetable to be assigned to the Oscillator.
  * @return {Boolean} Succesfulness of the operation.
 */
 	setWavetable: function(wt){
@@ -91,49 +88,73 @@ proto = Oscillator.prototype = {
 	},
 /**
  * Returns sine wave output of the Oscillator.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.0, 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.0, 0.5
 	sine: function(){
 		return Math.sin(this._p * FullPI);
 	},
 /**
  * Returns triangle wave output of the Oscillator, phase zero representing the top of the triangle.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.25, 0.75
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.25, 0.75
 	triangle: function(){
 		return this._p < 0.5 ? 4 * this._p - 1 : 3 - 4 * this._p;
 	},
 /**
  * Returns square wave output of the Oscillator, phase zero being the first position of the positive side.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.0, 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.0, 0.5
 	square: function(){
 		return this._p < 0.5 ? -1 : 1;
 	},
 /**
  * Returns sawtooth wave output of the Oscillator, phase zero representing the negative peak.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.5
 	sawtooth: function(){
 		return 1 - this._p * 2;
 	},
 /**
  * Returns invert sawtooth wave output of the Oscillator, phase zero representing the positive peak.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.5
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.5
 	invSawtooth: function(){
 		return this._p * 2 - 1;
 	},
 /**
  * Returns pulse wave output of the Oscillator, phase zero representing slope starting point.
- * @return {Float32} Sample.
+ *
+ * Phase for the zero crossings of the function: 0.125, 0.325
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-// Phase for root of the function: 0.125, 0.325
 	pulse: function(){
 		return this._p < 0.5 ?
 			this._p < 0.25 ?
@@ -143,9 +164,13 @@ proto = Oscillator.prototype = {
 	},
 /**
  * Returns wavetable output of the Oscillator.
- * @return {Float32} Sample.
+ *
+ * Requires sink.js
+ *
+ * @method Oscillator
+ *
+ * @return {Float} Sample.
 */
-	// Requires Sink
 	wavetable: function(){
 		return audioLib.Sink.interpolate(this.wavetable, this._p * this.wavetable.length);
 	},
@@ -160,8 +185,8 @@ for(i=0; i<waveshapeNames.length; i++){
 /**
  * Creates a new wave shape and attaches it to Oscillator.prototype by a specified name.
  *
- * @param {String} name The name of the wave shape.
- * @param {Function} algorithm The algorithm for the wave shape. If omitted, no changes are made.
+ * @arg {String} name The name of the wave shape.
+ * @arg {Function} algorithm The algorithm for the wave shape. If omitted, no changes are made.
  * @return {Function} The algorithm assigned to Oscillator.prototype by the specified name.
 */
 
@@ -175,8 +200,8 @@ Oscillator.WaveShape = function(name, algorithm){
 /**
  * Creates a new wave shape that mixes existing wave shapes into a new waveshape and attaches it to Oscillator.prototype by a specified name.
  *
- * @param {String} name The name of the wave shape.
- * @param {Array} waveshapes Array of the wave shapes to mix, wave shapes represented as objects where .shape is the name of the wave shape and .mix is the volume of the wave shape.
+ * @arg {String} name The name of the wave shape.
+ * @arg {Array} waveshapes Array of the wave shapes to mix, wave shapes represented as objects where .shape is the name of the wave shape and .mix is the volume of the wave shape.
  * @return {Function} The algorithm created.
 */
 

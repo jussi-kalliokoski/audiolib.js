@@ -25,6 +25,22 @@ AutomationClass.prototype = {
 	},
 };
 
+/**
+ * Applies automation to a specified component.
+ *
+ * @class
+ *
+ * @arg type:Component The effect to apply the automation to.
+ * @arg =!parameter
+ * @arg =!automation
+ * @arg =!amount
+ * @arg =!type
+ *
+ * @param type:String parameter The name of the parameter to apply automation to.
+ * @param type:Component automation The component that controls the automation.
+ * @param type:Float default:1 amount The amount of automation to apply.
+ * @param type:String|Function default:modulation type The algorithm of applying the automation, can be a string for predefined types or a custom function.
+*/
 function Automation(fx, parameter, automation, amount, type){
 	if (!fx.automation){
 		fx.automation = [];
@@ -162,3 +178,27 @@ Automation.modes = {
 };
 
 Automation.__constructror		= AutomationClass;
+
+/**
+ * Applies automation to a specified component.
+ *
+ * @method Effect
+ * @name addAutomation
+ *
+ * @arg type:String parameter The name of the parameter to apply automation to.
+ * @arg type:Component automation The component that controls the automation.
+ * @arg type:Float default:1 amount The amount of automation to apply.
+ * @arg type:String|Function default:modulation type The algorithm of applying the automation, can be a string for predefined types or a custom function.
+*/
+
+/**
+ * Applies automation to a specified component.
+ *
+ * @method Generator
+ * @name addAutomation
+ *
+ * @arg type:String parameter The name of the parameter to apply automation to.
+ * @arg type:Component automation The component that controls the automation.
+ * @arg type:Float default:1 amount The amount of automation to apply.
+ * @arg type:String|Function default:modulation type The algorithm of applying the automation, can be a string for predefined types or a custom function.
+*/
