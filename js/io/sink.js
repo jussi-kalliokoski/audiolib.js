@@ -1,11 +1,25 @@
 (function (global){
+
 /**
  * Creates a Sink according to specified parameters, if possible.
  *
+ * @class
+ *
+ * @arg =!readFn
+ * @arg =!channelCount
+ * @arg =!bufferSize
+ * @arg =!sampleRate
+ *
  * @param {Function} readFn A callback to handle the buffer fills.
- * @param {number} channelCount Channel count.
- * @param {number} bufferSize (Optional) Specifies a pre-buffer size to control the amount of latency.
- * @param {number} sampleRate Sample rate (ms).
+ * @param {Number} channelCount Channel count.
+ * @param {Number} bufferSize (Optional) Specifies a pre-buffer size to control the amount of latency.
+ * @param {Number} sampleRate Sample rate (ms).
+ * @param {Number} default=0 writePosition Write position of the sink, as in how many samples have been written per channel.
+ * @param {String} default=async writeMode The default mode of writing to the sink.
+ * @param {String} default=interleaved channelMode The mode in which the sink asks the sample buffers to be channeled in.
+ * @param {Number} default=0 previousHit The previous time of a callback.
+ * @param {Buffer} default=null ringBuffer The ring buffer array of the sink. If null, ring buffering will not be applied.
+ * @param {Number} default=0 ringOffset The current position of the ring buffer.
 */
 function Sink(readFn, channelCount, bufferSize, sampleRate){
 	var	sinks	= Sink.sinks,
@@ -18,16 +32,146 @@ function Sink(readFn, channelCount, bufferSize, sampleRate){
 		}
 	}
 
-	throw "No audio sink available.";
+	throw Sink.Error(0x02);
 }
+
+/**
+ * A light event emitter.
+ *
+ * @class
+ * @static Sink
+*/
+function EventEmitter () {
+	var k;
+	for (k in EventEmitter.prototype) {
+		if (EventEmitter.prototype.hasOwnProperty(k)) {
+			this[k] = EventEmitter.prototype[k];
+		}
+	}
+	this._listeners = {};
+};
+
+EventEmitter.prototype = {
+	_listeners: null,
+/**
+ * Emits an event.
+ *
+ * @method EventEmitter
+ *
+ * @arg {String} name The name of the event to emit.
+ * @arg {Array} args The arguments to pass to the event handlers.
+*/
+	emit: function (name, args) {
+		if (this._listeners[name]) {
+			for (var i=0; i<this._listeners[name].length; i++) {
+				this._listeners[name][i].apply(this, args);
+			}
+		}
+		return this;
+	},
+/**
+ * Adds an event listener to an event.
+ *
+ * @method EventEmitter
+ *
+ * @arg {String} name The name of the event.
+ * @arg {Function} listener The event listener to attach to the event.
+*/
+	on: function (name, listener) {
+		this._listeners[name] = this._listeners[name] || [];
+		this._listeners[name].push(listener);
+		return this;
+	},
+/**
+ * Adds an event listener to an event.
+ *
+ * @method EventEmitter
+ *
+ * @arg {String} name The name of the event.
+ * @arg {Function} !listener The event listener to remove from the event. If not specified, will delete all.
+*/
+	off: function (name, listener) {
+		if (this._listeners[name]) {
+			if (!listener) {
+				delete this._listeners[name];
+				return this;
+			}
+			for (var i=0; i<this._listeners[name].length; i++) {
+				if (this._listeners[name][i] === listener) {
+					this._listeners[name].splice(i--, 1);
+				}
+			}
+			this._listeners[name].length || delete this._listeners[name];
+		}
+		return this;
+	},
+};
+
+Sink.EventEmitter = EventEmitter;
+
+/*
+ * A Sink-specific error class.
+ *
+ * @class
+ * @static Sink
+ * @name Error
+ *
+ * @arg =code
+ *
+ * @param {Number} code The error code.
+ * @param {String} message A brief description of the error.
+ * @param {String} explanation A more verbose explanation of why the error occured and how to fix.
+*/
+
+function SinkError(code) {
+	if (!SinkError.hasOwnProperty(code)) throw SinkError(1);
+	if (!(this instanceof SinkError)) return new SinkError(code);
+
+	var k;
+	for (k in SinkError[code]) {
+		if (SinkError[code].hasOwnProperty(k)) {
+			this[k] = SinkError[code][k];
+		}
+	}
+
+	this.code = code;
+}
+
+SinkError.prototype = new Error();
+
+SinkError.prototype.toString = function () {
+	return 'SinkError 0x' + this.code.toString(16) + ': ' + this.message;
+};
+
+SinkError[0x01] = {
+	message: 'No such error code.',
+	explanation: 'The error code does not exist.',
+};
+SinkError[0x02] = {
+	message: 'No audio sink available.',
+	explanation: 'The audio device may be busy, or no supported output API is available for this browser.',
+};
+
+SinkError[0x10] = {
+	message: 'Buffer underflow.',
+	explanation: 'Trying to recover...',
+};
+SinkError[0x11] = {
+	message: 'Critical recovery fail.',
+	explanation: 'The buffer underflow has reached a critical point, trying to recover, but will probably fail anyway.',
+};
+SinkError[0x12] = {
+	message: 'Buffer size too large.',
+	explanation: 'Unable to allocate the buffer due to excessive length, please try a smaller buffer. Buffer size should probably be smaller than the sample rate.',
+};
+
+Sink.Error = SinkError;
 
 /**
  * A Recording class for recording sink output.
  *
- * @private
- * @this {Recording}
- * @constructor
- * @param {Object} bindTo The sink to bind the recording to.
+ * @class
+ * @arg {Object} bindTo The sink to bind the recording to.
 */
 
 function Recording(bindTo){
@@ -40,19 +184,25 @@ Recording.prototype = {
 /**
  * Adds a new buffer to the recording.
  *
- * @param {Array} buffer The buffer to add.
+ * @arg {Array} buffer The buffer to add.
+ *
+ * @method Recording
 */
 	add: function(buffer){
 		this.buffers.push(buffer);
 	},
 /**
  * Empties the recording.
+ *
+ * @method Recording
 */
 	clear: function(){
 		this.buffers = [];
 	},
 /**
  * Stops the recording and unbinds it from it's host sink.
+ *
+ * @method Recording
 */
 	stop: function(){
 		var	recordings = this.boundTo.activeRecordings,
@@ -65,6 +215,8 @@ Recording.prototype = {
 	},
 /**
  * Joins the recorded buffers into a single buffer.
+ *
+ * @method Recording
 */
 	join: function(){
 		var	bufferLength	= 0,
@@ -93,46 +245,18 @@ function SinkClass(){
 Sink.SinkClass		= SinkClass;
 
 SinkClass.prototype = {
-/**
- * The sample rate of the Sink.
-*/
 	sampleRate: 44100,
-/**
- * The channel count of the Sink.
-*/
 	channelCount: 2,
-/**
- * The amount of samples to pre buffer for the sink.
-*/
 	bufferSize: 4096,
-/**
- * Write position of the sink, as in how many samples have been written per channel.
-*/
 	writePosition: 0,
-/**
- * The default mode of writing to the sink.
-*/
 	writeMode: 'async',
-/**
- * The mode in which the sink asks the sample buffers to be channeled in.
-*/
 	channelMode: 'interleaved',
-/**
- * The previous time of a callback.
-*/
 	previousHit: 0,
-/**
- * The ring buffer array of the sink. If null, ring buffering will not be applied.
-*/
 	ringBuffer: null,
-/**
- * The current position of the ring buffer.
- * @private
-*/
 	ringOffset: 0,
 /**
  * Does the initialization of the sink.
- * @private
+ * @method Sink
 */
 	start: function(readFn, channelCount, bufferSize, sampleRate){
 		this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount: channelCount;
@@ -143,22 +267,24 @@ SinkClass.prototype = {
 		this.previousHit	= +new Date;
 		this.asyncBuffers	= [];
 		this.syncBuffers	= [];
+		Sink.EventEmitter.call(this);
 	},
 /**
  * The method which will handle all the different types of processing applied on a callback.
- * @private
+ * @method Sink
 */
-	process: function(soundData, channelCount){
+	process: function(soundData, channelCount) {
 		this.ringBuffer && (this.channelMode === 'interleaved' ? this.ringSpin : this.ringSpinInterleaved).apply(this, arguments);
 		this.writeBuffersSync.apply(this, arguments);
-		if (this.readFn){
-			if (this.channelMode === 'interleaved'){
-				this.readFn.apply(this, arguments);
-			} else {
-				var soundDataSplit = Sink.deinterleave(soundData, this.channelCount);
-				this.readFn.apply(this, [soundDataSplit].concat([].slice.call(arguments, 1)));
-				Sink.interleave(soundDataSplit, this.channelCount, soundData);
-			}
+		if (this.channelMode === 'interleaved') {
+			this.readFn && this.readFn.apply(this, arguments);
+			this.emit('audioprocess', arguments);
+		} else {
+			var	soundDataSplit	= Sink.deinterleave(soundData, this.channelCount),
+				args		= [soundDataSplit].concat([].slice.call(arguments, 1));
+			this.readFn && this.readFn.apply(this, args);
+			this.emit('audioprocess', args);
+			Sink.interleave(soundDataSplit, this.channelCount, soundData);
 		}
 		this.writeBuffersAsync.apply(this, arguments);
 		this.recordData.apply(this, arguments);
@@ -168,6 +294,8 @@ SinkClass.prototype = {
 /**
  * Starts recording the sink output.
  *
+ * @method Sink
+ *
  * @return {Recording} The recording object for the recording started.
 */
 	record: function(){
@@ -176,8 +304,9 @@ SinkClass.prototype = {
 /**
  * Private method that handles the adding the buffers to all the current recordings.
  *
- * @private
- * @param {Array} buffer The buffer to record.
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to record.
 */
 	recordData: function(buffer){
 		var	activeRecs	= this.activeRecordings,
@@ -189,8 +318,9 @@ SinkClass.prototype = {
 /**
  * Private method that handles the mixing of asynchronously written buffers.
  *
- * @private
- * @param {Array} buffer The buffer to write to.
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to write to.
 */
 	writeBuffersAsync: function(buffer){
 		var	buffers		= this.asyncBuffers,
@@ -216,8 +346,9 @@ SinkClass.prototype = {
 /**
  * A private method that handles mixing synchronously written buffers.
  *
- * @private
- * @param {Array} buffer The buffer to write to.
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to write to.
 */
 	writeBuffersSync: function(buffer){
 		var	buffers		= this.syncBuffers,
@@ -240,8 +371,10 @@ SinkClass.prototype = {
 /**
  * Writes a buffer asynchronously on top of the existing signal, after a specified delay.
  *
- * @param {Array} buffer The buffer to write.
- * @param {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency.
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to write.
+ * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency.
  * @return {Number} The number of currently stored asynchronous buffers.
 */
 	writeBufferAsync: function(buffer, delay){
@@ -256,6 +389,8 @@ SinkClass.prototype = {
 /**
  * Writes a buffer synchronously to the output.
  *
+ * @method Sink
+ *
  * @param {Array} buffer The buffer to write.
  * @return {Number} The number of currently stored synchronous buffers.
 */
@@ -268,8 +403,10 @@ SinkClass.prototype = {
 /**
  * Writes a buffer, according to the write mode specified.
  *
- * @param {Array} buffer The buffer to write.
- * @param {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency. (only applicable in asynchronous write mode)
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to write.
+ * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency. (only applicable in asynchronous write mode)
  * @return {Number} The number of currently stored (a)synchronous buffers.
 */
 	writeBuffer: function(){
@@ -277,6 +414,8 @@ SinkClass.prototype = {
 	},
 /**
  * Gets the total amount of yet unwritten samples in the synchronous buffers.
+ *
+ * @method Sink
  *
  * @return {Number} The total amount of yet unwritten samples in the synchronous buffers.
 */
@@ -292,6 +431,8 @@ SinkClass.prototype = {
 /**
  * Get the current output position, defaults to writePosition - bufferSize.
  *
+ * @method Sink
+ *
  * @return {Number} The position of the write head, in samples, per channel.
 */
 	getPlaybackTime: function(){
@@ -300,8 +441,9 @@ SinkClass.prototype = {
 /**
  * A private method that applies the ring buffer contents to the specified buffer, while in interleaved mode.
  *
- * @private
- * @param {Array} buffer The buffer to write to.
+ * @method Sink
+ *
+ * @arg {Array} buffer The buffer to write to.
 */
 	ringSpin: function(buffer){
 		var	ring	= this.ringBuffer,
@@ -318,7 +460,8 @@ SinkClass.prototype = {
 /**
  * A private method that applies the ring buffer contents to the specified buffer, while in deinterleaved mode.
  *
- * @private
+ * @method Sink
+ *
  * @param {Array} buffer The buffers to write to.
 */
 	ringSpinDeinterleaved: function(buffer){
@@ -342,10 +485,12 @@ SinkClass.prototype = {
 /**
  * The container for all the available sinks. Also a decorator function for creating a new Sink class and binding it.
  *
- * @param {String} type The name / type of the Sink.
- * @param {Function} constructor The constructor function for the Sink.
- * @param {Object} prototype The prototype of the Sink. (optional)
- * @param {Boolean} disabled Whether the Sink should be disabled at first.
+ * @method Sink
+ *
+ * @arg {String} type The name / type of the Sink.
+ * @arg {Function} constructor The constructor function for the Sink.
+ * @arg {Object} prototype The prototype of the Sink. (optional)
+ * @arg {Boolean} disabled Whether the Sink should be disabled at first.
 */
 
 function sinks(type, constructor, prototype, disabled){
@@ -373,7 +518,7 @@ sinks('moz', function(){
 		written, currentPosition, available, soundData, prevPos,
 		timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
 	self.start.apply(self, arguments);
-	self.preBufferSize = isNaN(arguments[4]) || arguments[4] === null ? self.sampleRate / 2 : arguments[4];
+	self.preBufferSize = isNaN(arguments[4]) || arguments[4] === null ? this.preBufferSize : arguments[4];
 
 	function bufferFill(){
 		if (tail){
@@ -388,10 +533,17 @@ sinks('moz', function(){
 
 		currentPosition = audioDevice.mozCurrentSampleOffset();
 		available = Number(currentPosition + (prevPos !== currentPosition ? self.bufferSize : self.preBufferSize) * self.channelCount - currentWritePosition);
-		if (available > 0){
-			soundData = new Float32Array(prevPos !== currentPosition ? self.bufferSize : available);
+		currentPosition === prevPos && self.emit('error', [Sink.Error(0x10)]);
+		if (available > 0 || prevPos === currentPosition){
+			try {
+				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount : available);
+			} catch(e) {
+				self.emit('error', [Sink.Error(0x12)]);
+				self.kill();
+				return;
+			}
 			self.process(soundData, self.channelCount);
-			written = audioDevice.mozWriteAudio(soundData);
+			written = self._audio.mozWriteAudio(soundData);
 			if (written < soundData.length){
 				tail = soundData.subarray(written);
 			}
@@ -402,14 +554,34 @@ sinks('moz', function(){
 
 	audioDevice.mozSetup(self.channelCount, self.sampleRate);
 
-	self.kill = Sink.doInterval(bufferFill, 20);
+	this._timers = [];
+
+	this._timers.push(Sink.doInterval(function () {
+		// Check for complete death of the output
+		if (+new Date - self.previousHit > 2000) {
+			self._audio = audioDevice = new Audio();
+			audioDevice.mozSetup(self.channelCount, self.sampleRate);
+			currentWritePosition = 0;
+			self.emit('error', [Sink.Error(0x11)]);
+		}
+	}, 1000));
+
+	this._timers.push(Sink.doInterval(bufferFill, 20));
+
 	self._bufferFill	= bufferFill;
 	self._audio		= audioDevice;
 }, {
 	// These are somewhat safe values...
-	bufferSize: 16384,
+	bufferSize: 24576,
 	preBufferSize: 24576,
-	getPlaybackTime: function(){
+	kill: function () {
+		while(this._timers.length){
+			this._timers[0]();
+			this._timers.splice(0, 1);
+		}
+		this.emit('kill');
+	},
+	getPlaybackTime: function() {
 		return this._audio.mozCurrentSampleOffset() / this.channelCount;
 	}
 });
@@ -493,6 +665,8 @@ sinks('webkit', function(readFn, channelCount, bufferSize, sampleRate){
 			fixChrome82795[i] === this._node && fixChrome82795.splice(i--, 1);
 		}
 		this._node = this._context = null;
+		this.kill();
+		this.emit('kill');
 	},
 	getPlaybackTime: function(){
 		return this._context.currentTime * this.sampleRate;
@@ -514,35 +688,155 @@ sinks('dummy', function(){
 		self.process(soundData, self.channelCount);
 	}
 
-	self.kill = Sink.doInterval(bufferFill, self.bufferSize / self.sampleRate * 1000);
+	self._kill = Sink.doInterval(bufferFill, self.bufferSize / self.sampleRate * 1000);
 
 	self._callback		= bufferFill;
-}, null, true);
+}, {
+	kill: function () {
+		this._kill();
+		this.emit('kill');
+	},
+}, true);
 
 Sink.sinks		= Sink.devices = sinks;
 Sink.Recording		= Recording;
 
-Sink.doInterval		= function(callback, timeout){
-	var	BlobBuilder	= typeof window === 'undefined' ? undefined : window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder || window.BlobBuilder,
-		timer, id, prev;
-	if ((Sink.doInterval.backgroundWork || Sink.devices.moz.backgroundWork) && BlobBuilder){
-		try{
-			prev	= new BlobBuilder();
-			prev.append('setInterval(function(){ postMessage("tic"); }, ' + timeout + ');');
-			id	= (window.MozURL || window.webkitURL || window.MSURL || window.OURL || window.URL).createObjectURL(prev.getBlob());
-			timer	= new Worker(id);
+(function(){
+
+var	BlobBuilder	= typeof window === 'undefined' ? undefined :
+	window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder || window.BlobBuilder,
+	URL		= typeof window === 'undefined' ? undefined : (window.MozURL || window.webkitURL || window.MSURL || window.OURL || window.URL);
+
+/**
+ * Creates an inline worker using a data/blob URL, if possible.
+ *
+ * @static Sink
+ *
+ * @arg {String} script
+ *
+ * @return {Worker} A web worker, or null if impossible to create.
+*/
+
+function inlineWorker (script) {
+	var	worker	= null,
+		url, bb;
+	try {
+		bb	= new BlobBuilder();
+		bb.append(script);
+		url	= URL.createObjectURL(bb.getBlob());
+		worker	= new Worker(url);
+
+		worker._terminate	= worker.terminate;
+		worker._url		= url;
+		bb			= null;
+
+		worker.terminate = function () {
+			this._terminate;
+			URL.revokeObjectURL(this._url);
+		};
+
+		inlineWorker.type = 'blob';
+
+		return worker;
+
+	} catch (e) {}
+
+	try {
+		worker			= new Worker('data:text/javascript;base64,' + btoa(script));
+		inlineWorker.type	= 'data';
+
+		return worker;
+
+	} catch (e) {}
+
+	return worker;
+}
+
+inlineWorker.ready = inlineWorker.working = false;
+
+Sink.EventEmitter.call(inlineWorker);
+
+inlineWorker.test = function () {
+	var	worker	= inlineWorker('this.onmessage=function(e){postMessage(e.data)}'),
+		data	= 'inlineWorker';
+	inlineWorker.ready = inlineWorker.working = false;
+
+	function ready(success) {
+		if (inlineWorker.ready) return;
+		inlineWorker.ready	= true;
+		inlineWorker.working	= success;
+		inlineWorker.emit('ready', [success]);
+		inlineWorker.off('ready');
+	}
+
+	if (!worker) {
+		ready(false);
+	} else {
+		worker.onmessage = function (e) {
+			ready(e.data === data);
+		};
+		worker.postMessage(data);
+		setTimeout(function () {
+			ready(false);
+		}, 1000);
+	}
+};
+
+Sink.inlineWorker = inlineWorker;
+
+inlineWorker.test();
+
+}());
+
+/**
+ * Creates a timer with consistent (ie. not clamped) intervals even in background tabs.
+ * Uses inline workers to achieve this. If not available, will revert to regular timers.
+ *
+ * @static Sink
+ * @name doInterval
+ *
+ * @arg {Function} callback The callback to trigger on timer hit.
+ * @arg {Number} timeout The interval between timer hits.
+ *
+ * @return {Function} A function to cancel the timer.
+*/
+
+Sink.doInterval		= function (callback, timeout) {
+	var timer, kill;
+
+	function create (noWorker) {
+		if (Sink.inlineWorker.working && !noWorker) {
+			timer = Sink.inlineWorker('setInterval(function(){ postMessage("tic"); }, ' + timeout + ');');
 			timer.onmessage = function(){
 				callback();
 			};
-			return function(){
+			kill = function () {
 				timer.terminate();
-				(window.MozURL || window.webkitURL || window.MSURL || window.OURL || window.URL).revokeObjectURL(id);
 			};
-		} catch(e){};
+		} else {
+			timer = setInterval(callback, timeout);
+			kill = function(){
+				clearInterval(timer);
+			};
+		}
 	}
-	timer = setInterval(callback, timeout);
-	return function(){
-		clearInterval(timer);
+
+	if (Sink.doInterval.backgroundWork || Sink.devices.moz.backgroundWork){
+		Sink.inlineWorker.ready ? create() : Sink.inlineWorker.on('ready', function(){
+			create();
+		});
+	} else {
+		create(true);
+	}
+
+	return function () {
+		if (!kill) {
+			Sink.inlineWorker.ready || Sink.inlineWorker.on('ready', function () {
+				kill && kill();
+			});
+		} else {
+			kill();
+		}
 	};
 };
 
@@ -553,8 +847,8 @@ Sink.doInterval.backgroundWork = true;
 /**
  * If method is supplied, adds a new interpolation method to Sink.interpolation, otherwise sets the default interpolation method (Sink.interpolate) to the specified property of Sink.interpolate.
  *
- * @param {String} name The name of the interpolation method to get / set.
- * @param {Function} method The interpolation method. (Optional)
+ * @arg {String} name The name of the interpolation method to get / set.
+ * @arg {Function} !method The interpolation method.
 */
 
 function interpolation(name, method){
@@ -603,11 +897,16 @@ interpolation('linear');
 /**
  * Resamples a sample buffer from a frequency to a frequency and / or from a sample rate to a sample rate.
  *
- * @param {Float32Array} buffer The sample buffer to resample.
- * @param {number} fromRate The original sample rate of the buffer, or if the last argument, the speed ratio to convert with.
- * @param {number} fromFrequency The original frequency of the buffer, or if the last argument, used as toRate and the secondary comparison will not be made.
- * @param {number} toRate The sample rate of the created buffer.
- * @param {number} toFrequency The frequency of the created buffer.
+ * @static Sink
+ * @name resample
+ *
+ * @arg {Buffer} buffer The sample buffer to resample.
+ * @arg {Number} fromRate The original sample rate of the buffer, or if the last argument, the speed ratio to convert with.
+ * @arg {Number} fromFrequency The original frequency of the buffer, or if the last argument, used as toRate and the secondary comparison will not be made.
+ * @arg {Number} toRate The sample rate of the created buffer.
+ * @arg {Number} toFrequency The frequency of the created buffer.
+ *
+ * @return The new resampled buffer.
 */
 Sink.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or toRate */, toRate, toFrequency){
 	var
@@ -626,8 +925,12 @@ Sink.resample	= function(buffer, fromRate /* or speed */, fromFrequency /* or to
 /**
  * Splits a sample buffer into those of different channels.
  *
- * @param {Float32Array} buffer The sample buffer to split.
- * @param {number} channelCount The number of channels to split to.
+ * @static Sink
+ * @name deinterleave
+ *
+ * @arg {Buffer} buffer The sample buffer to split.
+ * @arg {Number} channelCount The number of channels to split to.
+ *
  * @return {Array} An array containing the resulting sample buffers.
 */
 
@@ -648,9 +951,14 @@ Sink.deinterleave = function(buffer, channelCount){
 /**
  * Joins an array of sample buffers into a single buffer.
  *
- * @param {Array} buffers The buffers to join.
- * @param {Number} channelCount The number of channels. Defaults to buffers.length
- * @param {Array} buffer The output buffer. (optional)
+ * @static Sink
+ * @name resample
+ *
+ * @arg {Array} buffers The buffers to join.
+ * @arg {Number} !channelCount The number of channels. Defaults to buffers.length
+ * @arg {Buffer} !buffer The output buffer.
+ *
+ * @return {Buffer} The interleaved buffer created.
 */
 
 Sink.interleave = function(buffers, channelCount, buffer){
@@ -670,8 +978,13 @@ Sink.interleave = function(buffers, channelCount, buffer){
 /**
  * Mixes two or more buffers down to one.
  *
- * @param {Array} buffer The buffer to append the others to.
- * @param {Array} bufferX The buffers to append from.
+ * @static Sink
+ * @name mix
+ *
+ * @arg {Buffer} buffer The buffer to append the others to.
+ * @arg {Buffer} bufferX The buffers to append from.
+ *
+ * @return {Buffer} The mixed buffer.
 */
 
 Sink.mix = function(buffer){
@@ -689,7 +1002,12 @@ Sink.mix = function(buffer){
 /**
  * Resets a buffer to all zeroes.
  *
- * @param {Array} buffer The buffer to reset.
+ * @static Sink
+ * @name resetBuffer
+ *
+ * @arg {Buffer} buffer The buffer to reset.
+ *
+ * @return {Buffer} The 0-reset buffer.
 */
 
 Sink.resetBuffer = function(buffer){
@@ -702,10 +1020,15 @@ Sink.resetBuffer = function(buffer){
 };
 
 /**
- * Copies the content of an array to another array.
+ * Copies the content of a buffer to another buffer.
  *
- * @param {Array} buffer The buffer to copy from.
- * @param {Array} result The buffer to copy to. Optional.
+ * @static Sink
+ * @name clone
+ *
+ * @arg {Buffer} buffer The buffer to copy from.
+ * @arg {Buffer} !result The buffer to copy to.
+ *
+ * @return {Buffer} A clone of the buffer.
 */
 
 Sink.clone = function(buffer, result){
@@ -721,8 +1044,11 @@ Sink.clone = function(buffer, result){
 /**
  * Creates an array of buffers of the specified length and the specified count.
  *
- * @param {Number} length The length of a single channel.
- * @param {Number} channelCount The number of channels.
+ * @static Sink
+ * @name createDeinterleaved
+ *
+ * @arg {Number} length The length of a single channel.
+ * @arg {Number} channelCount The number of channels.
  * @return {Array} The array of buffers.
 */
 
