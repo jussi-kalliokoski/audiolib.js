@@ -1,5 +1,5 @@
-SOURCE := js/api-*.js js/*/*
-IN := js/wrapper-start.js $(SOURCE) js/wrapper-end.js
+SOURCE := src/api-*.js src/*/*
+IN := src/wrapper-start.js $(SOURCE) src/wrapper-end.js
 TEMPLATES := $(SOURCE) templates/
 COMPILER := cat
 MINIFIER := uglifyjs
