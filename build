@@ -2,7 +2,7 @@
 
 /* vim: set filetype=javascript */
 
-var	sys		= require('sys');
+var	sys		= require('util');
 
 function print(){
 	[].slice.call(arguments).forEach(function(a){
