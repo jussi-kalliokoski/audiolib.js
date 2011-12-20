@@ -1,14 +1,14 @@
 SOURCE := js/api-*.js js/*/*
 IN := js/wrapper-start.js $(SOURCE) js/wrapper-end.js
 TEMPLATES := $(SOURCE) templates/
-COMPILE := cat
-MINIFY := uglifyjs
+COMPILER := cat
+MINIFIER := uglifyjs
 
 all: lib/audiolib.min.js docs
 
 lib/audiolib.js: $(IN)
 	mkdir lib/ -p
-	$(COMPILE) $^ > $@
+	$(COMPILER) $^ > $@
 
 %.min.js: %.js
 	$(MINIFIER) $^ > $@ 
