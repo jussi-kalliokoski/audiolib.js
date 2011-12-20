@@ -392,17 +392,17 @@ if (args.config){
 var updatables = {
 	wrappers: function(){
 		var builder = builderContext();
-		ls('js', /^\w+$/).forEach(function(dir){
-			ls(['js', dir], /\.js$/i).forEach(function(f){
-				builder.run(read(['js', dir, f]), _path(dir, f));
+		ls('src', /^\w+$/).forEach(function(dir){
+			ls(['src', dir], /\.js$/i).forEach(function(f){
+				builder.run(read(['src', dir, f]), _path(dir, f));
 			});
 		});
-		ls('js', /^api-(\w+-?)+\.js$/).forEach(function(file){
-			builder.run(read(['js', file]), _path('js', file));
+		ls('src', /^api-(\w+-?)+\.js$/).forEach(function(file){
+			builder.run(read(['src', file]), _path('src', file));
 		});
 
-		save('js/wrapper-start.js', builder.run(read('templates/wrapper-start.js')));
-		save('js/wrapper-end.js', builder.run(read('templates/wrapper-end.js')));
+		save('src/wrapper-start.js', builder.run(read('templates/wrapper-start.js')));
+		save('src/wrapper-end.js', builder.run(read('templates/wrapper-end.js')));
 		print('Wrappers updated.');
 	},
 	'package': function(){
@@ -412,13 +412,13 @@ var updatables = {
 	},
 	'docs': function(){
 		var builder = builderContext();
-		ls('js', /^\w+$/).forEach(function(dir){
-			ls(['js', dir], /\.js$/i).forEach(function(f){
-				builder.run(read(['js', dir, f]), _path(dir, f));
+		ls('src', /^\w+$/).forEach(function(dir){
+			ls(['src', dir], /\.js$/i).forEach(function(f){
+				builder.run(read(['src', dir, f]), _path(dir, f));
 			});
 		});
-		ls('js', /^api-(\w+-?)+\.js$/).forEach(function(file){
-			builder.run(read(['js', file]), _path('js', file));
+		ls('src', /^api-(\w+-?)+\.js$/).forEach(function(file){
+			builder.run(read(['src', file]), _path('src', file));
 		});
 
 		builder.commentParser.comments.forEach(function(comment){
