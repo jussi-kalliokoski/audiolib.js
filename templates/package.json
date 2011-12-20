@@ -19,5 +19,8 @@
 	"directories":	{
 		"lib":		"./lib"
 	},
+	"scripts":	{
+		"preinstall":	"make all"
+	},
 	"main":		"./lib/audiolib"
 }
