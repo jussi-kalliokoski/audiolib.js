@@ -277,13 +277,13 @@ SinkClass.prototype = {
 		this.ringBuffer && (this.channelMode === 'interleaved' ? this.ringSpin : this.ringSpinInterleaved).apply(this, arguments);
 		this.writeBuffersSync.apply(this, arguments);
 		if (this.channelMode === 'interleaved') {
-			this.readFn && this.readFn.apply(this, arguments);
 			this.emit('audioprocess', arguments);
+			this.readFn && this.readFn.apply(this, arguments);
 		} else {
 			var	soundDataSplit	= Sink.deinterleave(soundData, this.channelCount),
 				args		= [soundDataSplit].concat([].slice.call(arguments, 1));
-			this.readFn && this.readFn.apply(this, args);
 			this.emit('audioprocess', args);
+			this.readFn && this.readFn.apply(this, args);
 			Sink.interleave(soundDataSplit, this.channelCount, soundData);
 		}
 		this.writeBuffersAsync.apply(this, arguments);
@@ -536,7 +536,8 @@ sinks('moz', function(){
 		currentPosition === prevPos && self.emit('error', [Sink.Error(0x10)]);
 		if (available > 0 || prevPos === currentPosition){
 			try {
-				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount : available);
+				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount :
+					self.forceBufferSize ? available < self.bufferSize * 2 ? self.bufferSize * 2 : available : available);
 			} catch(e) {
 				self.emit('error', [Sink.Error(0x12)]);
 				self.kill();
@@ -566,7 +567,7 @@ sinks('moz', function(){
 		}
 	}, 1000));
 
-	this._timers.push(Sink.doInterval(bufferFill, 20));
+	this._timers.push(Sink.doInterval(bufferFill, self.interval));
 
 	self._bufferFill	= bufferFill;
 	self._audio		= audioDevice;
@@ -574,6 +575,8 @@ sinks('moz', function(){
 	// These are somewhat safe values...
 	bufferSize: 24576,
 	preBufferSize: 24576,
+	forceBufferSize: false,
+	interval: 20,
 	kill: function () {
 		while(this._timers.length){
 			this._timers[0]();
@@ -767,6 +770,8 @@ inlineWorker.test = function () {
 		inlineWorker.working	= success;
 		inlineWorker.emit('ready', [success]);
 		inlineWorker.off('ready');
+		success && worker && worker.terminate();
+		worker = null;
 	}
 
 	if (!worker) {
@@ -841,6 +846,16 @@ Sink.doInterval		= function (callback, timeout) {
 };
 
 Sink.doInterval.backgroundWork = true;
+
+Sink.singleton = function () {
+	var sink = Sink.apply(null, arguments);
+
+	Sink.singleton = function () {
+		return sink;
+	};
+
+	return sink;
+};
 
 (function(){
 
