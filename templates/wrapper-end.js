@@ -85,7 +85,6 @@ Codec('wav', audioLib.PCMData);
 
 audioLib.Automation			= Automation;
 audioLib.BufferEffect			= BufferEffect;
-audioLib.EffectChain			= EffectChain;
 audioLib.EffectClass			= EffectClass;
 audioLib.GeneratorClass			= GeneratorClass;
 audioLib.codecs				= audioLib.Codec = Codec;

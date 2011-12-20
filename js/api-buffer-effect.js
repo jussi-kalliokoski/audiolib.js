@@ -42,9 +42,6 @@ BufferEffect.prototype = {
 		}
 		return out;
 	},
-	join:	function(){
-		return BufferEffectChain.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));
-	},
 	addPreProcessing: function(){
 		var i;
 		for (i=0; i<this.effects.length; i++){
