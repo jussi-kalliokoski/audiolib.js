@@ -1,4 +1,3 @@
-//#processor FFT
 var FFT = (function(){
 
 var	sin	= Math.sin,
@@ -124,3 +123,39 @@ proto.sampleRate	= 44100;
 proto.method		= 'forward';
 
 }(FFT.prototype));
+
+/**
+ * A Fast Fourier Transform module.
+ *
+ * @name FFT
+ * @processor
+ *
+ * @arg =!sampleRate
+ * @arg =!bufferSize
+ *
+ * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
+ * @param type:UInt default:4096 bufferSize The buffer size of the FFT.
+ * @param type:String min:0.0 default:forward method The direction to do the FFT to.
+*/
+
+/**
+ * Forward process the buffer.
+ *
+ * @name forward
+ * @method FFT
+*/
+
+/**
+ * Backward process the buffer.
+ *
+ * @name backward
+ * @method FFT
+*/
+
+/**
+ * Calculate the spectrum for the FFT buffer.
+ *
+ * @name calculateSpectrum
+ * @method FFT
+*/
+
