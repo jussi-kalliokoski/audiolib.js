@@ -20,7 +20,7 @@
 		"lib":		"./lib"
 	},
 	"scripts":	{
-		"preinstall":	"make all"
+		"preinstall":	"make lib/audiolib.js"
 	},
 	"main":		"./lib/audiolib"
 }
