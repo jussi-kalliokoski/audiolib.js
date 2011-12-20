@@ -39,9 +39,6 @@ EffectClass.prototype = {
 		}
 		return out;
 	},
-	join:	function(){
-		return EffectChain.apply(0, [this].concat(Array.prototype.splice.call(arguments, 0)));
-	},
 /**
  * Adds a callback that is applied before pushSample() to the effect.
  *
