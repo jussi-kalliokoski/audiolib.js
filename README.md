@@ -1,12 +1,77 @@
-audiolib.js
-===========
+## Overview
 
-audiolib.js is a powerful audio tools library for javascript.
+audiolib.js is a powerful toolkit for audio written in JS.
 
-Amongst other things, it's bundled with [sink.js](https://github.com/jussi-kalliokoski/sink.js) that provides a Sink class which has a consistent callback audio output API that supports both Firefox4's Audio Data API and Chrome 10's Web Audio API.
+It ships with most of the common tools such as:
 
-Usage
------
+* Reverbs
+* Comb/IIR/Biquad/All-Pass/Low-Pass/Band-Pass/High-Pass filters
+* Delays
+* Oscillators
+* FFT and other analyzing tools
+* Step sequencers
+* Envelope controls
+* Noise generators
+* Samplers
+
+In addition, it hosts these tools in a comprehensive framework, that makes it simple to write a single effect and provides the higher level abstraction on top of that, making the whole system comfortable for both users and plugin authors.
+
+As for the higher level abstraction, audiolib.js features a sophisticated automation API, alongside with pre-processing hooks, sample level access and buffer level management.
+
+audiolib.js is bundled with some tools to make an audio developer's life in a browser much easier, such as sink.js for a consistent API between the experimental browser audio APIs. To complement that, audiolib.js also bundles pcmdata.js that is a WAV encoder/decoder, so that you can turn the recordings you make using Sink.js into WAV files that the user can save. Other tools include the AudioWorker API that allows you to create web workers from strings or functions, bundling audiolib.js and its plugins, all ready to use from the worker.
+
+
+## How to get it
+
+audiolib.js is available both in browser and CLI environments.
+
+To install via npm:
+
+```
+$ npm install audiolib
+```
+
+For browser environments, download the latest version [here](https://github.com/jussi-kalliokoski/audiolib.js/downloads), or get the [source code](https://github.com/jussi-kalliokoski/audiolib.js) from [GitHub](https://github.com/) and build it yourself. Don't worry, instructions are included.
+
+## Documentation
+
+Documentation is available at http://docs.audiolibjs.org/ . Tutorials can be found in the [wiki](https://github.com/jussi-kalliokoski/audiolib.js/wiki)
+
+## Demos
+
+(if you have your own, please fork & add | msg me)
+
+* [JSMad](http://jsmad.org/)
+* [Orbisyn](http://niiden.com/orbisyn/)
+* [jams.no.de](http://jams.no.de)
+
+## Libraries bundled with audiolib.js
+
+* [sink.js](https://github.com/jussi-kalliokoski/sink.js), for output and buffer handling.
+* [PCMData.js](https://github.com/jussi-kalliokoski/pcmdata.js), for WAV codecs.
+* [binary.js](https://github.com/jussi-kalliokoski/binary.js), for PCMData.js and general binary data processing.
+* [fft.js](https://github.com/jussi-kalliokoski/fft.js), for super fast FT.
+
+## Related libraries
+
+* [XAudioJS](https://github.com/grantgalitz/XAudioJS) is an alternative audio sink with built-in resampling and a Flash fallback. More developer-controlled output environment, that might be more sane for example games.
+* [dynamicaudio.js](http://github.com/bfirsh/dynamicaudio.js) is a Flash fallback for Mozilla Audio Data API.
+* [Audiolet](https://github.com/oampo/Audiolet) is a graph-based audio routing framework with a lot of nice stuff.
+* [DSP.js](https://github.com/corbanbrook/dsp.js) is an extensive DSP toolkit originally designed for the Mozilla Audio Data API.
+
+## Plugins
+
+Specifications for plugin developers can be found in https://github.com/jussi-kalliokoski/audiolib.js/tree/master/specs
+
+## Credits 
+
+This project is maintained by [Jussi Kalliokoski](https://github.com/jussi-kalliokoski), with significant contributions from [David Govea](https://github.com/davidgovea). The project is funded by the awesome [ofmlabs](http://ofmlabs.org) !
+
+## License
+
+Licensed under MIT license.
+
+## Example usage
 
 ```javascript
 // Create an output.
@@ -101,8 +166,7 @@ bufFx.append(buffer);
 
 ```
 
-Audio Workers
--------------
+### Audio Workers
 
 You can also use audiolib.js inside Audio Workers (Firefox 6.0+ only), but this is a whole another story. There are many approaches to that, you can include audiolib.js via an external javascript worker file, but audiolib.js offers an alternative approach to this: inline workers. Inline audio workers include the source code already downloaded, and thus creates a new worker that already contains audiolib.js. Inline Audio Workers also allow you to inject code into workers. Here is some code to get started, also see tests/audioworker.html.
 
@@ -127,48 +191,3 @@ worker.terminate();
 ```
 
 It's important to remember that even though that code looks like it's running in the same environment as the code it's written in, it's actually not and runs in the context of the worker, meaning you can't cross-reference variables. Also, the injections are sandboxed, so if you need to create a global variable, drop var.
-
-Node.JS
--------
-
-To install the latest version on NodeJS, please use the NPMJS:
-
-```shell
-
-$ npm install audiolib
-
-```
-
-You can now use ``` require('audiolib') ``` to use the library just as you would on the clientside.
-
-Demos
------
-
-(if you have your own, please fork & add | msg me)
-
-* [JSMad](http://jsmad.org/)
-* [Orbisyn](http://niiden.com/orbisyn/)
-* [jams.no.de](http://jams.no.de)
-
-Libraries bundled with audiolib.js
-----------------------------------
-
-* [sink.js](https://github.com/jussi-kalliokoski/sink.js), for output and buffer handling.
-* [PCMData.js](https://github.com/jussi-kalliokoski/pcmdata.js), for WAV codecs.
-* [binary.js](https://github.com/jussi-kalliokoski/binary.js), for PCMData.js and general binary data processing.
-* [fft.js](https://github.com/jussi-kalliokoski/fft.js), for super fast FT.
-
-Related libraries
------------------
-
-* [XAudioJS](https://github.com/grantgalitz/XAudioJS) is an alternative audio sink with built-in resampling and a Flash fallback. More developer-controlled output environment, that might be more sane for example games.
-* [dynamicaudio.js](http://github.com/bfirsh/dynamicaudio.js) is a Flash fallback for Mozilla Audio Data API.
-* [Audiolet](https://github.com/oampo/Audiolet) is a graph-based audio routing framework with a lot of nice stuff.
-* [DSP.js](https://github.com/corbanbrook/dsp.js) is an extensive DSP toolkit originally designed for the Mozilla Audio Data API.
-
-Plugins
--------
-
-Specifications for plugin developers can be found in https://github.com/jussi-kalliokoski/audiolib.js/tree/master/specs
-
-Licensed under MIT license.
