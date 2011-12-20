@@ -134,7 +134,7 @@ stepSeq.generate();
 // Get the value
 stepSeq.value; // 0.0 - 1.0
 
-//Recording
+// Recording
 
 var rec = dev.record();
 
@@ -148,17 +148,6 @@ var audioElement = new Audio(
 
 // Resampling buffers
 audioLib.Sampler.resample(buffer, fromSampleRate, fromFrequency, toSampleRate, toFrequency);
-
-// Effect chains
-var fx = new audioLib.EffectChain(fx1, fx2, fx3 /*, ...*/);
-// Or...
-var fx = fx1.join(fx2, fx3 /*, ...*/);
-
-// Used just as if it were a single effect:
-sample = fx.pushSample(sample);
-
-// You can adjust mix or other properties of the chain simply as it were an array.
-fx[0].mix = 0.75;
 
 // If you are used to buffer based approach (for example DSP.js) and don't need to do any raw manipulation, all the effects can be used as buffer based too.
 var bufFx = audioLib.Delay/* or any effect */.createBufferBased(channelCount, /* the parameters needed by the specific effect */);
