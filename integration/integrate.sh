@@ -2,7 +2,7 @@
 
 echo "Integrating fft.js..."
 cat fft.js/fft.js > ../src/process/fft.js
-echo "" >> ../src/process/fft.js
+echo "" >> ../src/processors/fft.js
 cat prepend-fft.js >> ../src/process/fft.js
 
 echo "Integrating pcmdata.js..."
