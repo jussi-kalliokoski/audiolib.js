@@ -14,7 +14,7 @@
 		"type":		"MIT"
 	}],
 	"bugs":		{
-		"web":		"http://github.com/jussi-kalliokoski/audiolib.js/issues"
+		"url":		"http://github.com/jussi-kalliokoski/audiolib.js/issues"
 	},
 	"directories":	{
 		"lib":		"./lib"
