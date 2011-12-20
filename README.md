@@ -45,6 +45,7 @@ Documentation is available at http://docs.audiolibjs.org/ . Tutorials can be fou
 * [JSMad](http://jsmad.org/)
 * [Orbisyn](http://niiden.com/orbisyn/)
 * [jams.no.de](http://jams.no.de)
+* [ofmlabs codecs](http://codecs.ofmlabs.org/)
 
 ## Libraries bundled with audiolib.js
 
