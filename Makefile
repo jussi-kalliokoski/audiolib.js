@@ -29,5 +29,9 @@ package: $(TEMPLATES)
 docs: $(TEMPLATES)
 	./build update docs
 
+release: lib/audiolib.min.js
+	rm -rf lib/audiolib.js/tar.gz
+	cd lib && tar pczf audiolib.js.tar.gz *.js
+
 clean:
 	rm lib/ -rf
