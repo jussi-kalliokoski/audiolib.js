@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
 echo "Integrating fft.js..."
-cat fft.js/fft.js > ../src/process/fft.js
+cat fft.js/fft.js > ../src/processors/fft.js
 echo "" >> ../src/processors/fft.js
-cat prepend-fft.js >> ../src/process/fft.js
+cat append-fft.js >> ../src/processors/fft.js
 
 echo "Integrating pcmdata.js..."
 cat prepend-pcmdata.js > ../src/io/pcmdata.js
