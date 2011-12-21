@@ -14,6 +14,28 @@ proto.process = function(buffer){
 	return this.calculateSpectrum();
 };
 
+proto.setParam = function (name, value) {
+	switch (name) {
+	case "bufferSize":
+		if (this.bufferSize === value) break;
+
+		this.fullScratch = this.fullScratch || this.scratch;
+		if (this.fullScratch.length < value) {
+			this.fullScratch = new Float32Array(value);
+		}
+
+		this.scratch = this.fullScratch.subarray(0, value);
+		break;
+	}
+	this[name] = value;
+};
+
+proto.resetScratch = function () {
+	this.fullScratch	= null;
+	this.scratch		= new Float32Array(this.bufferSize);
+};
+
+proto.fullScratch	= null;
 proto.sampleRate	= 44100;
 proto.method		= 'forward';
 
