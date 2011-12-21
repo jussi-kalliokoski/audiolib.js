@@ -32,7 +32,7 @@ To install via npm:
 $ npm install audiolib
 ```
 
-For browser environments, download the latest version [here](https://github.com/jussi-kalliokoski/audiolib.js/downloads), or get the [source code](https://github.com/jussi-kalliokoski/audiolib.js) from [GitHub](https://github.com/) and build it yourself. Don't worry, instructions are included.
+For browser environments, download the latest version [here](https://github.com/jussi-kalliokoski/audiolib.js/downloads), or get the [source code](https://github.com/jussi-kalliokoski/audiolib.js) from GitHub and build it yourself. Don't worry, instructions are included.
 
 ## Documentation
 
@@ -76,16 +76,26 @@ Licensed under MIT license.
 ## Example usage
 
 ```javascript
-// Create an output.
+/* Create an output. */
+
 var dev = audioLib.Sink(function(sampleBuffer){
 	// Fill the buffer here.
 }, channelCount, preBufferSize, sampleRate);
 
-// Note that all the arguments are optional, so if you want to create a write-only device, you can leave the arguments blank.
-// Writing buffers:
+/*
+ Note that all the arguments are optional,
+ so if you want to create a write-only
+ device, you can leave the arguments blank.
+ Also, it is highly discouraged to set any
+ of the arguments if you aren't sure that you
+ need them. Use null if you need to skip
+ arguments.
+*/
+
+/* Writing buffers: */
 dev.writeBuffer(buffer);
 
-// Effects
+/ Effects */
 
 var del = audioLib.Delay(sampleRate, delay, feedback);
 
@@ -97,49 +107,49 @@ var flt = audioLib.Reverb(sampleRate, channelCount, wet, dry, roomSize, damping)
 
 var dist = audioLib.BiquadFilter(sampleRate, b0, b1, b2, a1, a2);
 
-// to feed a new input sample
+/* to feed a new input sample */
 effect.pushSample(sample);
-// to get the output
+/* to get the output */
 sample = effect.getMix();
 
-// Synthesis
+/* Synthesis */
 
 var osc = audioLib.Oscillator(sampleRate, frequency);
 
-// to generate a new sample
-osc.generate(fm1, fm2, ..., fmX);
-// to get the output
+/* to generate a new sample */
+osc.generate();
+/* to get the output */
 osc.getMix();
 
-// Sampler
+/* Sampler */
 
 var sampler = audioLib.Sampler(sampleRate, sampleBuffer, defaultPitch);
 
-// Envelopes
+/* Envelopes */
 
 var adsr = audioLib.ADSREnvelope(sampleRate, attack, decay, sustain, release);
 
-// to trigger the gate
+/* to trigger the gate */
 adsr.triggerGate(isOpen);
-// to update the value ** Do this on every sample fetch for this to work properly. also returns the current value
+/* to update the value ** Do this on every sample fetch for this to work properly. */
 adsr.generate();
-// Get the value
+/* Get the value */
 adsr.value; // 0.0 - 1.0, unless you put something more as sustain
 
 var stepSeq = new audioLib.StepSequencer(sampleRate, stepLength, stepArray, attack);
 
-// To start the sequence over
+/* To start the sequence over */
 stepSeq.triggerGate();
-// to update the value ** Do this on every sample fetch for this to work properly. also returns the current value
+/* to update the value ** Do this on every sample fetch for this to work properly. */
 stepSeq.generate();
-// Get the value
+/* Get the value */
 stepSeq.value; // 0.0 - 1.0
 
-// Recording
+/* Recording */
 
 var rec = dev.record();
 
-// To stop
+/* To stop */
 rec.stop();
 // To export wav
 var audioElement = new Audio(
@@ -147,11 +157,18 @@ var audioElement = new Audio(
 	btoa( rec.toWav() ) // presuming btoa is supported
 );
 
-// Resampling buffers
-audioLib.Sampler.resample(buffer, fromSampleRate, fromFrequency, toSampleRate, toFrequency);
+/* Resampling buffers */
+audioLib.Sampler.resample(buffer, fromSampleRate,
+	fromFrequency, toSampleRate, toFrequency);
 
-// If you are used to buffer based approach (for example DSP.js) and don't need to do any raw manipulation, all the effects can be used as buffer based too.
-var bufFx = audioLib.Delay/* or any effect */.createBufferBased(channelCount, /* the parameters needed by the specific effect */);
+/*
+ If you are used to buffer based approach (for example DSP.js)
+ and don't need to do any raw manipulation, all the effects
+ can be used as buffer based too.
+*/
+
+var bufFx = audioLib.Delay/* or any effect */.createBufferBased(
+	channelCount, /* the parameters needed by the specific effect */);
 
 bufFx.append(buffer);
 
@@ -165,17 +182,17 @@ You can also use audiolib.js inside Audio Workers (Firefox 6.0+ only), but this 
 
 var worker = audioLib.AudioWorker(function(){
 	device = audioLib.Sink(function(buffer, channelCount){
-		// Do some audio processing, like you weren't in a worker.
+		/* Do some audio processing, like you weren't in a worker. */
 	});
 }, true /* enables injections */);
 
-// Injection
+/* Injection */
 
 worker.inject(function(){
-	// Execute some code inside the worker.
+	/* Execute some code inside the worker. */
 });
 
-// Close the worker
+/* Close the worker */
 
 worker.terminate();
 
