@@ -95,7 +95,14 @@ var dev = audioLib.Sink(function(sampleBuffer){
 /* Writing buffers: */
 dev.writeBuffer(buffer);
 
-/ Effects */
+/*
+ You can also attach multiple listeners
+ to the same Sink instance.
+*/
+dev.on('audioprocess', function(...){});
+
+
+/* Effects */
 
 var del = audioLib.Delay(sampleRate, delay, feedback);
 
