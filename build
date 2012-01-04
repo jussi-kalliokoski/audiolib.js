@@ -323,6 +323,16 @@ function builderContext(s){
 			}
 		}
 	}, {
+		name: 'static',
+		exec: function(args){
+			args = args ? args.split(/\s+/g) : [];
+			this.static = true;
+			this.method = true;
+			if (args[0]) {
+				this.methodOf = args[0];
+			}
+		}
+	}, {
 		name: 'class',
 		exec: function(args){
 			this.class = true;

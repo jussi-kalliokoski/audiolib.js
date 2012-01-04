@@ -25,6 +25,11 @@ header > * {
 	float:		left;
 	position:	relative;
 	margin-left:	10px;
+	text-shadow:	1px 1px 1px rgba(0,0,0,.5), 0 0 3px rgba(177,177,177,.7);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family:	SansationRegular;
 }
 
 #search {
@@ -62,11 +67,12 @@ nav a {
 	background-color:	#272d34;
 	border-radius:		7px;
 	box-shadow:		0 0 10px black, 0 0 5px rgba(0,0,0,0.8) inset;
-	-webkit-transition:	box-shadow 0.5s ease-in-out;
-	-moz-transition:	box-shadow 0.5s ease-in-out;
-	-ms-transition:		box-shadow 0.5s ease-in-out;
-	-o-transition:		box-shadow 0.5s ease-in-out;
-	transition:		box-shadow 0.5s ease-in-out;
+	-webkit-transition:	box-shadow 0.2s ease-in-out;
+	-moz-transition:	box-shadow 0.2s ease-in-out;
+	-ms-transition:		box-shadow 0.2s ease-in-out;
+	-o-transition:		box-shadow 0.2s ease-in-out;
+	transition:		box-shadow 0.2s ease-in-out;
+	font-family:		SansationRegular;
 }
 
 nav a:hover {
@@ -215,7 +221,7 @@ components.forEach(function(func){
 	func.generator && elem.classList.add('generator');
 	func.control && elem.classList.add('control');
 
-	var html = '<h2>' + (func.assignName || func.name) + '</h2>';
+	var html = '<h2>' + (func.static ? func.methodOf + '.' : '') + (func.assignName || func.name) + '</h2>';
 	html += '<p>' + parseText(func.text) + '</p>';
 
 	if (func.arglist) {
@@ -242,7 +248,11 @@ components.forEach(function(func){
 	if (func.methods) {
 		html += '<h3>Methods</h3>';
 		func.methods.forEach(function(method){
-			html += '<div class="method"><h4>' + method.name + '(';
+			html += '<div class="method"><h4>';
+			if (method.static) {
+				html += '<span class="static">(Static)</span> ';
+			}
+			html += method.name + '(';
 			if (method.arglist) {
 				html += method.arglist.map(function(a){ return a.name }).join(', ');
 			}
@@ -299,7 +309,7 @@ components.forEach(function(func){
 	func.elem = elem;
 	content.appendChild(elem);
 
-	addNav(func.assignName || func.name);
+	addNav((func.static ? func.methodOf + '.' : '') + (func.assignName || func.name));
 });
 
 var searchbox = document.getElementById('search');
@@ -366,5 +376,6 @@ document.body.appendChild(infoBox);
 	//TODO: Add a mouseover infobox for this, it should explain the min and max values, etc.
 });
 		</script>
+		<link rel="stylesheet" href="/css/fonts/sansation/regular.css" />
 	</body>
 </html>
