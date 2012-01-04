@@ -206,9 +206,9 @@ documentation.forEach(function(func){
 
 var	content	= document.querySelector('div.content');
 var	nav	= document.querySelector('nav');
-function addNav(name) {
+function addNav(name, href) {
 	var elem	= document.createElement('a');
-	elem.href	= name;
+	elem.href	= href || name;
 	elem.innerHTML	= name;
 	nav.appendChild(elem);
 }
@@ -309,7 +309,7 @@ components.forEach(function(func){
 	func.elem = elem;
 	content.appendChild(elem);
 
-	addNav((func.static ? func.methodOf + '.' : '') + (func.assignName || func.name));
+	addNav((func.static ? func.methodOf + '.' : '') + (func.assignName || func.name), func.assignName || func.name);
 });
 
 var searchbox = document.getElementById('search');
