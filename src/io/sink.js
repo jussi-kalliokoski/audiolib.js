@@ -316,6 +316,21 @@ SinkClass.prototype = {
 		}
 	},
 /**
+ * Creates a proxy callback system for the sink instance.
+ *
+ * @method Sink
+ *
+ * @arg {Number} !bufferSize The buffer size for the proxy.
+*/
+	createProxy: function (bufferSize) {
+		var	proxy		= new Sink.Proxy(bufferSize, this.channelCount);
+		proxy.parentSink	= this;
+
+		this.on('audioprocess', proxy.callback);
+
+		return proxy;
+	},
+/**
  * Private method that handles the mixing of asynchronously written buffers.
  *
  * @method Sink
@@ -857,6 +872,51 @@ Sink.singleton = function () {
 	return sink;
 };
 
+function Proxy (bufferSize, channelCount) {
+	Sink.EventEmitter.call(this);
+
+	this.bufferSize		= isNaN(bufferSize) || bufferSize === null ? this.bufferSize : bufferSize;
+	this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount : channelCount;
+
+	var self = this;
+	this.callback	= function () {
+		return self.process.apply(self, arguments);
+	};
+
+	this.resetBuffer();
+}
+
+Proxy.prototype = {
+	buffer: null,
+	zeroBuffer: null,
+	parentSink: null,
+	bufferSize: 4096,
+	channelCount: 2,
+	offset: null,
+
+	resetBuffer: function () {
+		this.buffer	= new Float32Array(this.bufferSize);
+		this.zeroBuffer	= new Float32Array(this.bufferSize);
+	},
+
+	process: function (buffer, channelCount) {
+		this.offset === null && this.loadBuffer();
+
+		for (var i=0; i<buffer.length; i++) {
+			this.offset >= this.buffer.length && this.loadBuffer();
+			buffer[i] = this.buffer[this.offset++];
+		}
+	},
+
+	loadBuffer: function () {
+		this.offset = 0;
+		Sink.memcpy(this.zeroBuffer, 0, this.buffer, 0);
+		this.emit('audioprocess', [this.buffer, this.channelCount]);
+	},
+};
+
+Sink.Proxy = Proxy;
+
 (function(){
 
 /**
@@ -1074,6 +1134,47 @@ Sink.createDeinterleaved = function(length, channelCount){
 		result[i] = new Float32Array(length);
 	}
 	return result;
+};
+
+Sink.memcpy = function (src, srcOffset, dst, dstOffset, length) {
+	src	= src.subarray || src.slice ? src : src.buffer;
+	dst	= dst.subarray || dst.slice ? dst : dst.buffer;
+
+	src	= srcOffset ? src.subarray ?
+		src.subarray(srcOffset, length && srcOffset + length) :
+		src.slice(srcOffset, length && srcOffset + length) : src;
+
+	if (dst.set) {
+		dst.set(src, dstOffset);
+	} else {
+		for (var i=0; i<src.length; i++) {
+			dst[i + dstOffset] = src[i];
+		}
+	}
+
+	return dst;
+};
+
+Sink.memslice = function (buffer, offset, length) {
+	return buffer.subarray ? buffer.subarray(offset, length) : buffer.slice(offset, length);
+};
+
+Sink.mempad = function (buffer, out, offset) {
+	out = out.length ? out : new (buffer.constructor)(out);
+	Sink.memcpy(buffer, 0, out, offset);
+	return out;
+};
+
+Sink.linspace = function (start, end, out) {
+	var l, i, n, step;
+	out	= out.length ? (l=out.length) && out : Array(l=out);
+	step	= (end - start) / --l;
+	for (n=start+step, i=1; i<l; i++, n+=step) {
+		out[i] = n;
+	}
+	out[0]	= start;
+	out[l]	= end;
+	return out;
 };
 
 global.Sink = Sink;
