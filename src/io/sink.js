@@ -1156,5 +1156,17 @@ Sink.linspace = function (start, end, out) {
 	return out;
 };
 
+Sink.ftoi = function (input, bitCount, output) {
+	var i, mask = Math.pow(2, bitCount - 1);
+
+	output = output || new (input.constructor)(input.length);
+
+	for (i=0; i<input.length; i++) {
+		output[i] = ~~(mask * input[i]);
+	}
+
+	return output;
+};
+
 global.Sink = Sink;
 }(function (){ return this; }()));
