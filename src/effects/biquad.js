@@ -19,7 +19,7 @@
  * @param {number} a1 Biquadratic difference equation parameter
  * @param {number} a2 Biquadratic difference equation parameter
 */
-function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
+function BiquadFilter (sampleRate, b0, b1, b2, a1, a2) {
 	this.reset.apply(this, arguments)
 }
 
@@ -28,10 +28,10 @@ function BiquadFilter(sampleRate, b0, b1, b2, a1, a2){
  * @constructor
  * @this BiquadFilterClass
 */
-BiquadFilter.BiquadFilterClass = function BiquadFilterClass(){
+BiquadFilter.BiquadFilterClass = function BiquadFilterClass () {
 	var k;
-	for (k in BiquadFilterClass.prototype){
-		if (BiquadFilterClass.prototype.hasOwnProperty){
+	for (k in BiquadFilterClass.prototype) {
+		if (BiquadFilterClass.prototype.hasOwnProperty) {
 			this[k] = this[k];
 		}
 	}
@@ -43,7 +43,8 @@ BiquadFilter.BiquadFilterClass.prototype = {
 	inputs:		null,
 	outputs:	null,
 	coefs:		null,
-	pushSample: function(s){
+
+	pushSample: function (s) {
 		var	c	= this.coefs,
 			i	= this.inputs,
 			o	= this.outputs;
@@ -54,10 +55,10 @@ BiquadFilter.BiquadFilterClass.prototype = {
 		o.unshift(this.sample);
 		return this.sample;
 	},
-	getMix: function(){
+	getMix: function () {
 		return this.sample;
 	},
-	reset: function(sampleRate, b0, b1, b2, a1, a2){
+	reset: function (sampleRate, b0, b1, b2, a1, a2) {
 		this.inputs = [0,0];
 		this.outputs = [0,0];
 		this.sampleRate = isNaN(sampleRate) ? this.sampleRate : sampleRate;
@@ -81,7 +82,7 @@ BiquadFilter.BiquadFilterClass.prototype = {
  * @param type:Float units:Hz cutoff Low-pass cutoff frequency.
  * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
-BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
+BiquadFilter.LowPass = function (sampleRate, cutoff, Q) {
 	var	w0	= 2* Math.PI*cutoff/sampleRate,
 		cosw0	= Math.cos(w0),
 		sinw0   = Math.sin(w0),
@@ -109,7 +110,7 @@ BiquadFilter.LowPass = function(sampleRate, cutoff, Q){
  * @param type:Float units:Hz cutoff High-pass cutoff frequency.
  * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
-BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
+BiquadFilter.HighPass = function (sampleRate, cutoff, Q) {
 	var	w0	= 2* Math.PI*cutoff/sampleRate,
 		cosw0   = Math.cos(w0),
 		sinw0   = Math.sin(w0),
@@ -137,7 +138,7 @@ BiquadFilter.HighPass = function(sampleRate, cutoff, Q){
  * @param type:Float units:Hz min:0.0 f0 Significant frequency: filter will cause a phase shift of 180deg at f0.
  * @param type:Float min:0.0 max:1.0 Q Filter Q-factor (Q<0.5 filter underdamped, Q>0.5 filter overdamped)
 */
-BiquadFilter.AllPass = function(sampleRate, f0, Q){
+BiquadFilter.AllPass = function (sampleRate, f0, Q) {
 	var	w0	= 2* Math.PI*f0/sampleRate,
 		cosw0   = Math.cos(w0),
 		sinw0   = Math.sin(w0),
@@ -165,7 +166,7 @@ BiquadFilter.AllPass = function(sampleRate, f0, Q){
  * @param type:Float units:Hz min:0.0 centerFreq Center frequency of filter: 0dB gain at center peak
  * @param type:Float units:octaves min:0 bandwidthInOctaves Bandwidth of the filter (between -3dB points).
 */
-BiquadFilter.BandPass = function(sampleRate, centerFreq, bandwidthInOctaves){
+BiquadFilter.BandPass = function (sampleRate, centerFreq, bandwidthInOctaves) {
 	var	w0	= 2* Math.PI*centerFreq/sampleRate,
 		cosw0	= Math.cos(w0),
 		sinw0	= Math.sin(w0),
@@ -180,8 +181,10 @@ BiquadFilter.BandPass = function(sampleRate, centerFreq, bandwidthInOctaves){
 	this.reset(sampleRate, b0/a0, b1/a0, b2/a0, a1/a0, a2/a0);
 };
 
-(function(classes, i){
-for (i=0; i<classes.length; i++){
+(function (classes, i) {
+
+for (i=0; i<classes.length; i++) {
 	classes[i].prototype = new BiquadFilter.BiquadFilterClass();
 }
+
 }([BiquadFilter, BiquadFilter.LowPass, BiquadFilter.HighPass, BiquadFilter.AllPass, BiquadFilter.BandPass]));

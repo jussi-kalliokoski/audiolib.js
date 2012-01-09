@@ -8,7 +8,7 @@
  * @param type:String default:white color The color of the noise.
  * @param type:Float default:0 value The current value of the noise.
 */
-function Noise(){
+function Noise () {
 	this.reset.apply(this, arguments);
 }
 
@@ -34,7 +34,8 @@ Noise.prototype = {
 	brownQ:		0,
 	/* Current value of the Noise. */
 	value:		0,
-	reset: function(sampleRate, color){
+
+	reset: function (sampleRate, color) {
 		this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 		this.color		= typeof color === 'string' ? color : this.color;
 		this.c1			= (1 << this.q) - 1;
@@ -45,10 +46,12 @@ Noise.prototype = {
 		this.q0			= Math.exp(-200 * Math.PI / this.sampleRate);
 		this.q1			= 1 - this.q0;
 	},
-	generate: function(){
+
+	generate: function () {
 		this.value	= this[this.color]();
 	},
-	getMix: function(){
+
+	getMix: function () {
 		return this.value;
 	},
 /**
@@ -58,7 +61,7 @@ Noise.prototype = {
  *
  * @return {Float} White noise.
 */
-	white: function(){
+	white: function () {
 		var r = Math.random();
 		return (r * this.c1 - this.c4) * this.c3;
 	},
@@ -69,7 +72,7 @@ Noise.prototype = {
  *
  * @return {Float} Pink noise.
 */
-	pink: function(){
+	pink: function () {
 		var	w	= this.white();
 		this.b0 = 0.997 * this.b0 + 0.029591 * w;
 		this.b1 = 0.985 * this.b1 + 0.032534 * w;
@@ -86,9 +89,9 @@ Noise.prototype = {
  *
  * @return {Float} Brown noise.
 */
-	brown: function(){
+	brown: function () {
 		var	w	= this.white();
 		this.brownQ	= (this.q1 * w + this.q0 * this.brownQ);
 		return 6.2 * this.brownQ;
-	}
+	},
 };

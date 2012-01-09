@@ -9,7 +9,7 @@
  * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
  * @param type:UInt default:1 gain The gain for the gain controller.
 */
-function GainController(sampleRate, gain){
+function GainController (sampleRate, gain) {
 	this.sampleRate	= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 	this.gain	= isNaN(gain) ? this.gain : gain;
 }
@@ -25,7 +25,7 @@ GainController.prototype = {
  * @arg {Number} s The input sample for the gain controller.
  * @return {Number} The current output sample of the controller.
 */
-	pushSample:	function(s){
+	pushSample: function (s) {
 		this.sample	= s * this.gain;
 		return this.sample;
 	},
@@ -34,7 +34,7 @@ GainController.prototype = {
  *
  * @return {Number} The current output sample of the controller.
 */
-	getMix:		function(){
+	getMix: function () {
 		return this.sample;
-	}
+	},
 };

@@ -1,4 +1,4 @@
-this.FourierTransform = (function(){
+this.FourierTransform = (function () {
 
 var	sin		= Math.sin,
 	cos		= Math.cos,
@@ -18,10 +18,10 @@ var	sin		= Math.sin,
  * @arg {Number} bufferSize The buffer size of the FFT. Must be a power of 2.
 */
 
-function FourierTransform(sampleRate, bufferSize){
+function FourierTransform (sampleRate, bufferSize) {
 	var k;
-	for (k in FourierTransform.prototype){
-		if (FourierTransform.prototype.hasOwnProperty){
+	for (k in FourierTransform.prototype) {
+		if (FourierTransform.prototype.hasOwnProperty) {
 			this[k] = FourierTransform.prototype[k];
 		}
 	}
@@ -31,7 +31,7 @@ function FourierTransform(sampleRate, bufferSize){
 
 FourierTransform.prototype = {
 	/** Resets the parameters of the FT */
-	resetFT: function(sampleRate){
+	resetFT: function (sampleRate) {
 		var self = this;
 		self.sampleRate		= isNaN(sampleRate) ? self.sampleRate : sampleRate;
 		self.bandWidth		= 2 / self.bufferSize * self.sampleRate * 0.5;
@@ -45,31 +45,31 @@ FourierTransform.prototype = {
  * @param {Number} index The index of the band.
  * @return {Number} The frequency.
 */
-	getBandFrequency: function(index){
+	getBandFrequency: function (index) {
 		return this.bandwidth * index + this.bandWidth * 0.5;
 	},
 	/** Calculates the spectrum of the FT */
-	calculateSpectrum: function(){
+	calculateSpectrum: function () {
 		var	self		= this,
 			spectrum	= self.spectrum,
 			bSi		= 2 / self.bufferSize,
 			N		= self.bufferSize / 2,
 			rval, ival, mag, i, n;
 
-		for (i=0; i<N; i++){
+		for (i=0; i<N; i++) {
 			n	= i * 2,
 			rval	= self.buffer[  i * 2  ];
 			ival	= self.buffer[i * 2 + 1];
 			mag	= bSi * sqrt(rval * rval + ival * ival);
 
-			if (mag > self.peak){
+			if (mag > self.peak) {
 				self.peakBand	= i;
 				self.peak	= mag;
 			}
 
 			spectrum[i] = mag;
 		}
-	}
+	},
 };
 
 return FourierTransform;

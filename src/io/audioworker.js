@@ -1,8 +1,8 @@
-(function(){
+(function () {
 
 /* Depends on Sink.inlineWorker */
 
-function inject(){
+function inject () {
 	var	args	= arguments,
 		l	= args.length,
 		code, i;
@@ -12,7 +12,7 @@ function inject(){
 	}
 }
 
-audioLib.AudioWorker = function(code, injectable){
+audioLib.AudioWorker = function (code, injectable) {
 	var	worker	= 'var audioLib=(' + String(AUDIOLIB) + '(this, Math, Object, Array));\n',
 		i;
 	for (i=0; i < audioLib.plugins._pluginList.length; i++) {
@@ -21,7 +21,7 @@ audioLib.AudioWorker = function(code, injectable){
 	injectable && (worker += 'this.addEventListener("message",function(e){e.data&&e.data.type==="injection"&&Function(e.data.code).call(this)},true);\n');
 	worker += (code instanceof Function ? '(' + String(code) + ').call(this);' : code);
 	worker = Sink.inlineWorker(worker);
-	if (injectable){
+	if (injectable) {
 		worker.inject = inject;
 	}
 	return worker;

@@ -1,5 +1,6 @@
 /**
  * Creates a Distortion effect.
+ * Based on the famous TubeScreamer.
  * Requires [[IIRFilter]]
  * 
  * @effect
@@ -10,8 +11,7 @@
  * @param type:Float default:4 gain The gain value of the Distortion.
  * @param type:Float default:1 master The master volume value of the distortion.
 */
-function Distortion(sampleRate) // Based on the famous TubeScreamer.
-{
+function Distortion (sampleRate) {
 	var	hpf1	= new IIRFilter(sampleRate, 720.484),
 		lpf1	= new IIRFilter(sampleRate, 723.431),
 		hpf2	= new IIRFilter(sampleRate, 1.0),
@@ -20,11 +20,11 @@ function Distortion(sampleRate) // Based on the famous TubeScreamer.
 	this.master = 1;
 	this.sampleRate = sampleRate;
 	this.filters = [hpf1, lpf1, hpf2];
-	this.pushSample = function(s){
+	this.pushSample = function (s) {
 		hpf1.pushSample(s);
 		smpl = hpf1.getMix(1) * this.gain;
 		smpl = Math.atan(smpl) + smpl;
-		if (smpl > 0.4){
+		if (smpl > 0.4) {
 			smpl = 0.4;
 		} else if (smpl < -0.4) {
 			smpl = -0.4;
@@ -34,7 +34,7 @@ function Distortion(sampleRate) // Based on the famous TubeScreamer.
 		smpl = hpf2.getMix(1) * this.master;
 		return smpl;
 	};
-	this.getMix = function(){
+	this.getMix = function () {
 		return smpl;
 	};
 }

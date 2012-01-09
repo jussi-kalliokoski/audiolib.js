@@ -7,8 +7,7 @@
  * @param type:Float mix The mix amount for the generator output.
  * @param type:UInt min:1 units:channels The channel count of the generator.
 */
-function GeneratorClass(){
-}
+function GeneratorClass () {}
 
 GeneratorClass.prototype = {
 	type:			'generator',
@@ -26,14 +25,14 @@ GeneratorClass.prototype = {
  * @arg {Array<Float>} default:buffer !out The optional output buffer.
  * @return {Array<Float>} The output buffer.
 */
-	append: function(buffer, channelCount, out){
+	append: function (buffer, channelCount, out) {
 		var	l	= buffer.length,
 			i, n;
 		out		= out || buffer;
 		channelCount	= channelCount || this.channelCount;
-		for (i=0; i<l; i+=channelCount){
+		for (i=0; i<l; i+=channelCount) {
 			this.generate();
-			for (n=0; n<channelCount; n++){
+			for (n=0; n<channelCount; n++) {
 				out[i + n] = this.getMix(n) * this.mix + buffer[i + n];
 			}
 		}
@@ -46,9 +45,9 @@ GeneratorClass.prototype = {
  *
  * @arg {Function} callback The callback to add.
 */
-	addPreProcessing: function(callback){
+	addPreProcessing: function (callback) {
 		callback.generate = this.generate;
-		this.generate = function(){
+		this.generate = function () {
 			callback.apply(this, arguments);
 			return callback.generate.apply(this, arguments);
 		};
@@ -60,10 +59,10 @@ GeneratorClass.prototype = {
  *
  * @arg {Function} callback The callback to remove.
 */
-	removePreProcessing: function(callback){
+	removePreProcessing: function (callback) {
 		var f;
-		while (f = this.generate.generate){
-			if (f === callback || !callback){
+		while (f = this.generate.generate) {
+			if (f === callback || !callback) {
 				this.generate		= f;
 				callback.generate	= null;
 			}
@@ -79,7 +78,7 @@ GeneratorClass.prototype = {
  * @arg {UInt} min:1 length The length of the buffer to generate.
  * @arg {UInt} min:1 default:1 !chCount The amount of channels the buffer should have.
 */
-	generateBuffer: function(length, chCount){
+	generateBuffer: function (length, chCount) {
 		this.generatedBuffer = new Float32Array(length);
 		this.append(this.generatedBuffer, chCount || 1);
 	},
@@ -91,7 +90,7 @@ GeneratorClass.prototype = {
  * @arg {String} param The parameter to change.
  * @arg value The value to set the parameter to.
 */
-	setParam: function(param, value){
+	setParam: function (param, value) {
 		this[param] = value;
 	},
 /**
@@ -99,7 +98,7 @@ GeneratorClass.prototype = {
  *
  * @method Generator
 */
-	generate: function(){},
+	generate: function () {},
 /**
  * Retrieves the current output of the generator.
  *
@@ -108,11 +107,11 @@ GeneratorClass.prototype = {
  * @arg {UInt} default:0 !channel The channel to retrieve the output of. This is only applicable to multi-channel generators.
  * @return {Float} The current output of the generator.
 */
-	getMix: function(){},
+	getMix: function () {},
 /**
  * Resets the component to it's initial state, if possible.
  *
  * @method Generator
 */
-	reset: function(){},
+	reset: function () {},
 };

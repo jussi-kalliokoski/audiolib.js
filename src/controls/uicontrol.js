@@ -9,7 +9,7 @@
  * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
  * @param type:Number default:1 value The value of the UI control.
 */
-function UIControl(sampleRate, value){
+function UIControl (sampleRate, value) {
 	this.sampleRate	= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 	this.schedule	= [];
 	this.reset(value);
@@ -27,14 +27,14 @@ UIControl.prototype = {
  *
  * @return {Number} The current value of the UI control
 */
-	getMix:		function(){
+	getMix: function () {
 		return this.value;
 	},
 	/** Moves the UI control one sample forward in the sample time */
-	generate:	function(){
+	generate: function () {
 		var i;
-		for (i=0; i<this.schedule.length; i++){
-			if (this.schedule[i].t--){
+		for (i=0; i<this.schedule.length; i++) {
+			if (this.schedule[i].t--) {
 				this.value = this.schedule[i].v;
 				this.schedule.splice(i--, 1);
 			}
@@ -47,14 +47,15 @@ UIControl.prototype = {
  *
  * @param {Number} value The new value.
 */
-	setValue:	function(value){
+	setValue: function (value) {
 		this.schedule.push({
 			v:	value,
-			t:	~~((+new Date - this.clock) / 1000 * this.sampleRate)
+			t:	~~((+new Date - this.clock) / 1000 * this.sampleRate),
 		});
 	},
-	reset: function(value){
+
+	reset: function (value) {
 		this.value	= isNaN(value) ? this.value : value;
 		this.clock	= +new Date;
-	}
+	},
 };

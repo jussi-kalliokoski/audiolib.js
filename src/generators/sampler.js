@@ -13,7 +13,7 @@
  * @param type:UInt default:Infinity maxVoices The maximum amount of voices allowed to be played simultaneously.
 */
 
-function Sampler(sampleRate, pitch){
+function Sampler (sampleRate, pitch) {
 	var	self	= this;
 	self.voices	= [];
 	self.sampleRate	= sampleRate;
@@ -45,7 +45,7 @@ Sampler.prototype = {
  * @arg {Float} default:1.0 !velocity The relative volume of the voice.
  * @return {Voice} The voice object created.
 */
-	noteOn: function(frequency, velocity){
+	noteOn: function (frequency, velocity) {
 		frequency	= isNaN(frequency) ? this.pitch : frequency;
 		var	self	= this,
 			speed	= frequency / self.pitch,
@@ -60,7 +60,7 @@ Sampler.prototype = {
 				v:	isNaN(velocity) ? 1 : velocity
 			};
 		self.voices.push(note);
-		while (self.voices.length > self.maxVoices){
+		while (self.voices.length > self.maxVoices) {
 			end = self.voices.shift();
 			end.onend && end.onend();
 		}
@@ -69,10 +69,10 @@ Sampler.prototype = {
 /**
  * Moves all the voices one sample position further and disbands the voices that have ended.
 */
-	generate: function(){
+	generate: function () {
 		var	voices = this.voices,
 			i, voice;
-		for (i=0; i<voices.length; i++){
+		for (i=0; i<voices.length; i++) {
 			voice = voices[i];
 			voice.p += voice.s;
 			voice.p > voice.l && voices.splice(i--, 1) && voice.onend && voice.onend();
@@ -84,13 +84,13 @@ Sampler.prototype = {
  * @arg {Int} channel The number of the channel to be returned. (Optional)
  * @return {Float32} The current output of the Sampler's channel number channel.
 */
-	getMix: function(ch){
+	getMix: function (ch) {
 		var	voices	= this.voices,
 			smpl	= 0,
 			i;
 		ch = ch || 0;
-		if (this.samples[ch]){
-			for (i=0; i<voices.length; i++){
+		if (this.samples[ch]) {
+			for (i=0; i<voices.length; i++) {
 				smpl	+= audioLib.Sink.interpolate(this.samples[ch], voices[i].p) * voices[i].v;
 			}
 		}
@@ -104,12 +104,12 @@ Sampler.prototype = {
  * @arg {AudioData} data The AudioData object representation of the sample to be loaded.
  * @arg {Boolean} !resample Determines whether to resample the sample to match the sample rate of the Sampler.
 */
-	load: function(data, resample){
+	load: function (data, resample) {
 		var	self	= this,
 			samples	= self.samples = audioLib.Sink.deinterleave(data.data, data.channelCount),
 			i;
-		if (resample){
-			for (i=0; i<samples.length; i++){
+		if (resample) {
+			for (i=0; i<samples.length; i++) {
 				samples[i] = audioLib.Sink.resample(samples[i], data.sampleRate, self.sampleRate);
 			}
 		}

@@ -14,7 +14,7 @@
  * @param type:UInt depth Depth of the Chorus.
  * @param type:Float units:Hz min:0.0 freq The frequency of the LFO running the Chorus.
 */
-function Chorus(sampleRate, delayTime, depth, freq){
+function Chorus (sampleRate, delayTime, depth, freq) {
 	var	self		= this,
 		buffer, bufferPos, sample;
 
@@ -22,7 +22,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 	self.depth	= depth	|| 3;
 	self.freq	= freq || 0.1;
 
-	function calcCoeff(){
+	function calcCoeff () {
 		buffer = new Float32Array(self.sampleRate * 0.1);
 		bufferPos = 0;
 		var i, l = buffer.length;
@@ -34,7 +34,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 	self.sampleRate = sampleRate;
 	self.osc = new Oscillator(sampleRate, freq);
 	self.calcCoeff = calcCoeff;
-	self.pushSample = function(s){
+	self.pushSample = function (s) {
 		if (++bufferPos >= buffer.length){
 			bufferPos = 0;
 		}
@@ -51,7 +51,7 @@ function Chorus(sampleRate, delayTime, depth, freq){
 		sample = buffer[delay];
 		return sample;
 	};
-	self.getMix = function(){
+	self.getMix = function () {
 		return sample;
 	};
 

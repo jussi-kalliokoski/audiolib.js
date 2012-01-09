@@ -11,7 +11,7 @@
  * @param type:Float units:ms min:0.0 default:1000 time The delay time between the individual delays.
  * @param type:Float min:0.0 max:0.0 default:0.0 feedback The amount of feedback in the delay line.
 */
-function Delay(sampleRate, time, feedback){
+function Delay (sampleRate, time, feedback) {
 	var	self	= this;
 	self.time	= isNaN(time) ? self.time : time;
 	self.feedback	= isNaN(feedback) ? self.feedback : feedback;
@@ -37,7 +37,7 @@ Delay.prototype = {
  * @arg {Float32} sample The sample to be added to the delay line.
  * @return {Float32} Current output of the Delay.
 */
-	pushSample: function(s){
+	pushSample: function (s) {
 		var	self	= this,
 			buffer	= self.buffer;
 		buffer[self.bufferPos++] += s;
@@ -53,7 +53,7 @@ Delay.prototype = {
  *
  * @return {Float32} Current output of the Delay.
 */
-	getMix: function(){
+	getMix: function () {
 		return this.sample;
 	},
 /**
@@ -66,7 +66,7 @@ Delay.prototype = {
  * @arg {Uint} time The new time value for the Delay.
  * @return {AudioBuffer} The new delay line audio buffer.
 */
-	resample: function(time){
+	resample: function (time) {
 		var	self	= this,
 			ratio	= self.time / time;
 		self.buffer	= audioLib.Sink.resample(self.buffer, time);
@@ -81,7 +81,7 @@ Delay.prototype = {
  * @arg {Boolean} resample Determines whether to resample and apply the old buffer. (Requires Sink)
  * @return {AudioBuffer} The new delay line audio buffer.
 */
-	reset: function(sampleRate, resample){
+	reset: function (sampleRate, resample) {
 		var	self	= this,
 			buf	= self.buffer,
 			i, ratio;
@@ -90,9 +90,9 @@ Delay.prototype = {
 		self.buffer	= new Float32Array(sampleRate * Delay.MAX_DELAY);
 		self.bufferPos	= Math.round(ratio * self.bufferPos);
 		self._rstf	= 1 / 1000 * sampleRate;
-		if (resample){
+		if (resample) {
 			buf = audioLib.Sink.resample(buf, ratio);
-			for (i=0; i<buf.length && i<self.buffer.length; i++){
+			for (i=0; i<buf.length && i<self.buffer.length; i++) {
 				self.buffer[i] = buf[i];
 			}
 		}

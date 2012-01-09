@@ -14,7 +14,7 @@
  * @param type:Float min:0.0 max:1.0 default:0.1 resonance The resonance of the IIRFilter.
  * @param type:UInt default:0 type The type of the filter (LowPass, HighPass, BandPass, Notch).
 */
-function IIRFilter(samplerate, cutoff, resonance, type){
+function IIRFilter (samplerate, cutoff, resonance, type) {
 	var	self	= this,
 		f	= [0.0, 0.0, 0.0, 0.0],
 		freq, damp,
@@ -29,12 +29,12 @@ function IIRFilter(samplerate, cutoff, resonance, type){
 	self.samplerate = isNaN(samplerate) ? 44100 : sampleRate;
 	self.type = type || 0;
 
-	function calcCoeff(){
+	function calcCoeff () {
 		freq = 2 * sin(Math.PI * min(0.25, self.cutoff / (self.samplerate * 2)));
 		damp = min(2 * (1 - pow(self.resonance, 0.25)), min(2, 2 / freq - freq * 0.5));
 	}
 
-	self.pushSample = function(sample){
+	self.pushSample = function (sample) {
 		if (prevCut !== self.cutoff || prevReso !== self.resonance){
 			calcCoeff();
 			prevCut = self.cutoff;
@@ -54,7 +54,7 @@ function IIRFilter(samplerate, cutoff, resonance, type){
 		return f[self.type];
 	};
 
-	self.getMix = function(type){
+	self.getMix = function (type) {
 		return f[type || self.type];
 	};
 }

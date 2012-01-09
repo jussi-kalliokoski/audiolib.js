@@ -14,8 +14,7 @@
  * @param type:Float default:0 fm The frequency modulation of the Oscillator.
 */
 
-function Oscillator(sampleRate, freq)
-{
+function Oscillator (sampleRate, freq) {
 	var	self	= this;
 	self.frequency	= isNaN(freq) ? 440 : freq;
 	self.waveTable	= new Float32Array(1);
@@ -23,7 +22,7 @@ function Oscillator(sampleRate, freq)
 	self.waveShapes	= self.waveShapes.slice(0);
 }
 
-(function(FullPI, waveshapeNames, proto, i){
+(function (FullPI, waveshapeNames, proto, i) {
 
 proto = Oscillator.prototype = {
 	sampleRate:	44100,
@@ -40,7 +39,7 @@ proto = Oscillator.prototype = {
 /**
  * Moves the Oscillator's phase forward by one sample.
 */
-	generate: function(){
+	generate: function () {
 		var	self	= this,
 			f	= +self.frequency,
 			pw	= self.pulseWidth,
@@ -55,7 +54,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} The output signal sample.
 */
-	getMix: function(){
+	getMix: function () {
 		return this[this.waveShape]();
 	},
 /**
@@ -63,7 +62,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} The relative phase.
 */
-	getPhase: function(){
+	getPhase: function () {
 		return this._p;
 	},
 /**
@@ -71,7 +70,7 @@ proto = Oscillator.prototype = {
  *
  * @arg {Float} phase The phase to reset the values to. (Optional, defaults to 0).
 */
-	reset: function(p){
+	reset: function (p) {
 		this.phase = this._p = isNaN(p) ? 0 : p;
 	},
 /**
@@ -82,7 +81,7 @@ proto = Oscillator.prototype = {
  * @arg {Array<Float>} wavetable The wavetable to be assigned to the Oscillator.
  * @return {Boolean} Succesfulness of the operation.
 */
-	setWavetable: function(wt){
+	setWavetable: function (wt) {
 		this.waveTable = wt;
 		return true;
 	},
@@ -95,7 +94,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	sine: function(){
+	sine: function () {
 		return Math.sin(this._p * FullPI);
 	},
 /**
@@ -107,7 +106,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	triangle: function(){
+	triangle: function () {
 		return this._p < 0.5 ? 4 * this._p - 1 : 3 - 4 * this._p;
 	},
 /**
@@ -119,7 +118,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	square: function(){
+	square: function () {
 		return this._p < 0.5 ? -1 : 1;
 	},
 /**
@@ -131,7 +130,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	sawtooth: function(){
+	sawtooth: function () {
 		return 1 - this._p * 2;
 	},
 /**
@@ -143,7 +142,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	invSawtooth: function(){
+	invSawtooth: function () {
 		return this._p * 2 - 1;
 	},
 /**
@@ -155,7 +154,7 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	pulse: function(){
+	pulse: function () {
 		return this._p < 0.5 ?
 			this._p < 0.25 ?
 				this._p * 8 - 1 :
@@ -171,13 +170,14 @@ proto = Oscillator.prototype = {
  *
  * @return {Float} Sample.
 */
-	wavetable: function(){
+	wavetable: function () {
 		return audioLib.Sink.interpolate(this.wavetable, this._p * this.wavetable.length);
 	},
-	waveShapes: []
+
+	waveShapes: [],
 };
 
-for(i=0; i<waveshapeNames.length; i++){
+for (i=0; i<waveshapeNames.length; i++) {
 	proto[i] = proto[waveshapeNames[i]];
 	proto.waveShapes.push(proto[i]);
 }
@@ -190,8 +190,8 @@ for(i=0; i<waveshapeNames.length; i++){
  * @return {Function} The algorithm assigned to Oscillator.prototype by the specified name.
 */
 
-Oscillator.WaveShape = function(name, algorithm){
-	if (algorithm){
+Oscillator.WaveShape = function (name, algorithm) {
+	if (algorithm) {
 		this.prototype[name] = algorithm;
 	}
 	return this.prototype[name];
@@ -205,12 +205,12 @@ Oscillator.WaveShape = function(name, algorithm){
  * @return {Function} The algorithm created.
 */
 
-Oscillator.createMixWave = function(name, waveshapes){
+Oscillator.createMixWave = function (name, waveshapes) {
 	var	l = waveshapes.length,
 		smpl, i;
-	return this.WaveShape(name, function(){
+	return this.WaveShape(name, function () {
 		smpl = 0;
-		for (i=0; i<l; i++){
+		for (i=0; i<l; i++) {
 			smpl += this[waveshapes[i].shape]() * waveshapes[i].mix;
 		}
 		return smpl;

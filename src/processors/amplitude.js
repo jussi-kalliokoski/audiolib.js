@@ -11,7 +11,7 @@
  * @param type:Float min:0.0 max:1.0 default:0.01 attack The speed on which the amplitude metering reacts.
  * @param type:Float min:0.0 max:1.0 default:0.01 decay The speed on which the amplitude metering cools down.
 */
-function Amplitude(sampleRate, attack, decay){
+function Amplitude (sampleRate, attack, decay) {
 	this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 	this.attack		= isNaN(attack) ? this.attack : attack;
 	this.decay		= isNaN(decay) ? this.decay : decay;
@@ -30,7 +30,7 @@ Amplitude.prototype = {
  * @arg {UInt} channel The channel on which the sample is. (Only if multi-channel)
  * @return {Float} The current output of the effect. (Only if single-channel)
 */
-	pushSample: function(s){
+	pushSample: function (s) {
 		this.sample = Math.abs((s > this.sample ? this.attack : this.release) * (this.sample - s) + s);
 		return this.sample;
 	},
@@ -40,7 +40,7 @@ Amplitude.prototype = {
  * @arg {UInt} channel The channel for which to get the sample.
  * @return {Float} The current output of the effect.
 */
-	getMix: function(){
+	getMix: function () {
 		return this.sample;
 	},
 };

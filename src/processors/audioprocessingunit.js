@@ -4,10 +4,10 @@
  * @arg {Number} bufferSize Size of the buffer (a power of 2)
 */
 
-function AudioProcessingUnit(bufferSize){
+function AudioProcessingUnit (bufferSize) {
 	var k;
-	for (k in AudioProcessingUnit.prototype){
-		if (AudioProcessingUnit.prototype.hasOwnProperty(k)){
+	for (k in AudioProcessingUnit.prototype) {
+		if (AudioProcessingUnit.prototype.hasOwnProperty(k)) {
 			this[k] = AudioProcessingUnit.prototype[k];
 		}
 	}
@@ -16,18 +16,20 @@ function AudioProcessingUnit(bufferSize){
 
 AudioProcessingUnit.prototype = {
 	bufferPos:	-1,
-	pushSample: function(s){
+	pushSample: function (s) {
 		this.bufferPos = (this.bufferPos + 1) % this.buffer.length;
 		this.bufferPos === 0 && this.process(this.buffer);
 		this.buffer[this.bufferPos] = s;
 		return s;
 	},
-	getMix: function(){
+
+	getMix: function () {
 		return this.buffer[this.bufferPos];
 	},
-	resetBuffer: function(bufferSize){
+
+	resetBuffer: function (bufferSize) {
 		this.bufferSize	= isNaN(bufferSize) ? this.bufferSize : bufferSize;
 		this.buffer	= new Float32Array(this.bufferSize);
 		this.bufferPos	= -1;
-	}
+	},
 };

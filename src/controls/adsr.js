@@ -21,7 +21,7 @@
  * @param type:Bool default:false gate The state of the gate envelope, open being true.
  * @param type:UInt max:5 default:3 state The current state of the value, determining what the gate will do.
 */
-function ADSREnvelope(sampleRate, attack, decay, sustain, release, sustainTime, releaseTime){
+function ADSREnvelope (sampleRate, attack, decay, sustain, release, sustainTime, releaseTime) {
 	this.sampleRate		= isNaN(sampleRate) ? this.sampleRate : sampleRate;
 	this.attack		= isNaN(attack) ? this.attack : attack;
 	this.decay		= isNaN(decay) ? this.decay : decay;
@@ -50,7 +50,7 @@ ADSREnvelope.prototype = {
  *
  * @return {Number} The current value of the envelope.
 */
-	generate: function(){
+	generate: function () {
 		this.states[this.state].call(this);
 		return this.value;
 	},
@@ -59,7 +59,7 @@ ADSREnvelope.prototype = {
  *
  * @return {Number} The current value of the envelope.
 */
-	getMix: function(){
+	getMix: function () {
 		return this.value;
 	},
 /**
@@ -69,7 +69,7 @@ ADSREnvelope.prototype = {
  * 
  * @arg {Boolean} isOpen The new state of the gate.
 */
-	triggerGate: function(isOpen){
+	triggerGate: function (isOpen) {
 		isOpen		= typeof isOpen === 'undefined' ? !this.gate : isOpen;
 		this.gate	= isOpen;
 		this.state	= isOpen ? 0 : this.releaseTime === null ? 3 : 5;
@@ -79,16 +79,16 @@ ADSREnvelope.prototype = {
  * Array of functions for handling the different states of the envelope.
 */
 	states: [
-		function(){ // Attack
+		function () { // Attack
 			this.value += 1000 / this.sampleRate / this.attack;
-			if (this.value >= 1){
+			if (this.value >= 1) {
 				this.state = 1;
 			}
 		},
-		function(){ // Decay
+		function () { // Decay
 			this.value -= 1000 / this.sampleRate / this.decay * this.sustain;
-			if (this.value <= this.sustain){
-				if (this.sustainTime === null){
+			if (this.value <= this.sustain) {
+				if (this.sustainTime === null) {
 					this.state	= 2;
 				} else {
 					this._st	= 0;
@@ -96,25 +96,25 @@ ADSREnvelope.prototype = {
 				}
 			}
 		},
-		function(){ // Sustain
+		function () { // Sustain
 			this.value = this.sustain;
 		},
-		function(){ // Release
+		function () { // Release
 			this.value = Math.max(0, this.value - 1000 / this.sampleRate / this.release);
 		},
-		function(){ // Timed sustain
+		function () { // Timed sustain
 			this.value = this.sustain;
-			if (this._st++ >= this.sampleRate * 0.001 * this.sustainTime){
+			if (this._st++ >= this.sampleRate * 0.001 * this.sustainTime) {
 				this._st	= 0;
 				this.state	= this.releaseTime === null ? 3 : 5;
 			}
 		},
-		function(){ // Timed release
+		function () { // Timed release
 			this.value = Math.max(0, this.value - 1000 / this.sampleRate / this.release);
-			if (this._st++ >= this.sampleRate * 0.001 * this.releaseTime){
+			if (this._st++ >= this.sampleRate * 0.001 * this.releaseTime) {
 				this._st	= 0;
 				this.state	= 0;
 			}
 		}
-	]
+	],
 };

@@ -14,7 +14,7 @@
  * @param type:Float min:0.0 max:1.0 default:0.0 attack The time the linear transition between the steps. Measured in steps.
  * @param type:Float default:0.0 phase The current phase of the sequencer.
 */
-function StepSequencer(sampleRate, stepLength, steps, attack){
+function StepSequencer (sampleRate, stepLength, steps, attack) {
 	var	self	= this,
 		phase	= 0;
 
@@ -38,7 +38,7 @@ StepSequencer.prototype = {
  *
  * @return {Number} The current value of the step sequencer.
 */
-	generate: function(){
+	generate: function () {
 		var	self		= this,
 			stepLength	= self.sampleRate / 1000 * self.stepLength,
 			steps		= self.steps,
@@ -48,11 +48,11 @@ StepSequencer.prototype = {
 		self.phase	= (self.phase + 1) % sequenceLength;
 		step		= self.phase / sequenceLength * steps.length;
 		overStep	= step % 1;
-		step		= Math.floor(step);
+		step		= ~~(step);
 		prevStep	= (step || steps.length) - 1;
 		stepDiff	= steps[step] - steps[prevStep];
 		val		= steps[step];
-		if (overStep < self.attack){
+		if (overStep < self.attack)  {
 			val -= stepDiff - stepDiff / self.attack * overStep;
 		}
 		self.value = val;
@@ -63,7 +63,7 @@ StepSequencer.prototype = {
  *
  * @return {Number} The current value of the step sequencer.
 */
-	getMix: function(){
+	getMix: function () {
 		return this.value;
 	},
 /**
@@ -71,7 +71,7 @@ StepSequencer.prototype = {
  *
  * @method StepSequencer
 */
-	triggerGate: function(){
+	triggerGate: function () {
 		this.phase = 0;
-	}
+	},
 };

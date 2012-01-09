@@ -18,7 +18,7 @@
  * @param type:Float min:0.0 max:1.0 default:0.5 roomSize The size of the simulated reverb area.
  * @param type:Float min:0.0 max:1.0 default:0.2223 damping Reverberation damping parameter.
 */
-function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride){
+function Freeverb (sampleRate, channelCount, wet, dry, roomSize, damping, tuningOverride) {
 	var	self		= this;
 	self.sampleRate		= sampleRate;
 	self.channelCount	= isNaN(channelCount) ? self.channelCount : channelCount;
@@ -28,16 +28,16 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 	self.damping		= isNaN(damping) ? self.damping: damping;
 	self.tuning		= new Freeverb.Tuning(tuningOverride || self.tuning);
 	
-	self.sample	= (function(){
+	self.sample	= (function () {
 		var	sample	= [],
 			c;
-		for(c=0; c<self.channelCount; c++){
+		for (c=0; c<self.channelCount; c++) {
 			sample[c] = 0.0;
 		}
 		return sample;
 	}());
 
-	self.CFs	= (function(){
+	self.CFs	= (function () {
 		var 	combs	= [],
 			channel	= [],
 			num	= self.tuning.combCount,
@@ -45,8 +45,8 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 			feed	= self.roomSize * self.tuning.scaleRoom + self.tuning.offsetRoom,
 			sizes	= self.tuning.combTuning,
 			i, c;
-		for(c=0; c<self.channelCount; c++){
-			for(i=0; i<num; i++){
+		for (c=0; c<self.channelCount; c++) {
+			for(i=0; i<num; i++) {
 				channel.push(new audioLib.CombFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed, damp));
 			}
 			combs.push(channel);
@@ -56,15 +56,15 @@ function Freeverb(sampleRate, channelCount, wet, dry, roomSize, damping, tuningO
 	}());
 	self.numCFs	= self.CFs[0].length;
 	
-	self.APFs	= (function(){
+	self.APFs	= (function () {
 		var 	apfs	= [],
 			channel	= [],
 			num	= self.tuning.allPassCount,
 			feed	= self.tuning.allPassFeedback,
 			sizes	= self.tuning.allPassTuning,
 			i, c;
-		for(c=0; c<self.channelCount; c++){
-			for(i=0; i<num; i++){
+		for (c=0; c<self.channelCount; c++) {
+			for (i=0; i<num; i++) {
 				channel.push(new Freeverb.AllPassFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed));
 			}
 			apfs.push(channel);
@@ -87,48 +87,48 @@ Freeverb.prototype = {
 	tuning: {
 	},
 
-	pushSample: function(s, channel){
+	pushSample: function (s, channel) {
 		var	input	= s * this.tuning.fixedGain,
 			output	= 0,
 			i;
-		for(i=0; i < this.numCFs; i++){
+		for (i=0; i < this.numCFs; i++) {
 			output += this.CFs[channel][i].pushSample(input);
 		}
-		for(i=0; i < this.numAPFs; i++){
+		for (i=0; i < this.numAPFs; i++) {
 			output = this.APFs[channel][i].pushSample(output);
 		}
 		this.sample[channel] = output * this.wet + s * this.dry;
 	},
 
-	getMix: function(channel){
+	getMix: function (channel) {
 		return this.sample[channel];
 	},
 
-	reset: function(){
+	reset: function () {
 		var	i,
 			c;
-		for(c=0; c < this.channelCount; c++){
-			for(i=0; i < this.numCFs; i++){
+		for (c=0; c < this.channelCount; c++) {
+			for (i=0; i < this.numCFs; i++) {
 				this.CFs[c][i].reset();
 			}
-			for(i=0; i < this.numAPFs; i++){
+			for (i=0; i < this.numAPFs; i++) {
 				this.APFs[c][i].reset();
 			}
 			this.sample[c] = 0.0;
 		}		
 	},
 
-	setParam: function(param, value){
+	setParam: function (param, value) {
 		var	combFeed,
 			combDamp,
 			i,
 			c;
-		switch (param){
+		switch (param) {
 		case 'roomSize':
 			this.roomSize	= value;
 			combFeed	= this.roomSize * this.tuning.scaleRoom + this.tuning.offsetRoom;
-			for(c=0; c < this.channelCount; c++){
-				for(i=0; i < this.numCFs; i++){
+			for (c=0; c < this.channelCount; c++) {
+				for (i=0; i < this.numCFs; i++) {
 					this.CFs[c][i].setParam('feedback', combFeed);
 				}
 			}
@@ -136,8 +136,8 @@ Freeverb.prototype = {
 		case 'damping':
 			this.damping	= value;
 			combDamp	= this.damping * this.tuning.scaleDamping;
-			for(c=0; c < this.channelCount; c++){
-				for(i=0; i < this.numCFs; i++){
+			for (c=0; c < this.channelCount; c++) {
+				for (i=0; i < this.numCFs; i++) {
 					this.CFs[c][i].setParam('damping', combDamp);
 				}
 			}
@@ -158,11 +158,11 @@ Freeverb.prototype = {
  * @arg {Object} overrides The object containing the values to be overwritten.
 */
 
-Freeverb.Tuning = function FreeverbTuning(overrides){
+Freeverb.Tuning = function FreeverbTuning (overrides) {
 	var k;
-	if (overrides){
-		for (k in overrides){
-			if (overrides.hasOwnProperty(k)){
+	if (overrides) {
+		for (k in overrides) {
+			if (overrides.hasOwnProperty(k)) {
 				this[k] = overrides[k];
 			}
 		}
@@ -183,7 +183,7 @@ Freeverb.Tuning.prototype = {
 	scaleRoom:		0.28,
 	offsetRoom:		0.7,
 	
-	stereoSpread:		23
+	stereoSpread:		23,
 };
 
 /**
@@ -199,7 +199,7 @@ Freeverb.Tuning.prototype = {
  * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
  * @param type:Float min:0.0 max:1.0 default:0.5 feedback Amount of feedback.
 */
-Freeverb.AllPassFilter = function AllPassFilter(sampleRate, delaySize, feedback){
+Freeverb.AllPassFilter = function AllPassFilter (sampleRate, delaySize, feedback) {
 	var	self	= this;
 	self.sampleRate	= sampleRate;
 	self.buffer	= new Float32Array(isNaN(delaySize) ? 500 : delaySize);
@@ -212,7 +212,7 @@ Freeverb.AllPassFilter.prototype = {
 	index:		0,
 	feedback:	0.5,
 
-	pushSample: function(s){
+	pushSample: function (s) {
 		var	self		= this;
 			bufOut		= self.buffer[self.index];
 		self.sample		= -s + bufOut;
@@ -222,12 +222,12 @@ Freeverb.AllPassFilter.prototype = {
 		}
 		return self.sample;
 	},
-	getMix: function(){
+	getMix: function () {
 		return this.sample;
 	},
-	reset: function(){
+	reset: function () {
 		this.index	= 0;
 		this.sample	= 0.0;
 		this.buffer	= new Float32Array(this.bufferSize);
-	}
+	},
 }

@@ -7,8 +7,7 @@
  * @param type:Float mix The mix between dry and wet for the effect.
  * @param type:UInt min:1 units:channels The channel count of the effect. If one, will be treated like a single channel effect and to be used with createBufferBased().
 */
-function EffectClass(){
-}
+function EffectClass () {}
 
 EffectClass.prototype = {
 	type:		'effect',
@@ -26,13 +25,13 @@ EffectClass.prototype = {
  * @arg {Array<Float>} default:buffer out The optional output buffer.
  * @return {Array<Float>} The output buffer.
 */
-	append: function(buffer, channelCount, out){
+	append: function (buffer, channelCount, out) {
 		var	l	= buffer.length,
 			i, n;
 		out		= out || buffer;
 		channelCount	= channelCount || this.channelCount;
-		for (i=0; i<l; i+=channelCount){
-			for (n=0; n<channelCount; n++){
+		for (i=0; i<l; i+=channelCount) {
+			for (n=0; n<channelCount; n++) {
 				this.pushSample(buffer[i + n], n);
 				out[i + n] = this.getMix(n) * this.mix + buffer[i + n] * (1 - this.mix);
 			}
@@ -46,9 +45,9 @@ EffectClass.prototype = {
  *
  * @arg {Function} callback The callback to add.
 */
-	addPreProcessing: function(callback){
+	addPreProcessing: function (callback) {
 		callback.pushSample = this.pushSample;
-		this.pushSample = function(){
+		this.pushSample = function () {
 			callback.apply(this, arguments);
 			return callback.pushSample.apply(this, arguments);
 		};
@@ -62,8 +61,8 @@ EffectClass.prototype = {
 */
 	removePreProcessing: function(callback){
 		var f;
-		while (f = this.pushSample.pushSample){
-			if (f === callback || !callback){
+		while (f = this.pushSample.pushSample) {
+			if (f === callback || !callback) {
 				this.pushSample		= f;
 				callback.pushSample	= null;
 			}
@@ -77,7 +76,7 @@ EffectClass.prototype = {
  * @arg {String} param The parameter to change.
  * @arg value The value to set the parameter to.
 */
-	setParam: function(param, value){
+	setParam: function (param, value) {
 		this[param] = value;
 	},
 /**
@@ -88,7 +87,7 @@ EffectClass.prototype = {
  * @arg {Float} The sample to push to the effect.
  * @arg {UInt} min:1 !channel The channel to push to. This is only applicable to multi-channel effects.
 */
-	pushSample: function(){},
+	pushSample: function () {},
 /**
  * Retrieves the current output of the effect.
  *
@@ -97,11 +96,11 @@ EffectClass.prototype = {
  * @arg {UInt} default:0 !channel The channel to retrieve the output of. This is only applicable to multi-channel effects.
  * @return {Float} The current output of the effect.
 */
-	getMix: function(){},
+	getMix: function () {},
 /**
  * Resets the component to it's initial state, if possible.
  *
  * @method Effect
 */
-	reset: function(){},
+	reset: function () {},
 };
