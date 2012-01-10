@@ -59,7 +59,7 @@ EffectClass.prototype = {
  *
  * @arg {Function} callback The callback to remove.
 */
-	removePreProcessing: function(callback){
+	removePreProcessing: function (callback) {
 		var f;
 		while (f = this.pushSample.pushSample) {
 			if (f === callback || !callback) {

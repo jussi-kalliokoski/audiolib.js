@@ -10,12 +10,12 @@
 	Please note that the file is not of valid syntax when standalone.
 */
 
-this.audioLib = (function AUDIOLIB(global, Math, Object, Array){
+this.audioLib = (function AUDIOLIB (global, Math, Object, Array) {
 
 var	arrayType	= global.Float32Array || Array,
 	audioLib	= this;
 
-function Float32Array(length){
+function Float32Array (length) {
 	var array = new arrayType(length);
 	array.subarray = array.subarray || array.slice;
 	return array;
@@ -23,11 +23,11 @@ function Float32Array(length){
 
 audioLib.Float32Array = Float32Array;
 
-var __define = (function(){
+var __define = (function () {
 
-	if (Object.defineProperty){
+	if (Object.defineProperty) {
 		return Object.defineProperty;
-	} else if (Object.prototype.__defineGetter__){
+	} else if (Object.prototype.__defineGetter__) {
 		return function(obj, prop, desc){
 			desc.get && obj.__defineGetter__(prop, desc.get);
 			desc.set && obj.__defineSetter__(prop, desc.set);
@@ -36,10 +36,10 @@ var __define = (function(){
 
 }());
 
-function __defineConst(obj, prop, value, enumerable){
-	if (__define){
+function __defineConst (obj, prop, value, enumerable) {
+	if (__define) {
 		__define(obj, prop, {
-			get: function(){
+			get: function () {
 				return value;
 			},
 			enumerable: !!enumerable
@@ -53,13 +53,13 @@ function __defineConst(obj, prop, value, enumerable){
 __defineConst(audioLib, '__define', __define);
 __defineConst(audioLib, '__defineConst', __defineConst);
 
-function __extend(obj){
+function __extend (obj) {
 	var	args	= arguments,
 		l	= args.length,
 		i, n;
-	for (i=1; i<l; i++){
-		for (n in args[i]){
-			if (args[i].hasOwnProperty(n)){
+	for (i=1; i<l; i++) {
+		for (n in args[i]) {
+			if (args[i].hasOwnProperty(n)) {
 				obj[n] = args[i][n];
 			}
 		}
@@ -69,9 +69,9 @@ function __extend(obj){
 
 __defineConst(audioLib, '__extend', __extend);
 
-function __enum(obj, callback, unignoreInherited){
+function __enum (obj, callback, unignoreInherited) {
 	var i;
-	for (i in obj){
+	for (i in obj) {
 		(obj.hasOwnProperty(i) || unignoreInherited) && callback.call(obj, obj[i], i);
 	}
 	return obj;
@@ -79,17 +79,17 @@ function __enum(obj, callback, unignoreInherited){
 
 __defineConst(audioLib, '__enum', __enum);
 
-function __class(name, constructor, args){
+function __class (name, constructor, args) {
 	var	i, cls;
-	if (!args){
+	if (!args) {
 		args	= [];
 		i	= /^\s*function\s*\w*\s*\(([^\)]+)/.exec(constructor);
-		if (i){
-			i[1].replace(/[a-z$_0-9]+/ig, function(i){
+		if (i) {
+			i[1].replace(/[a-z$_0-9]+/ig, function (i) {
 				args.push(i);
 			});
 		} else {
-			for (i=0; i<constructor.length; i++){
+			for (i=0; i<constructor.length; i++) {
 				args[i] = Array(i+2).join('_');
 			}
 		}

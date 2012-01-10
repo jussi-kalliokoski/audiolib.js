@@ -33,21 +33,21 @@ audioLib.FFT		= FFT;
 audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 
 
-audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
+audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
 
-(function(names, i){
-	function createBufferBased(channelCount){
+(function (names, i) {
+	function createBufferBased (channelCount) {
 		return new audioLib.BufferEffect(this, channelCount, [].slice.call(arguments, 1));
 	}
 
-	function effects(name, effect, prototype, argNames){
-		if (effect){
+	function effects (name, effect, prototype, argNames) {
+		if (effect) {
 			prototype	= prototype || effect.prototype;
 			var	proto	= effect.prototype = new EffectClass();
 			proto.name	= proto.fxid = name;
 			effects[name]	= __class(name, effect, argNames);
 			effects[name].createBufferBased = effect.createBufferBased = createBufferBased;
-			for (argNames in prototype){
+			for (argNames in prototype) {
 				if (prototype.hasOwnProperty(argNames)){
 					proto[argNames] = prototype[argNames];
 				}
@@ -60,7 +60,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 
 	audioLib.effects = effects;
 
-	for (i=0; i<names.length; i++){
+	for (i=0; i<names.length; i++) {
 		audioLib[names[i]] = effects(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 
@@ -71,15 +71,15 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 	effects('FreeverbAllPassFilter',Freeverb.AllPassFilter);
 }(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Limiter', 'Reverb', 'Amplitude', 'FFT']));
 
-(function(names, i){
-	function generators(name, effect, prototype, argNames){
-		if (effect){
+(function (names, i) {
+	function generators (name, effect, prototype, argNames) {
+		if (effect) {
 			prototype	= prototype || effect.prototype;
 			var	proto	= effect.prototype = new GeneratorClass();
 			proto.name	= proto.fxid = name;
 			generators[name]= __class(name, effect, argNames);
-			for (argNames in prototype){
-				if (prototype.hasOwnProperty(argNames)){
+			for (argNames in prototype) {
+				if (prototype.hasOwnProperty(argNames)) {
 					proto[argNames] = prototype[argNames];
 				}
 			}
@@ -89,7 +89,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function(){ return this; }()).Sink;
 
 	audioLib.generators = generators;
 
-	for (i=0; i<names.length; i++){
+	for (i=0; i<names.length; i++) {
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
 }(['Noise', 'Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
@@ -108,7 +108,7 @@ audioLib.version			= '0.6.0';
 audioLib.BufferEffect.prototype.addAutomation	=
 audioLib.EffectClass.prototype.addAutomation	=
 audioLib.GeneratorClass.prototype.addAutomation	=
-function addAutomation(){
+function addAutomation () {
 	return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
 };
 
