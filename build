@@ -4,17 +4,17 @@
 
 var	sys		= require('util');
 
-function print(){
+function print () {
 	[].slice.call(arguments).forEach(function(a){
 		sys.puts(a);
 	});
 }
 
-function _path(){
+function _path () {
 	return [].slice.call(arguments).map(function(a){return/^(.+)\/?$/.exec(a)[1]}).join('/');
 }
 
-function __extend(obj){
+function __extend (obj) {
 	var	args	= arguments,
 		l	= args.length,
 		i, n;
@@ -32,12 +32,48 @@ var	paramon		= require('paramon');
 var	fs		= require('fs');
 var	Builder		= require('script-builder');
 
-function ls(path, r){
+function getMinifiers () {
+	function dummy (str) {
+		return str;
+	}
+
+	var minifiers = {};
+
+	try {
+		minifiers.html = require('html-minifier').minify;
+	} catch (e) {
+		minifiers.html = dummy;
+	}
+
+	try {
+		var jsp = require('uglify-js').parser;
+		var pro = require('uglify-js').uglify;
+
+		minifiers.js = function (str) {
+			var ast = jsp.parse(str);
+			ast = pro.ast_mangle(ast);
+			ast = pro.ast_squeeze(ast);
+			return pro.gen_code(ast);
+		};
+	} catch (e) {
+		minifiers.js = dummy;
+	}
+
+	try {
+		minifiers.css = require('clean-css').process;
+	} catch (e) {
+		minifiers.css = dummy;
+	}
+
+	return minifiers;
+}
+
+function ls (path, r) {
 	path	= path instanceof Array ? _path.apply(null, path) : path;
 	path	= fs.readdirSync(path);
-	if (r){
-		for (var i=0; i<path.length; i++){
-			if (!r.exec(path[i])){
+	if (r) {
+		for (var i=0; i<path.length; i++) {
+			if (!r.exec(path[i])) {
 				path.splice(i--, 1);
 			}
 		}
@@ -45,24 +81,24 @@ function ls(path, r){
 	return path;
 }
 
-function read(path, encoding){
+function read (path, encoding) {
 	path		= path instanceof Array ? _path.apply(null, path) : path;
 	encoding	= encoding || 'UTF-8';
 	return fs.readFileSync(path, encoding);
 }
 
-function save(path, data, encoding){
+function save (path, data, encoding) {
 	path		= path instanceof Array ? _path.apply(null, path) : path;
 	encoding	= encoding || 'UTF-8';
 	return fs.writeFileSync(path, data, encoding);
 }
 
-var __define = (function(){
+var __define = (function () {
 
-	if (Object.defineProperty){
+	if (Object.defineProperty) {
 		return Object.defineProperty;
-	} else if (Object.prototype.__defineGetter__){
-		return function(obj, prop, desc){
+	} else if (Object.prototype.__defineGetter__) {
+		return function (obj, prop, desc) {
 			desc.get && obj.__defineGetter__(prop, desc.get);
 			desc.set && obj.__defineSetter__(prop, desc.set);
 		}
@@ -70,8 +106,8 @@ var __define = (function(){
 
 }());
 
-function __defineConst(obj, prop, value, enumerable){
-	if (__define){
+function __defineConst (obj, prop, value, enumerable) {
+	if (__define) {
 		__define(obj, prop, {
 			get: function(){
 				return value;
@@ -84,24 +120,24 @@ function __defineConst(obj, prop, value, enumerable){
 	}
 }
 
-function logicalMods(obj, name, value){
-	if (arguments.length < 3){
+function logicalMods (obj, name, value) {
+	if (arguments.length < 3) {
 		value	= obj[name];
 	}
 	var	pos	= ['major', 'minor', 'patch'];
 	__define(obj, name, {
-		set: function(val){
+		set: function (val) {
 			var	op	= typeof val === 'string' ? val.split(' ') : val;
 			var	r	= typeof value === 'string' ? value.split('.') : value;
 			var	n	= [];
-			if (op && op instanceof Array){
+			if (op && op instanceof Array) {
 				op.slice(1).forEach(function(o){
 					o = pos.indexOf(o);
 					o !== -1 && n.push(o);
 				});
 				!n.length && n.push(0);
-				n.forEach(function(n){
-					switch(op[0]){
+				n.forEach(function (n) {
+					switch (op[0]) {
 					case 'increment':
 						typeof r === 'number' ? r++ : r[n]++;
 						val = r instanceof Array ? r.join('.') : r;
@@ -121,10 +157,10 @@ function logicalMods(obj, name, value){
 	});
 }
 
-var ArrayStuff = (function f(){
+var ArrayStuff = (function f () {
 var a	= Array.prototype;
-a.copy	= function(){return this.slice();};
-a.smap	= function(s, r){
+a.copy	= function () {return this.slice();};
+a.smap	= function (s, r) {
 	return this.map(function(t){
 		var x = r ? r.exec(t) : [t];
 		return s.replace(/\$([0-9]+)/g, function(q,n){
@@ -135,12 +171,12 @@ a.smap	= function(s, r){
 a.table	= function(tabwidth){
 	tabwidth	= isNaN(+tabwidth) ? 8 : +tabwidth;
 	var	w	= [];
-	this.forEach(function(r){
+	this.forEach(function (r) {
 		r.forEach(function(c, i){
 			w[i] = Math.max(Math.ceil(c.length / tabwidth), w[i] || 0);
 		});
 	});
-	return this.map(function(r){
+	return this.map(function (r) {
 		var	l	= r.length - 1,
 			s	= '',
 			i;
@@ -153,8 +189,8 @@ a.table	= function(tabwidth){
 return f;
 }());
 
-var createSettings = (function(settings){
-return function(){
+var createSettings = (function (settings) {
+return function () {
 	var s =  __extend({}, settings);
 	logicalMods(s, 'version');
 	return s;
@@ -163,30 +199,30 @@ return function(){
 
 Builder.context(ArrayStuff);
 
-function builderContext(s){
+function builderContext (s) {
 	s		= s || createSettings();
 
-	Builder.Comment.prototype.toString = function(){
+	Builder.Comment.prototype.toString = function () {
 		return this.assignName || this.name || Object.prototype.toString.call(this);
 	};
 
 	var	builder	= Builder.Builder(s);
 	var cp	= Builder.CommentParser();
 
-	function group(name){
+	function group (name) {
 		arguments.length > 1 && group.apply(this, [].slice.call(arguments, 1));
 		var g	= builder.variables[name + 's'] = [];
 		var sg	= builder.variables['sub' + name + 's'] = [];
 		builder.instructions.push({
 			name:	name,
-			exec:	function(args){
+			exec:	function (args) {
 				args = args.split(/\s+/g);
 				args[1] = args[1] || args[0];
 				builder.variables[name + 's'].push({name: args[0], assignName: args[1]});
 			}
 		}, {
 			name:	'sub' + name,
-			exec:	function(args){
+			exec:	function (args) {
 				args = args.split(/\s+/g);
 				args[2] = args[2] || args[0] + args[1];
 				builder.variables['sub' + name + 's'].push({subOf: args[0], name: args[1], assignName: args[2], toString: Builder.Comment.prototype.toString});
@@ -197,7 +233,7 @@ function builderContext(s){
 			exec:	function(args){
 				args = args ? args.split(/\s+/g) : [];
 				this.assignName = args[0];
-				!this.assignName && this.onfinish(function(){
+				!this.assignName && this.onfinish(function () {
 					this.assignName = this.name;
 				});
 				this[name] = true;
@@ -205,11 +241,11 @@ function builderContext(s){
 			}
 		}, {
 			name:	'sub' + name,
-			exec:	function(args){
+			exec:	function (args) {
 				args = args ? args.split(/\s+/g) : [];
 				this.subOf = args[0];
 				this.assignName = args[1];
-				!this.name && !this.assignName && this.onfinish(function(){
+				!this.name && !this.assignName && this.onfinish(function () {
 					this.assignName = args[0] + this.name;
 				});
 				this[name] = true;
@@ -223,7 +259,7 @@ function builderContext(s){
 
 	cp.commands.push({
 		name: 'param',
-		exec: function(args){
+		exec: function (args) {
 			if (!args) return;
 			var	params	= this.params = this.params || [],
 				p	= {},
@@ -253,7 +289,7 @@ function builderContext(s){
 		}
 	}, {
 		name: 'arg',
-		exec: function(args){
+		exec: function (args) {
 			if (!args) return;
 			var	arglist	= this.arglist = this.arglist || [],
 				p	= {},
@@ -292,7 +328,7 @@ function builderContext(s){
 		}
 	}, {
 		name: 'return',
-		exec: function(args){
+		exec: function (args) {
 			if (!args) return;
 			var	p	= {},
 				s, x, desc;
@@ -315,7 +351,7 @@ function builderContext(s){
 		}
 	}, {
 		name: 'method',
-		exec: function(args){
+		exec: function (args) {
 			args = args ? args.split(/\s+/g) : [];
 			this.method = true;
 			if (args[0]) {
@@ -324,7 +360,7 @@ function builderContext(s){
 		}
 	}, {
 		name: 'static',
-		exec: function(args){
+		exec: function (args) {
 			args = args ? args.split(/\s+/g) : [];
 			this.static = true;
 			this.method = true;
@@ -334,7 +370,7 @@ function builderContext(s){
 		}
 	}, {
 		name: 'class',
-		exec: function(args){
+		exec: function (args) {
 			this.class = true;
 		}
 	});
@@ -348,7 +384,7 @@ function builderContext(s){
 }
 
 
-if (process.argv.length < 3){
+if (process.argv.length < 3) {
 	throw "Try build -h for help.";
 }
 
@@ -379,19 +415,19 @@ var	args	= paramon.readFormat(process.argv, {
 	],
 });
 
-!args.debug && process.on('uncaughtException', function(e){
+!args.debug && process.on('uncaughtException', function (e) {
 	print(e.toString());
 	process.exit(1);
 });
 
-args['$!stray'].forEach(function(e){
+args['$!stray'].forEach(function (e) {
 	print('Unknown build command "' + e + '".');
 	process.exit();
 });
 
-if (args.config){
+if (args.config) {
 	var settings = createSettings();
-	if (args.config.length > 1){
+	if (args.config.length > 1) {
 		settings[args.config[0]] = args.config.slice(1).join(' ');
 		save('templates/variables.json', JSON.stringify(settings, null, '\t'));
 	}
@@ -400,14 +436,14 @@ if (args.config){
 }
 
 var updatables = {
-	wrappers: function(){
+	wrappers: function () {
 		var builder = builderContext();
-		ls('src', /^\w+$/).forEach(function(dir){
-			ls(['src', dir], /\.js$/i).forEach(function(f){
+		ls('src', /^\w+$/).forEach(function (dir) {
+			ls(['src', dir], /\.js$/i).forEach(function (f) {
 				builder.run(read(['src', dir, f]), _path(dir, f));
 			});
 		});
-		ls('src', /^api-(\w+-?)+\.js$/).forEach(function(file){
+		ls('src', /^api-(\w+-?)+\.js$/).forEach(function (file) {
 			builder.run(read(['src', file]), _path('src', file));
 		});
 
@@ -415,40 +451,62 @@ var updatables = {
 		save('src/wrapper-end.js', builder.run(read('templates/wrapper-end.js')));
 		print('Wrappers updated.');
 	},
-	'package': function(){
+	'package': function () {
 		var builder = builderContext();
 		save('package.json', builder.run(read('templates/package.json')));
 		print('package.json updated.');
 	},
-	'docs': function(){
+	'docs': function () {
 		var builder = builderContext();
-		ls('src', /^\w+$/).forEach(function(dir){
-			ls(['src', dir], /\.js$/i).forEach(function(f){
+		ls('src', /^\w+$/).forEach(function (dir) {
+			ls(['src', dir], /\.js$/i).forEach(function (f) {
 				builder.run(read(['src', dir, f]), _path(dir, f));
 			});
 		});
-		ls('src', /^api-(\w+-?)+\.js$/).forEach(function(file){
+		ls('src', /^api-(\w+-?)+\.js$/).forEach(function (file) {
 			builder.run(read(['src', file]), _path('src', file));
 		});
 
-		builder.commentParser.comments.forEach(function(comment){
+		builder.commentParser.comments.forEach(function(comment) {
 			// This is probably unnecessary payload.
 			delete comment.body;
 		});
 
-		var docs = JSON.stringify(builder.commentParser.comments, null, '\t');
-		save('lib/docs.html', read('templates/docs.html').split('INSERT_DOCUMENTATION_HERE').join(docs));
+		var minify = getMinifiers();
+
+		var docs	= JSON.stringify(builder.commentParser.comments);
+		docs		= read('templates/docs/docs.html').split('INSERT_DOCUMENTATION_HERE').join(docs);
+		docs		= docs.replace(/<script src="([^"]+)"><\/script>/g, function (tag, target) {
+			switch (target) {
+			case "docs.js":
+				return '<script>' + minify.js(read('templates/docs/docs.js')) + '</script>';
+			default:
+				return tag;
+			}
+		}).replace(/<link rel="stylesheet" href="([^"]+)" \/>/g, function (tag, target) {
+			switch (target) {
+			case "docs.css":
+				return '<style>' + minify.css(read('templates/docs/docs.css')) + '</style>';
+			default:
+				return tag;
+			}
+		});
+		docs		= minify.html(docs, {
+			collapseWhitespace:	true,
+			removeAttributeQuotes:	true,
+		});
+		save('lib/docs.html', docs);
 		print('Documentation updated.');
 	},
 };
 
-if (args.update){
-	args.update.forEach(function(e){
+if (args.update) {
+	args.update.forEach(function (e) {
 		e = e.toLowerCase();
 		var k;
 		if (e === 'all') {
-			for (k in updatables){
-				if (updatables.hasOwnProperty(k)){
+			for (k in updatables) {
+				if (updatables.hasOwnProperty(k)) {
 					updatables[k]();
 				}
 			}

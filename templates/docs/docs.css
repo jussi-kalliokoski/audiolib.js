@@ -1,0 +1,127 @@
+body {
+	font-size:	16px;
+	font-family:	Arial, sans-serif;
+}
+
+header {
+	position:		absolute;
+	left:			0;
+	top:			0;
+	width:			100%;
+	height:			10%;
+	background-color:	#13161a;
+	box-shadow:		0 0 10px black;
+	color:			white;
+	text-shadow:		0 0 3px rgba(177,177,177,0.7);
+}
+
+header > * {
+	float:		left;
+	position:	relative;
+	margin-left:	10px;
+	text-shadow:	1px 1px 1px rgba(0,0,0,.5), 0 0 3px rgba(177,177,177,.7);
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family:	SansationRegular;
+}
+
+#search {
+	float:			right;
+	margin:			8px;
+	padding:		5px;
+	border-radius:		8px;
+	outline:		none;
+	border:			1px solid gray;
+}
+
+nav {
+	position:		absolute;
+	right:			0;
+	top:			10%;
+	width:			28%;
+	height:			90%;
+	color:			white;
+	background-color:	#13161a;
+	overflow:		auto;
+}
+
+nav a {
+	position:		relative;
+	display:		block;
+	text-align:		center;
+	text-decoration:	none;
+	padding-top:		3px;
+	padding-bottom:		3px;
+	margin-left:		15px;
+	margin-right:		15px;
+	margin-top:		4px;
+	color:			white;
+	text-shadow:		0 0 1px rgba(255,255,255,0.5);
+	background-color:	#272d34;
+	border-radius:		7px;
+	box-shadow:		0 0 10px black, 0 0 5px rgba(0,0,0,0.8) inset;
+	-webkit-transition:	box-shadow 0.2s ease-in-out;
+	-moz-transition:	box-shadow 0.2s ease-in-out;
+	-ms-transition:		box-shadow 0.2s ease-in-out;
+	-o-transition:		box-shadow 0.2s ease-in-out;
+	transition:		box-shadow 0.2s ease-in-out;
+	font-family:		SansationRegular;
+}
+
+nav a:hover {
+	box-shadow:	0 0 10px #5588dd, 0 0 20px #5588dd inset;
+	z-index:	1;
+}
+
+div.content {
+	position:		absolute;
+	left:			0;
+	top:			12%;
+	width:			50%;
+	height:			86%;
+	padding-right:		10%;
+	padding-left:		10%;
+	overflow:		auto;
+}
+
+
+span.type {
+	font-weight:	bold;
+	color:		darkgreen;
+}
+
+span.optional {
+	font-style:	italic;
+	color:		darkgray;
+}
+span.description{
+	font-style:	italic;
+	margin-left:	5px;
+}
+
+div.method {
+	margin-left:	20px;
+}
+
+section {
+}
+
+section.hidden {
+	display: none;
+}
+
+div.infoBox {
+	position:		absolute;
+	width:			auto;
+	height:			auto;
+	padding:		4px;
+	background-color:	#f5ee82;
+	color:			black;
+	box-shadow:		0 0 10px #f5ee82;
+	border-radius:		10px;
+}
+
+div.infoBox.hidden {
+	display: none;
+}

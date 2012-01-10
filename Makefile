@@ -1,5 +1,5 @@
 SOURCE := src/api-*.js src/*/*
-TEMPLATES := $(SOURCE) templates/
+TEMPLATES := $(SOURCE) templates/ build
 
 IN := src/wrapper-start.js $(SOURCE) src/wrapper-end.js
 OUT := lib/audiolib.js
