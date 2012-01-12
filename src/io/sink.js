@@ -539,9 +539,10 @@ Sink.sinks('dummy', function () {
 
 sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
 	var	self		= this,
-		// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
-		context		= new (window.AudioContext || webkitAudioContext)(/*sampleRate*/),
-		node		= context.createJavaScriptNode(bufferSize, 0, channelCount);
+		context		= sinks.webkit.getContext(),
+		node		= context.createJavaScriptNode(bufferSize, 0, channelCount),
+		soundData	= null,
+		zeroBuffer	= null;
 	self.start.apply(self, arguments);
 
 	function bufferFill(e) {
@@ -550,8 +551,11 @@ sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
 			i, n, l		= outputBuffer.length,
 			size		= outputBuffer.size,
 			channels	= new Array(channelCount),
-			soundData	= new Float32Array(l * channelCount),
 			tail;
+		
+		soundData	= soundData && soundData.length === l * channelCount ? soundData : new Float32Array(l * channelCount);
+		zeroBuffer	= zeroBuffer && zeroBuffer.length === soundData.length ? zeroBuffer : new Float32Array(l * channelCount);
+		soundData.set(zeroBuffer);
 
 		for (i=0; i<channelCount; i++) {
 			channels[i] = outputBuffer.getChannelData(i);
@@ -578,14 +582,12 @@ sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
 	// Thanks to @baffo32
 	fixChrome82795.push(node);
 }, {
-	//TODO: Do something here.
 	kill: function () {
 		this._node.disconnect(0);
 		for (var i=0; i<fixChrome82795.length; i++) {
 			fixChrome82795[i] === this._node && fixChrome82795.splice(i--, 1);
 		}
 		this._node = this._context = null;
-		this.kill();
 		this.emit('kill');
 	},
 	getPlaybackTime: function () {
@@ -594,6 +596,17 @@ sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
 });
 
 sinks.webkit.fix82795 = fixChrome82795;
+
+sinks.webkit.getContext = function () {
+	// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
+	var context = new (window.AudioContext || webkitAudioContext)(/*sampleRate*/);
+
+	sinks.webkit.getContext = function () {
+		return context;
+	};
+
+	return context;
+};
 
 }(this.Sink.sinks, []));
 (function (Sink) {
