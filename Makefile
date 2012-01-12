@@ -48,7 +48,7 @@ $(DOCS): $(TEMPLATES)
 $(PACKAGE): $(TEMPLATES)
 	$(UPDATE) package
 
-$(SINK_JS): integration/sink.js/src/
+$(SINK_JS): integration/sink.js/
 	cd $^ && make
 
 src/processors/fft.js: $(FFT_JS) $(FFT_APPEND)
