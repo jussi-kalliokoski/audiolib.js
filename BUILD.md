@@ -10,12 +10,22 @@ Operation:
 
 ``
 
-make [all]
+git submodule --init
+make main
+
+``
+
+If you need to minify as well:
+
+``
+
+make minify
 
 ``
 
 Dependencies:
  * A terminal (emulator)
+ * git
  * make
  * (con)cat
  * A minifier (optional, defaults to uglifyjs, install via npm `` sudo npm install uglifyjs -g ``)
@@ -26,8 +36,7 @@ Integrates bundled packages to audiolib.js. To run this operation, you must firs
 
 ``sh
 
-git submodule init
-git submodule update
+git submodule update --init
 cd integration/sink.js
 git pull origin master
 cd ../..
@@ -65,6 +74,7 @@ Dependencies:
  * nodejs
  * npm
  * paramon & script-builder (npm packages, installation: `` npm install paramon script-builder ``)
+ * (OPTIONAL) for automatic minification of the docs: `` npm install uglify-js html-minifier clean-css ``
 
 ## Config
 
