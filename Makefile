@@ -10,7 +10,7 @@ PACKAGE := package.json
 
 FFT_JS := integration/fft.js/fft.js
 SINK_JS := integration/sink.js/sink.js
-PCMDATA_JS := integration/pcmdata.js
+PCMDATA_JS := integration/pcmdata.js/lib/pcmdata.js
 FFT_APPEND := integration/append-fft.js
 PCMDATA_PREPEND := integration/prepend-pcmdata.js
 
@@ -48,14 +48,14 @@ $(DOCS): $(TEMPLATES)
 $(PACKAGE): $(TEMPLATES)
 	$(UPDATE) package
 
-$(SINK_JS): integration/sink.js
+$(SINK_JS): integration/sink.js/src/
 	cd $^ && make
 
-src/processors/fft.js: $(FFT_JS) $(FFT_PREPEND)
-	cat $(FFT_JS) - $(FFT_PREPEND) | echo "" > $@
+src/processors/fft.js: $(FFT_JS) $(FFT_APPEND)
+	echo "" | cat $(FFT_JS) - $(FFT_APPEND) > $@
 
-src/io/pcmdata.js: $(PCMDATA_JS) $(PCMDATA_APPEND)
-	cat $(PCMDATA_APPEND) - $(PCMDATA_JS) | echo "" > $@
+src/io/pcmdata.js: $(PCMDATA_JS) $(PCMDATA_PREPEND)
+	echo "" | cat $(PCMDATA_PREPEND) - $(PCMDATA_JS) > $@
 
 src/io/sink.js: $(SINK_JS)
 	cat $^ > $@
