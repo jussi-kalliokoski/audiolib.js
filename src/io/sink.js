@@ -1,4 +1,4 @@
-(function(global){
+var Sink = this.Sink = (function(global){
 
 /**
  * Creates a Sink according to specified parameters, if possible.
@@ -34,6 +34,113 @@ function Sink (readFn, channelCount, bufferSize, sampleRate) {
 
 	throw Sink.Error(0x02);
 }
+
+function SinkClass () {
+}
+
+Sink.SinkClass = SinkClass;
+
+SinkClass.prototype = Sink.prototype = {
+	sampleRate: 44100,
+	channelCount: 2,
+	bufferSize: 4096,
+
+	writePosition: 0,
+	previousHit: 0,
+	ringOffset: 0,
+
+	channelMode: 'interleaved',
+
+/**
+ * Does the initialization of the sink.
+ * @method Sink
+*/
+	start: function (readFn, channelCount, bufferSize, sampleRate) {
+		this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount: channelCount;
+		this.bufferSize		= isNaN(bufferSize) || bufferSize === null ? this.bufferSize : bufferSize;
+		this.sampleRate		= isNaN(sampleRate) || sampleRate === null ? this.sampleRate : sampleRate;
+		this.readFn		= readFn;
+		this.activeRecordings	= [];
+		this.previousHit	= +new Date;
+		Sink.EventEmitter.call(this);
+		Sink.emit('init', [this].concat([].slice.call(arguments)));
+	},
+/**
+ * The method which will handle all the different types of processing applied on a callback.
+ * @method Sink
+*/
+	process: function (soundData, channelCount) {
+		this.emit('preprocess', arguments);
+		this.ringBuffer && (this.channelMode === 'interleaved' ? this.ringSpin : this.ringSpinInterleaved).apply(this, arguments);
+		if (this.channelMode === 'interleaved') {
+			this.emit('audioprocess', arguments);
+			this.readFn && this.readFn.apply(this, arguments);
+		} else {
+			var	soundDataSplit	= Sink.deinterleave(soundData, this.channelCount),
+				args		= [soundDataSplit].concat([].slice.call(arguments, 1));
+			this.emit('audioprocess', args);
+			this.readFn && this.readFn.apply(this, args);
+			Sink.interleave(soundDataSplit, this.channelCount, soundData);
+		}
+		this.emit('postprocess', arguments);
+		this.previousHit = +new Date;
+		this.writePosition += soundData.length / channelCount;
+	},
+/**
+ * Get the current output position, defaults to writePosition - bufferSize.
+ *
+ * @method Sink
+ *
+ * @return {Number} The position of the write head, in samples, per channel.
+*/
+	getPlaybackTime: function () {
+		return this.writePosition - this.bufferSize;
+	},
+};
+
+/**
+ * The container for all the available sinks. Also a decorator function for creating a new Sink class and binding it.
+ *
+ * @method Sink
+ * @static
+ *
+ * @arg {String} type The name / type of the Sink.
+ * @arg {Function} constructor The constructor function for the Sink.
+ * @arg {Object} prototype The prototype of the Sink. (optional)
+ * @arg {Boolean} disabled Whether the Sink should be disabled at first.
+*/
+
+function sinks (type, constructor, prototype, disabled) {
+	prototype = prototype || constructor.prototype;
+	constructor.prototype = new Sink.SinkClass();
+	constructor.prototype.type = type;
+	constructor.enabled = !disabled;
+	for (disabled in prototype) {
+		if (prototype.hasOwnProperty(disabled)) {
+			constructor.prototype[disabled] = prototype[disabled];
+		}
+	}
+	sinks[type] = constructor;
+}
+
+Sink.sinks = Sink.devices = sinks;
+
+Sink.singleton = function () {
+	var sink = Sink.apply(null, arguments);
+
+	Sink.singleton = function () {
+		return sink;
+	};
+
+	return sink;
+};
+
+global.Sink = Sink;
+
+return Sink;
+
+}(function (){ return this; }()));
+(function (Sink) {
 
 /**
  * A light event emitter.
@@ -109,6 +216,11 @@ EventEmitter.prototype = {
 
 Sink.EventEmitter = EventEmitter;
 
+EventEmitter.call(Sink);
+
+}(this.Sink));
+(function (Sink) {
+
 /*
  * A Sink-specific error class.
  *
@@ -167,538 +279,8 @@ SinkError[0x12] = {
 
 Sink.Error = SinkError;
 
-/**
- * A Recording class for recording sink output.
- *
- * @class
- * @static Sink
- * @arg {Object} bindTo The sink to bind the recording to.
-*/
-
-function Recording (bindTo) {
-	this.boundTo = bindTo;
-	this.buffers = [];
-	bindTo.activeRecordings.push(this);
-}
-
-Recording.prototype = {
-/**
- * Adds a new buffer to the recording.
- *
- * @arg {Array} buffer The buffer to add.
- *
- * @method Recording
-*/
-	add: function (buffer) {
-		this.buffers.push(buffer);
-	},
-/**
- * Empties the recording.
- *
- * @method Recording
-*/
-	clear: function () {
-		this.buffers = [];
-	},
-/**
- * Stops the recording and unbinds it from it's host sink.
- *
- * @method Recording
-*/
-	stop: function () {
-		var	recordings = this.boundTo.activeRecordings,
-			i;
-		for (i=0; i<recordings.length; i++) {
-			if (recordings[i] === this) {
-				recordings.splice(i--, 1);
-			}
-		}
-	},
-/**
- * Joins the recorded buffers into a single buffer.
- *
- * @method Recording
-*/
-	join: function () {
-		var	bufferLength	= 0,
-			bufPos		= 0,
-			buffers		= this.buffers,
-			newArray,
-			n, i, l		= buffers.length;
-
-		for (i=0; i<l; i++) {
-			bufferLength += buffers[i].length;
-		}
-		newArray = new Float32Array(bufferLength);
-		for (i=0; i<l; i++) {
-			for (n=0; n<buffers[i].length; n++) {
-				newArray[bufPos + n] = buffers[i][n];
-			}
-			bufPos += buffers[i].length;
-		}
-		return newArray;
-	},
-};
-
-function SinkClass () {
-}
-
-Sink.SinkClass = SinkClass;
-
-SinkClass.prototype = {
-	sampleRate: 44100,
-	channelCount: 2,
-	bufferSize: 4096,
-
-	writePosition: 0,
-	previousHit: 0,
-	ringOffset: 0,
-
-	writeMode: 'async',
-	channelMode: 'interleaved',
-	ringBuffer: null,
-
-/**
- * Does the initialization of the sink.
- * @method Sink
-*/
-	start: function (readFn, channelCount, bufferSize, sampleRate) {
-		this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount: channelCount;
-		this.bufferSize	= isNaN(bufferSize) || bufferSize === null ? this.bufferSize : bufferSize;
-		this.sampleRate		= isNaN(sampleRate) || sampleRate === null ? this.sampleRate : sampleRate;
-		this.readFn		= readFn;
-		this.activeRecordings	= [];
-		this.previousHit	= +new Date;
-		this.asyncBuffers	= [];
-		this.syncBuffers	= [];
-		Sink.EventEmitter.call(this);
-	},
-/**
- * The method which will handle all the different types of processing applied on a callback.
- * @method Sink
-*/
-	process: function (soundData, channelCount) {
-		this.ringBuffer && (this.channelMode === 'interleaved' ? this.ringSpin : this.ringSpinInterleaved).apply(this, arguments);
-		this.writeBuffersSync.apply(this, arguments);
-		if (this.channelMode === 'interleaved') {
-			this.emit('audioprocess', arguments);
-			this.readFn && this.readFn.apply(this, arguments);
-		} else {
-			var	soundDataSplit	= Sink.deinterleave(soundData, this.channelCount),
-				args		= [soundDataSplit].concat([].slice.call(arguments, 1));
-			this.emit('audioprocess', args);
-			this.readFn && this.readFn.apply(this, args);
-			Sink.interleave(soundDataSplit, this.channelCount, soundData);
-		}
-		this.writeBuffersAsync.apply(this, arguments);
-		this.recordData.apply(this, arguments);
-		this.previousHit = +new Date;
-		this.writePosition += soundData.length / channelCount;
-	},
-/**
- * Starts recording the sink output.
- *
- * @method Sink
- *
- * @return {Recording} The recording object for the recording started.
-*/
-	record: function () {
-		return new Recording(this);
-	},
-/**
- * Private method that handles the adding the buffers to all the current recordings.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to record.
-*/
-	recordData: function (buffer) {
-		var	activeRecs	= this.activeRecordings,
-			i, l		= activeRecs.length;
-		for (i=0; i<l; i++) {
-			activeRecs[i].add(buffer);
-		}
-	},
-/**
- * Creates a proxy callback system for the sink instance.
- *
- * @method Sink
- *
- * @arg {Number} !bufferSize The buffer size for the proxy.
-*/
-	createProxy: function (bufferSize) {
-		var	proxy		= new Sink.Proxy(bufferSize, this.channelCount);
-		proxy.parentSink	= this;
-
-		this.on('audioprocess', proxy.callback);
-
-		return proxy;
-	},
-/**
- * Private method that handles the mixing of asynchronously written buffers.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to write to.
-*/
-	writeBuffersAsync: function (buffer) {
-		var	buffers		= this.asyncBuffers,
-			l		= buffer.length,
-			buf,
-			bufLength,
-			i, n, offset;
-		if (buffers) {
-			for (i=0; i<buffers.length; i++) {
-				buf		= buffers[i];
-				bufLength	= buf.b.length;
-				offset		= buf.d;
-				buf.d		-= Math.min(offset, l);
-				
-				for (n=0; n + offset < l && n < bufLength; n++) {
-					buffer[n + offset] += buf.b[n];
-				}
-				buf.b = buf.b.subarray(n + offset);
-				i >= bufLength && buffers.splice(i--, 1);
-			}
-		}
-	},
-/**
- * A private method that handles mixing synchronously written buffers.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to write to.
-*/
-	writeBuffersSync: function (buffer) {
-		var	buffers		= this.syncBuffers,
-			l		= buffer.length,
-			i		= 0,
-			soff		= 0;
-		for (;i<l && buffers.length; i++) {
-			buffer[i] += buffers[0][soff];
-			if (buffers[0].length <= soff){
-				buffers.splice(0, 1);
-				soff = 0;
-				continue;
-			}
-			soff++;
-		}
-		if (buffers.length) {
-			buffers[0] = buffers[0].subarray(soff);
-		}
-	},
-/**
- * Writes a buffer asynchronously on top of the existing signal, after a specified delay.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to write.
- * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency.
- * @return {Number} The number of currently stored asynchronous buffers.
-*/
-	writeBufferAsync: function (buffer, delay) {
-		buffer			= this.mode === 'deinterleaved' ? Sink.interleave(buffer, this.channelCount) : buffer;
-		var	buffers		= this.asyncBuffers;
-		buffers.push({
-			b: buffer,
-			d: isNaN(delay) ? ~~((+new Date - this.previousHit) / 1000 * this.sampleRate) : delay
-		});
-		return buffers.length;
-	},
-/**
- * Writes a buffer synchronously to the output.
- *
- * @method Sink
- *
- * @param {Array} buffer The buffer to write.
- * @return {Number} The number of currently stored synchronous buffers.
-*/
-	writeBufferSync: function (buffer) {
-		buffer			= this.mode === 'deinterleaved' ? Sink.interleave(buffer, this.channelCount) : buffer;
-		var	buffers		= this.syncBuffers;
-		buffers.push(buffer);
-		return buffers.length;
-	},
-/**
- * Writes a buffer, according to the write mode specified.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to write.
- * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency. (only applicable in asynchronous write mode)
- * @return {Number} The number of currently stored (a)synchronous buffers.
-*/
-	writeBuffer: function () {
-		return this[this.writeMode === 'async' ? 'writeBufferAsync' : 'writeBufferSync'].apply(this, arguments);
-	},
-/**
- * Gets the total amount of yet unwritten samples in the synchronous buffers.
- *
- * @method Sink
- *
- * @return {Number} The total amount of yet unwritten samples in the synchronous buffers.
-*/
-	getSyncWriteOffset: function () {
-		var	buffers		= this.syncBuffers,
-			offset		= 0,
-			i;
-		for (i=0; i<buffers.length; i++) {
-			offset += buffers[i].length;
-		}
-		return offset;
-	},
-/**
- * Get the current output position, defaults to writePosition - bufferSize.
- *
- * @method Sink
- *
- * @return {Number} The position of the write head, in samples, per channel.
-*/
-	getPlaybackTime: function () {
-		return this.writePosition - this.bufferSize;
-	},
-/**
- * A private method that applies the ring buffer contents to the specified buffer, while in interleaved mode.
- *
- * @method Sink
- *
- * @arg {Array} buffer The buffer to write to.
-*/
-	ringSpin: function (buffer) {
-		var	ring	= this.ringBuffer,
-			l	= buffer.length,
-			m	= ring.length,
-			off	= this.ringOffset,
-			i;
-		for (i=0; i<l; i++){
-			buffer[i] += ring[off];
-			off = (off + 1) % m;
-		}
-		this.ringOffset = off;
-	},
-/**
- * A private method that applies the ring buffer contents to the specified buffer, while in deinterleaved mode.
- *
- * @method Sink
- *
- * @param {Array} buffer The buffers to write to.
-*/
-	ringSpinDeinterleaved: function (buffer) {
-		var	ring	= this.ringBuffer,
-			l	= buffer.length,
-			ch	= ring.length,
-			m	= ring[0].length,
-			len	= ch * m,
-			off	= this.ringOffset,
-			i, n;
-		for (i=0; i<l; i+=ch){
-			for (n=0; n<ch; n++){
-				buffer[i + n] += ring[n][off];
-			}
-			off = (off + 1) % m;
-		}
-		this.ringOffset = n;
-	},
-};
-
-/**
- * The container for all the available sinks. Also a decorator function for creating a new Sink class and binding it.
- *
- * @method Sink
- *
- * @arg {String} type The name / type of the Sink.
- * @arg {Function} constructor The constructor function for the Sink.
- * @arg {Object} prototype The prototype of the Sink. (optional)
- * @arg {Boolean} disabled Whether the Sink should be disabled at first.
-*/
-
-function sinks (type, constructor, prototype, disabled) {
-	prototype = prototype || constructor.prototype;
-	constructor.prototype = new Sink.SinkClass();
-	constructor.prototype.type = type;
-	constructor.enabled = !disabled;
-	for (disabled in prototype) {
-		if (prototype.hasOwnProperty(disabled)) {
-			constructor.prototype[disabled] = prototype[disabled];
-		}
-	}
-	sinks[type] = constructor;
-}
-
-/**
- * A Sink class for the Mozilla Audio Data API.
-*/
-
-sinks('moz', function () {
-	var	self			= this,
-		currentWritePosition	= 0,
-		tail			= null,
-		audioDevice		= new Audio(),
-		written, currentPosition, available, soundData, prevPos,
-		timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
-	self.start.apply(self, arguments);
-	self.preBufferSize = isNaN(arguments[4]) || arguments[4] === null ? this.preBufferSize : arguments[4];
-
-	function bufferFill() {
-		if (tail){
-			written = audioDevice.mozWriteAudio(tail);
-			currentWritePosition += written;
-			if (written < tail.length){
-				tail = tail.subarray(written);
-				return tail;
-			}
-			tail = null;
-		}
-
-		currentPosition = audioDevice.mozCurrentSampleOffset();
-		available = Number(currentPosition + (prevPos !== currentPosition ? self.bufferSize : self.preBufferSize) * self.channelCount - currentWritePosition);
-		currentPosition === prevPos && self.emit('error', [Sink.Error(0x10)]);
-		if (available > 0 || prevPos === currentPosition){
-			try {
-				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount :
-					self.forceBufferSize ? available < self.bufferSize * 2 ? self.bufferSize * 2 : available : available);
-			} catch(e) {
-				self.emit('error', [Sink.Error(0x12)]);
-				self.kill();
-				return;
-			}
-			self.process(soundData, self.channelCount);
-			written = self._audio.mozWriteAudio(soundData);
-			if (written < soundData.length){
-				tail = soundData.subarray(written);
-			}
-			currentWritePosition += written;
-		}
-		prevPos = currentPosition;
-	}
-
-	audioDevice.mozSetup(self.channelCount, self.sampleRate);
-
-	this._timers = [];
-
-	this._timers.push(Sink.doInterval(function () {
-		// Check for complete death of the output
-		if (+new Date - self.previousHit > 2000) {
-			self._audio = audioDevice = new Audio();
-			audioDevice.mozSetup(self.channelCount, self.sampleRate);
-			currentWritePosition = 0;
-			self.emit('error', [Sink.Error(0x11)]);
-		}
-	}, 1000));
-
-	this._timers.push(Sink.doInterval(bufferFill, self.interval));
-
-	self._bufferFill	= bufferFill;
-	self._audio		= audioDevice;
-}, {
-	// These are somewhat safe values...
-	bufferSize: 24576,
-	preBufferSize: 24576,
-	forceBufferSize: false,
-	interval: 20,
-	kill: function () {
-		while(this._timers.length){
-			this._timers[0]();
-			this._timers.splice(0, 1);
-		}
-		this.emit('kill');
-	},
-	getPlaybackTime: function () {
-		return this._audio.mozCurrentSampleOffset() / this.channelCount;
-	},
-});
-
-/**
- * A sink class for the Web Audio API
-*/
-
-var fixChrome82795 = [];
-
-sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
-	var	self		= this,
-		// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
-		context		= new (window.AudioContext || webkitAudioContext)(/*sampleRate*/),
-		node		= context.createJavaScriptNode(bufferSize, 0, channelCount);
-	self.start.apply(self, arguments);
-
-	function bufferFill(e) {
-		var	outputBuffer	= e.outputBuffer,
-			channelCount	= outputBuffer.numberOfChannels,
-			i, n, l		= outputBuffer.length,
-			size		= outputBuffer.size,
-			channels	= new Array(channelCount),
-			soundData	= new Float32Array(l * channelCount),
-			tail;
-
-		for (i=0; i<channelCount; i++) {
-			channels[i] = outputBuffer.getChannelData(i);
-		}
-
-		self.process(soundData, self.channelCount);
-
-		for (i=0; i<l; i++) {
-			for (n=0; n < channelCount; n++) {
-				channels[n][i] = soundData[i * self.channelCount + n];
-			}
-		}
-	}
-
-	self.sampleRate = context.sampleRate;
-
-	node.onaudioprocess = bufferFill;
-	node.connect(context.destination);
-
-	self._context		= context;
-	self._node		= node;
-	self._callback		= bufferFill;
-	/* Keep references in order to avoid garbage collection removing the listeners, working around http://code.google.com/p/chromium/issues/detail?id=82795 */
-	// Thanks to @baffo32
-	fixChrome82795.push(node);
-}, {
-	//TODO: Do something here.
-	kill: function () {
-		this._node.disconnect(0);
-		for (var i=0; i<fixChrome82795.length; i++) {
-			fixChrome82795[i] === this._node && fixChrome82795.splice(i--, 1);
-		}
-		this._node = this._context = null;
-		this.kill();
-		this.emit('kill');
-	},
-	getPlaybackTime: function () {
-		return this._context.currentTime * this.sampleRate;
-	},
-});
-
-sinks.webkit.fix82795 = fixChrome82795;
-
-/**
- * A dummy Sink. (No output)
-*/
-
-sinks('dummy', function () {
-	var 	self		= this;
-	self.start.apply(self, arguments);
-	
-	function bufferFill () {
-		var	soundData = new Float32Array(self.bufferSize * self.channelCount);
-		self.process(soundData, self.channelCount);
-	}
-
-	self._kill = Sink.doInterval(bufferFill, self.bufferSize / self.sampleRate * 1000);
-
-	self._callback		= bufferFill;
-}, {
-	kill: function () {
-		this._kill();
-		this.emit('kill');
-	},
-}, true);
-
-Sink.sinks		= Sink.devices = sinks;
-Sink.Recording		= Recording;
-
-(function (){
+}(this.Sink));
+(function (Sink) {
 
 var	BlobBuilder	= typeof window === 'undefined' ? undefined :
 	window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder || window.BlobBuilder,
@@ -785,7 +367,8 @@ Sink.inlineWorker = inlineWorker;
 
 inlineWorker.test();
 
-}());
+}(this.Sink));
+(function (Sink) {
 
 /**
  * Creates a timer with consistent (ie. not clamped) intervals even in background tabs.
@@ -820,13 +403,9 @@ Sink.doInterval = function (callback, timeout) {
 		}
 	}
 
-	if (Sink.doInterval.backgroundWork || Sink.devices.moz.backgroundWork) {
-		Sink.inlineWorker.ready ? create() : Sink.inlineWorker.on('ready', function () {
-			create();
-		});
-	} else {
-		create(true);
-	}
+	Sink.inlineWorker.ready ? create() : Sink.inlineWorker.on('ready', function () {
+		create();
+	});
 
 	return function () {
 		if (!kill) {
@@ -839,62 +418,185 @@ Sink.doInterval = function (callback, timeout) {
 	};
 };
 
-Sink.doInterval.backgroundWork = true;
+}(this.Sink));
+(function (Sink) {
 
-Sink.singleton = function () {
-	var sink = Sink.apply(null, arguments);
+/**
+ * A Sink class for the Mozilla Audio Data API.
+*/
 
-	Sink.singleton = function () {
-		return sink;
-	};
+Sink.sinks('moz', function () {
+	var	self			= this,
+		currentWritePosition	= 0,
+		tail			= null,
+		audioDevice		= new Audio(),
+		written, currentPosition, available, soundData, prevPos,
+		timer; // Fix for https://bugzilla.mozilla.org/show_bug.cgi?id=630117
+	self.start.apply(self, arguments);
+	self.preBufferSize = isNaN(arguments[4]) || arguments[4] === null ? this.preBufferSize : arguments[4];
 
-	return sink;
-};
-
-function Proxy (bufferSize, channelCount) {
-	Sink.EventEmitter.call(this);
-
-	this.bufferSize		= isNaN(bufferSize) || bufferSize === null ? this.bufferSize : bufferSize;
-	this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount : channelCount;
-
-	var self = this;
-	this.callback = function () {
-		return self.process.apply(self, arguments);
-	};
-
-	this.resetBuffer();
-}
-
-Proxy.prototype = {
-	buffer: null,
-	zeroBuffer: null,
-	parentSink: null,
-	bufferSize: 4096,
-	channelCount: 2,
-	offset: null,
-
-	resetBuffer: function () {
-		this.buffer	= new Float32Array(this.bufferSize);
-		this.zeroBuffer	= new Float32Array(this.bufferSize);
-	},
-
-	process: function (buffer, channelCount) {
-		this.offset === null && this.loadBuffer();
-
-		for (var i=0; i<buffer.length; i++) {
-			this.offset >= this.buffer.length && this.loadBuffer();
-			buffer[i] = this.buffer[this.offset++];
+	function bufferFill() {
+		if (tail){
+			written = audioDevice.mozWriteAudio(tail);
+			currentWritePosition += written;
+			if (written < tail.length){
+				tail = tail.subarray(written);
+				return tail;
+			}
+			tail = null;
 		}
-	},
 
-	loadBuffer: function () {
-		this.offset = 0;
-		Sink.memcpy(this.zeroBuffer, 0, this.buffer, 0);
-		this.emit('audioprocess', [this.buffer, this.channelCount]);
-	},
-};
+		currentPosition = audioDevice.mozCurrentSampleOffset();
+		available = Number(currentPosition + (prevPos !== currentPosition ? self.bufferSize : self.preBufferSize) * self.channelCount - currentWritePosition);
+		currentPosition === prevPos && self.emit('error', [Sink.Error(0x10)]);
+		if (available > 0 || prevPos === currentPosition){
+			try {
+				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount :
+					self.forceBufferSize ? available < self.bufferSize * 2 ? self.bufferSize * 2 : available : available);
+			} catch(e) {
+				self.emit('error', [Sink.Error(0x12)]);
+				self.kill();
+				return;
+			}
+			self.process(soundData, self.channelCount);
+			written = self._audio.mozWriteAudio(soundData);
+			if (written < soundData.length){
+				tail = soundData.subarray(written);
+			}
+			currentWritePosition += written;
+		}
+		prevPos = currentPosition;
+	}
 
-Sink.Proxy = Proxy;
+	audioDevice.mozSetup(self.channelCount, self.sampleRate);
+
+	this._timers = [];
+
+	this._timers.push(Sink.doInterval(function () {
+		// Check for complete death of the output
+		if (+new Date - self.previousHit > 2000) {
+			self._audio = audioDevice = new Audio();
+			audioDevice.mozSetup(self.channelCount, self.sampleRate);
+			currentWritePosition = 0;
+			self.emit('error', [Sink.Error(0x11)]);
+		}
+	}, 1000));
+
+	this._timers.push(Sink.doInterval(bufferFill, self.interval));
+
+	self._bufferFill	= bufferFill;
+	self._audio		= audioDevice;
+}, {
+	// These are somewhat safe values...
+	bufferSize: 24576,
+	preBufferSize: 24576,
+	forceBufferSize: false,
+	interval: 20,
+	kill: function () {
+		while(this._timers.length){
+			this._timers[0]();
+			this._timers.splice(0, 1);
+		}
+		this.emit('kill');
+	},
+	getPlaybackTime: function () {
+		return this._audio.mozCurrentSampleOffset() / this.channelCount;
+	},
+});
+
+}(this.Sink));
+(function (Sink) {
+
+/**
+ * A dummy Sink. (No output)
+*/
+
+Sink.sinks('dummy', function () {
+	var 	self		= this;
+	self.start.apply(self, arguments);
+	
+	function bufferFill () {
+		var	soundData = new Float32Array(self.bufferSize * self.channelCount);
+		self.process(soundData, self.channelCount);
+	}
+
+	self._kill = Sink.doInterval(bufferFill, self.bufferSize / self.sampleRate * 1000);
+
+	self._callback		= bufferFill;
+}, {
+	kill: function () {
+		this._kill();
+		this.emit('kill');
+	},
+}, true);
+
+}(this.Sink));
+(function (sinks, fixChrome82795) {
+
+/**
+ * A sink class for the Web Audio API
+*/
+
+sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
+	var	self		= this,
+		// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
+		context		= new (window.AudioContext || webkitAudioContext)(/*sampleRate*/),
+		node		= context.createJavaScriptNode(bufferSize, 0, channelCount);
+	self.start.apply(self, arguments);
+
+	function bufferFill(e) {
+		var	outputBuffer	= e.outputBuffer,
+			channelCount	= outputBuffer.numberOfChannels,
+			i, n, l		= outputBuffer.length,
+			size		= outputBuffer.size,
+			channels	= new Array(channelCount),
+			soundData	= new Float32Array(l * channelCount),
+			tail;
+
+		for (i=0; i<channelCount; i++) {
+			channels[i] = outputBuffer.getChannelData(i);
+		}
+
+		self.process(soundData, self.channelCount);
+
+		for (i=0; i<l; i++) {
+			for (n=0; n < channelCount; n++) {
+				channels[n][i] = soundData[i * self.channelCount + n];
+			}
+		}
+	}
+
+	self.sampleRate = context.sampleRate;
+
+	node.onaudioprocess = bufferFill;
+	node.connect(context.destination);
+
+	self._context		= context;
+	self._node		= node;
+	self._callback		= bufferFill;
+	/* Keep references in order to avoid garbage collection removing the listeners, working around http://code.google.com/p/chromium/issues/detail?id=82795 */
+	// Thanks to @baffo32
+	fixChrome82795.push(node);
+}, {
+	//TODO: Do something here.
+	kill: function () {
+		this._node.disconnect(0);
+		for (var i=0; i<fixChrome82795.length; i++) {
+			fixChrome82795[i] === this._node && fixChrome82795.splice(i--, 1);
+		}
+		this._node = this._context = null;
+		this.kill();
+		this.emit('kill');
+	},
+	getPlaybackTime: function () {
+		return this._context.currentTime * this.sampleRate;
+	},
+});
+
+sinks.webkit.fix82795 = fixChrome82795;
+
+}(this.Sink.sinks, []));
+(function (Sink) {
 
 (function(){
 
@@ -975,6 +677,9 @@ Sink.resample	= function (buffer, fromRate /* or speed */, fromFrequency /* or t
 	}
 	return newBuffer;
 };
+
+}(this.Sink));
+(function (Sink) {
 
 /**
  * Splits a sample buffer into those of different channels.
@@ -1168,5 +873,383 @@ Sink.ftoi = function (input, bitCount, output) {
 	return output;
 };
 
-global.Sink = Sink;
-}(function (){ return this; }()));
+}(this.Sink));
+(function (Sink) {
+
+function Proxy (bufferSize, channelCount) {
+	Sink.EventEmitter.call(this);
+
+	this.bufferSize		= isNaN(bufferSize) || bufferSize === null ? this.bufferSize : bufferSize;
+	this.channelCount	= isNaN(channelCount) || channelCount === null ? this.channelCount : channelCount;
+
+	var self = this;
+	this.callback = function () {
+		return self.process.apply(self, arguments);
+	};
+
+	this.resetBuffer();
+}
+
+Proxy.prototype = {
+	buffer: null,
+	zeroBuffer: null,
+	parentSink: null,
+	bufferSize: 4096,
+	channelCount: 2,
+	offset: null,
+
+	resetBuffer: function () {
+		this.buffer	= new Float32Array(this.bufferSize);
+		this.zeroBuffer	= new Float32Array(this.bufferSize);
+	},
+
+	process: function (buffer, channelCount) {
+		this.offset === null && this.loadBuffer();
+
+		for (var i=0; i<buffer.length; i++) {
+			this.offset >= this.buffer.length && this.loadBuffer();
+			buffer[i] = this.buffer[this.offset++];
+		}
+	},
+
+	loadBuffer: function () {
+		this.offset = 0;
+		Sink.memcpy(this.zeroBuffer, 0, this.buffer, 0);
+		this.emit('audioprocess', [this.buffer, this.channelCount]);
+	},
+};
+
+Sink.Proxy = Proxy;
+
+/**
+ * Creates a proxy callback system for the sink instance.
+ * Requires Sink utils.
+ *
+ * @method Sink
+ * @method createProxy
+ *
+ * @arg {Number} !bufferSize The buffer size for the proxy.
+*/
+Sink.prototype.createProxy = function (bufferSize) {
+	var	proxy		= new Sink.Proxy(bufferSize, this.channelCount);
+	proxy.parentSink	= this;
+
+	this.on('audioprocess', proxy.callback);
+
+	return proxy;
+};
+
+}(this.Sink));
+(function (Sink) {
+
+function processRingBuffer () {
+	this.ringBuffer && (this.channelMode === 'interleaved' ? this.ringSpin : this.ringSpinInterleaved).apply(this, arguments);
+}
+
+Sink.on('init', function (sink) {
+	sink.on('preprocess', processRingBuffer);
+});
+
+Sink.prototype.ringBuffer = null;
+
+/**
+ * A private method that applies the ring buffer contents to the specified buffer, while in interleaved mode.
+ *
+ * @method Sink
+ * @name ringSpin
+ *
+ * @arg {Array} buffer The buffer to write to.
+*/
+Sink.prototype.ringSpin = function (buffer) {
+	var	ring	= this.ringBuffer,
+		l	= buffer.length,
+		m	= ring.length,
+		off	= this.ringOffset,
+		i;
+	for (i=0; i<l; i++){
+		buffer[i] += ring[off];
+		off = (off + 1) % m;
+	}
+	this.ringOffset = off;
+};
+
+/**
+ * A private method that applies the ring buffer contents to the specified buffer, while in deinterleaved mode.
+ *
+ * @method Sink
+ * @name ringSpinDeinterleaved
+ *
+ * @param {Array} buffer The buffers to write to.
+*/
+Sink.prototype.ringSpinDeinterleaved = function (buffer) {
+	var	ring	= this.ringBuffer,
+		l	= buffer.length,
+		ch	= ring.length,
+		m	= ring[0].length,
+		len	= ch * m,
+		off	= this.ringOffset,
+		i, n;
+	for (i=0; i<l; i+=ch){
+		for (n=0; n<ch; n++){
+			buffer[i + n] += ring[n][off];
+		}
+		off = (off + 1) % m;
+	}
+	this.ringOffset = n;
+};
+
+}(this.Sink));
+(function (Sink, proto) {
+
+proto = Sink.prototype;
+
+Sink.on('init', function (sink) {
+	sink.asyncBuffers	= [];
+	sink.syncBuffers	= [];
+	sink.on('preprocess', sink.writeBuffersSync);
+	sink.on('postprocess', sink.writeBuffersAsync);
+});
+
+proto.writeMode		= 'async';
+proto.asyncBuffers	= proto.syncBuffers = null;
+
+/**
+ * Private method that handles the mixing of asynchronously written buffers.
+ *
+ * @method Sink
+ * @name writeBuffersAsync
+ *
+ * @arg {Array} buffer The buffer to write to.
+*/
+proto.writeBuffersAsync = function (buffer) {
+	var	buffers		= this.asyncBuffers,
+		l		= buffer.length,
+		buf,
+		bufLength,
+		i, n, offset;
+	if (buffers) {
+		for (i=0; i<buffers.length; i++) {
+			buf		= buffers[i];
+			bufLength	= buf.b.length;
+			offset		= buf.d;
+			buf.d		-= Math.min(offset, l);
+			
+			for (n=0; n + offset < l && n < bufLength; n++) {
+				buffer[n + offset] += buf.b[n];
+			}
+			buf.b = buf.b.subarray(n + offset);
+			i >= bufLength && buffers.splice(i--, 1);
+		}
+	}
+};
+
+/**
+ * A private method that handles mixing synchronously written buffers.
+ *
+ * @method Sink
+ * @name writeBuffersSync
+ *
+ * @arg {Array} buffer The buffer to write to.
+*/
+proto.writeBuffersSync = function (buffer) {
+	var	buffers		= this.syncBuffers,
+		l		= buffer.length,
+		i		= 0,
+		soff		= 0;
+	for (;i<l && buffers.length; i++) {
+		buffer[i] += buffers[0][soff];
+		if (buffers[0].length <= soff){
+			buffers.splice(0, 1);
+			soff = 0;
+			continue;
+		}
+		soff++;
+	}
+	if (buffers.length) {
+		buffers[0] = buffers[0].subarray(soff);
+	}
+};
+
+/**
+ * Writes a buffer asynchronously on top of the existing signal, after a specified delay.
+ *
+ * @method Sink
+ * @name writeBufferAsync
+ *
+ * @arg {Array} buffer The buffer to write.
+ * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency.
+ * @return {Number} The number of currently stored asynchronous buffers.
+*/
+proto.writeBufferAsync = function (buffer, delay) {
+	buffer			= this.mode === 'deinterleaved' ? Sink.interleave(buffer, this.channelCount) : buffer;
+	var	buffers		= this.asyncBuffers;
+	buffers.push({
+		b: buffer,
+		d: isNaN(delay) ? ~~((+new Date - this.previousHit) / 1000 * this.sampleRate) : delay
+	});
+	return buffers.length;
+};
+
+/**
+ * Writes a buffer synchronously to the output.
+ *
+ * @method Sink
+ * @name writeBufferSync
+ *
+ * @param {Array} buffer The buffer to write.
+ * @return {Number} The number of currently stored synchronous buffers.
+*/
+proto.writeBufferSync = function (buffer) {
+	buffer			= this.mode === 'deinterleaved' ? Sink.interleave(buffer, this.channelCount) : buffer;
+	var	buffers		= this.syncBuffers;
+	buffers.push(buffer);
+	return buffers.length;
+};
+
+/**
+ * Writes a buffer, according to the write mode specified.
+ *
+ * @method Sink
+ * @name writeBuffer
+ *
+ * @arg {Array} buffer The buffer to write.
+ * @arg {Number} delay The delay to write after. If not specified, the Sink will calculate a delay to compensate the latency. (only applicable in asynchronous write mode)
+ * @return {Number} The number of currently stored (a)synchronous buffers.
+*/
+proto.writeBuffer = function () {
+	return this[this.writeMode === 'async' ? 'writeBufferAsync' : 'writeBufferSync'].apply(this, arguments);
+};
+
+/**
+ * Gets the total amount of yet unwritten samples in the synchronous buffers.
+ *
+ * @method Sink
+ * @name getSyncWriteOffset
+ *
+ * @return {Number} The total amount of yet unwritten samples in the synchronous buffers.
+*/
+proto.getSyncWriteOffset = function () {
+	var	buffers		= this.syncBuffers,
+		offset		= 0,
+		i;
+	for (i=0; i<buffers.length; i++) {
+		offset += buffers[i].length;
+	}
+	return offset;
+};
+
+} (this.Sink));
+(function (Sink) {
+
+Sink.on('init', function (sink) {
+	sink.activeRecordings = [];
+	sink.on('postprocess', sink.recordData);
+});
+
+Sink.prototype.activeRecordings = null;
+
+/**
+ * Starts recording the sink output.
+ *
+ * @method Sink
+ * @name record
+ *
+ * @return {Recording} The recording object for the recording started.
+*/
+Sink.prototype.record = function () {
+	var recording = new Sink.Recording(this);
+	this.emit('record', [recording]);
+	return recording;
+};
+/**
+ * Private method that handles the adding the buffers to all the current recordings.
+ *
+ * @method Sink
+ * @method recordData
+ *
+ * @arg {Array} buffer The buffer to record.
+*/
+Sink.prototype.recordData = function (buffer) {
+	var	activeRecs	= this.activeRecordings,
+		i, l		= activeRecs.length;
+	for (i=0; i<l; i++) {
+		activeRecs[i].add(buffer);
+	}
+};
+
+/**
+ * A Recording class for recording sink output.
+ *
+ * @class
+ * @static Sink
+ * @arg {Object} bindTo The sink to bind the recording to.
+*/
+
+function Recording (bindTo) {
+	this.boundTo = bindTo;
+	this.buffers = [];
+	bindTo.activeRecordings.push(this);
+}
+
+Recording.prototype = {
+/**
+ * Adds a new buffer to the recording.
+ *
+ * @arg {Array} buffer The buffer to add.
+ *
+ * @method Recording
+*/
+	add: function (buffer) {
+		this.buffers.push(buffer);
+	},
+/**
+ * Empties the recording.
+ *
+ * @method Recording
+*/
+	clear: function () {
+		this.buffers = [];
+	},
+/**
+ * Stops the recording and unbinds it from it's host sink.
+ *
+ * @method Recording
+*/
+	stop: function () {
+		var	recordings = this.boundTo.activeRecordings,
+			i;
+		for (i=0; i<recordings.length; i++) {
+			if (recordings[i] === this) {
+				recordings.splice(i--, 1);
+			}
+		}
+	},
+/**
+ * Joins the recorded buffers into a single buffer.
+ *
+ * @method Recording
+*/
+	join: function () {
+		var	bufferLength	= 0,
+			bufPos		= 0,
+			buffers		= this.buffers,
+			newArray,
+			n, i, l		= buffers.length;
+
+		for (i=0; i<l; i++) {
+			bufferLength += buffers[i].length;
+		}
+		newArray = new Float32Array(bufferLength);
+		for (i=0; i<l; i++) {
+			for (n=0; n<buffers[i].length; n++) {
+				newArray[bufPos + n] = buffers[i][n];
+			}
+			bufPos += buffers[i].length;
+		}
+		return newArray;
+	},
+};
+
+Sink.Recording = Recording;
+
+}(this.Sink));

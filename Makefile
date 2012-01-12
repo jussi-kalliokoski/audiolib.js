@@ -48,6 +48,9 @@ $(DOCS): $(TEMPLATES)
 $(PACKAGE): $(TEMPLATES)
 	$(UPDATE) package
 
+$(SINK_JS):
+	cd integration/sink.js && make
+
 src/processors/fft.js: $(FFT_JS) $(FFT_PREPEND)
 	cat $(FFT_JS) - $(FFT_PREPEND) | echo "" > $@
 
