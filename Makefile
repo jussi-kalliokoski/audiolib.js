@@ -61,6 +61,11 @@ src/io/sink.js: $(SINK_JS)
 	cat $^ > $@
 
 
+simple: # this is a simple build, doesn't require the subrepos
+	mkdir lib/ -p
+	$(COMPILER) $(IN) > $(OUT)
+
+
 %.min.js: %.js
 	$(MINIFIER) $^ > $@
 
@@ -68,4 +73,4 @@ clean:
 	rm lib/ -rf
 
 .PHONY: all update package release minify main docs \
-	integrate wrappers clean
+	integrate wrappers clean simple
