@@ -13,7 +13,7 @@ function inject () {
 }
 
 audioLib.AudioWorker = function (code, injectable) {
-	var	worker	= 'var audioLib=(' + String(AUDIOLIB) + '(this, Math, Object, Array));\n',
+	var	worker	= 'var audioLib=(' + String(AUDIOLIB) + ').call({},this,Math,Object,Array);\n',
 		i;
 	for (i=0; i < audioLib.plugins._pluginList.length; i++) {
 		worker += '(' + String(audioLib.plugins._pluginList[url]) + '());\n';
