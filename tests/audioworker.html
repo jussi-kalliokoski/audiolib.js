@@ -2,28 +2,33 @@
 <html>
 	<head>
 		<script src="../lib/audiolib.js"></script>
+		<script type="unknown" id="audio-worker">
+var osc;
+
+var dev = Sink();
+
+Sink.on('audioprocess', function (buffer, ch) {
+	osc.append(buffer, ch);
+});
+
+dev.on('ready', function () {
+	osc = audioLib.Oscillator(dev.sampleRate);
+});
+
+		</script>
 		<script>
 (function(){
 
 window.onload = function(){
-	var worker = audioLib.AudioWorker(function (){
-		this.dev	= audioLib.AudioDevice(function(buffer, ch){
-				
-				var	l	= buffer.length / ch,
-					smpl, i, n;
-				for (n=0; n<l; n++){
-					osc.generate();
-					smpl	= osc.getMix()
-					for (i=0; i<ch; i++){
-						buffer[n*ch + i] = smpl;
-					}
-				}
-			}, 2),
-		this.osc	= new audioLib.Oscillator(dev.sampleRate);
-	}, true);
+	var worker = audioLib.AudioWorker(document.querySelector('#audio-worker'), true);
+
+	worker.onmessage = function (e) {
+		console.log(e.data);
+	};
+
 	setTimeout(function(){
 		worker.inject(function(){
-			osc.frequency = 220;
+			postMessage(audioLib.version + !!dev);
 		});
 	}, 2000);
 };
