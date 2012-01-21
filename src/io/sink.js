@@ -425,7 +425,7 @@ Sink.doInterval = function (callback, timeout) {
  * A Sink class for the Mozilla Audio Data API.
 */
 
-Sink.sinks('moz', function () {
+Sink.sinks('audiodata', function () {
 	var	self			= this,
 		currentWritePosition	= 0,
 		tail			= null,
@@ -503,6 +503,8 @@ Sink.sinks('moz', function () {
 		return this._audio.mozCurrentSampleOffset() / this.channelCount;
 	},
 });
+
+Sink.sinks.moz = Sink.sinks.audiodata;
 
 }(this.Sink));
 (function (Sink, sinks) {
@@ -634,9 +636,9 @@ Sink.sinks('dummy', function () {
  * A sink class for the Web Audio API
 */
 
-sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
+sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 	var	self		= this,
-		context		= sinks.webkit.getContext(),
+		context		= sinks.webaudio.getContext(),
 		node		= context.createJavaScriptNode(bufferSize, 0, channelCount),
 		soundData	= null,
 		zeroBuffer	= null;
@@ -692,13 +694,15 @@ sinks('webkit', function (readFn, channelCount, bufferSize, sampleRate) {
 	},
 });
 
-sinks.webkit.fix82795 = fixChrome82795;
+sinks.webkit = sinks.webaudio;
 
-sinks.webkit.getContext = function () {
+sinks.webaudio.fix82795 = fixChrome82795;
+
+sinks.webaudio.getContext = function () {
 	// For now, we have to accept that the AudioContext is at 48000Hz, or whatever it decides.
 	var context = new (window.AudioContext || webkitAudioContext)(/*sampleRate*/);
 
-	sinks.webkit.getContext = function () {
+	sinks.webaudio.getContext = function () {
 		return context;
 	};
 
@@ -706,6 +710,104 @@ sinks.webkit.getContext = function () {
 };
 
 }(this.Sink.sinks, []));
+(function (Sink) {
+
+/**
+ * A Sink class for the Media Streams Processing API and/or Web Audio API in a Web Worker.
+*/
+
+Sink.sinks('worker', function () {
+	var	self		= this,
+		global		= (function(){ return this; }()),
+		soundData	= null,
+		outBuffer	= null,
+		zeroBuffer	= null;
+	self.start.apply(self, arguments);
+
+	// Let's see if we're in a worker.
+
+	importScripts();
+
+	function mspBufferFill (e) {
+		self.ready || self.initMSP(e);
+
+		var	channelCount	= self.channelCount,
+			l		= e.audioLength,
+			n, i;
+
+		soundData	= soundData && soundData.length === l * channelCount ? soundData : new Float32Array(l * channelCount);
+		outBuffer	= outBuffer && outBuffer.length === soundData.length ? outBuffer : new Float32Array(l * channelCount);
+		zeroBuffer	= zeroBuffer && zeroBuffer.length === soundData.length ? zeroBuffer : new Float32Array(l * channelCount);
+
+		soundData.set(zeroBuffer);
+		outBuffer.set(zeroBuffer);
+
+		self.process(soundData, self.channelCount);
+
+		for (n=0; n<channelCount; n++) {
+			for (i=0; i<l; i++) {
+				outBuffer[n * e.audioLength + i] = soundData[n + i * channelCount];
+			}
+		}
+
+		e.writeAudio(outBuffer);
+	}
+
+	function waBufferFill(e) {
+		self.ready || self.initWA(e);
+
+		var	outputBuffer	= e.outputBuffer,
+			channelCount	= outputBuffer.numberOfChannels,
+			i, n, l		= outputBuffer.length,
+			size		= outputBuffer.size,
+			channels	= new Array(channelCount),
+			tail;
+		
+		soundData	= soundData && soundData.length === l * channelCount ? soundData : new Float32Array(l * channelCount);
+		zeroBuffer	= zeroBuffer && zeroBuffer.length === soundData.length ? zeroBuffer : new Float32Array(l * channelCount);
+		soundData.set(zeroBuffer);
+
+		for (i=0; i<channelCount; i++) {
+			channels[i] = outputBuffer.getChannelData(i);
+		}
+
+		self.process(soundData, self.channelCount);
+
+		for (i=0; i<l; i++) {
+			for (n=0; n < channelCount; n++) {
+				channels[n][i] = soundData[i * self.channelCount + n];
+			}
+		}
+	}
+
+	global.onprocessmedia	= mspBufferFill;
+	global.onaudioprocess	= waBufferFill;
+
+	self._mspBufferFill	= mspBufferFill;
+	self._waBufferFill	= waBufferFill;
+
+}, {
+	ready: false,
+
+	initMSP: function (e) {
+		this.channelCount	= e.audioChannels;
+		this.sampleRate		= e.audioSampleRate;
+		this.bufferSize		= e.audioLength * this.channelCount;
+		this.ready		= true;
+		this.emit('ready', []);
+	},
+
+	initWA: function (e) {
+		var b = e.outputBuffer;
+		this.channelCount	= b.numberOfChannels;
+		this.sampleRate		= b.sampleRate;
+		this.bufferSize		= b.length * this.channelCount;
+		this.ready		= true;
+		this.emit('ready', []);
+	},
+});
+
+}(this.Sink));
 (function (Sink) {
 
 (function(){
