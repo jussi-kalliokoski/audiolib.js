@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../lib/audiolib.js"></script>
+	<script src="../plugins/loop-sequencer.js"></script>
+	<script src="samples/drum-samples.js"></script>
+	<script>
+var	dev	= Sink(),
+	kick	= audioLib.Sampler(dev.sampleRate),
+	snare	= audioLib.Sampler(dev.sampleRate),
+	hat	= audioLib.Sampler(dev.sampleRate),
+	seq	= audioLib.LoopSequencer(dev.sampleRate),
+	rev	= audioLib.Reverb(dev.sampleRate, dev.channelCount, 0.5, 0.99);
+
+kick.loadWav(atob(samples.kick));
+snare.loadWav(atob(samples.snare));
+hat.loadWav(atob(samples.hihat));
+
+seq.getMix = function (ch) {
+	return kick.getMix(ch) + snare.getMix(ch) + hat.getMix(ch);
+};
+
+seq.ongenerate = function () {
+	kick.generate();
+	snare.generate();
+	hat.generate();
+};
+
+dev.on('audioprocess', function (buffer, channelCount) {
+	seq.append(buffer, channelCount);
+	rev.append(buffer, channelCount);
+});
+
+seq.tempo = 132;
+seq.length = 2;
+
+seq.addEvent(kick, 0);
+seq.addEvent(hat, 0 + 2/16);
+seq.addEvent(hat, 0 + 3/16);
+seq.addEvent(snare, 0 + 4/16);
+seq.addEvent(snare, 0 + 6/16);
+seq.addEvent(kick, 0 + 7/16);
+seq.addEvent(hat, 0 + 8/16);
+seq.addEvent(snare, 0 + 9/16);
+seq.addEvent(kick, 0 + 10/16);
+seq.addEvent(kick, 0 + 11/16);
+seq.addEvent(snare, 0 + 12/16);
+seq.addEvent(snare, 0 + 14/16);
+seq.addEvent(hat, 0 + 14/16);
+
+seq.addEvent(kick, 1);
+seq.addEvent(hat, 1 + 2/16);
+seq.addEvent(hat, 1 + 3/16);
+seq.addEvent(snare, 1 + 4/16);
+seq.addEvent(snare, 1 + 6/16);
+seq.addEvent(kick, 1 + 7/16);
+seq.addEvent(hat, 1 + 8/16);
+seq.addEvent(snare, 1 + 9/16);
+seq.addEvent(kick, 1 + 10/16);
+seq.addEvent(kick, 1 + 11/16);
+seq.addEvent(snare, 1 + 12/16);
+seq.addEvent(snare, 1 + 13/16);
+seq.addEvent(hat, 1 + 14/16);
+seq.addEvent(snare, 1 + 14/16);
+seq.addEvent(snare, 1 + 15/16);
+	</script>
+</head>
+<body>
+</body>
+</html>
