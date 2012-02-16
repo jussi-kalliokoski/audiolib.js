@@ -50,6 +50,7 @@ SinkClass.prototype = Sink.prototype = {
 	ringOffset: 0,
 
 	channelMode: 'interleaved',
+	isReady: false,
 
 /**
  * Does the initialization of the sink.
@@ -95,6 +96,16 @@ SinkClass.prototype = Sink.prototype = {
 */
 	getPlaybackTime: function () {
 		return this.writePosition - this.bufferSize;
+	},
+/**
+ * Internal method to send the ready signal if not ready yet.
+ * @method Sink
+*/
+	ready: function () {
+		if (this.isReady) return;
+
+		this.isReady = true;
+		this.emit('ready', []);
 	},
 };
 
@@ -310,7 +321,7 @@ function inlineWorker (script) {
 		bb			= null;
 
 		worker.terminate = function () {
-			this._terminate;
+			this._terminate();
 			URL.revokeObjectURL(this._url);
 		};
 
@@ -436,7 +447,7 @@ Sink.sinks('audiodata', function () {
 	self.preBufferSize = isNaN(arguments[4]) || arguments[4] === null ? this.preBufferSize : arguments[4];
 
 	function bufferFill() {
-		if (tail){
+		if (tail) {
 			written = audioDevice.mozWriteAudio(tail);
 			currentWritePosition += written;
 			if (written < tail.length){
@@ -450,6 +461,8 @@ Sink.sinks('audiodata', function () {
 		available = Number(currentPosition + (prevPos !== currentPosition ? self.bufferSize : self.preBufferSize) * self.channelCount - currentWritePosition);
 		currentPosition === prevPos && self.emit('error', [Sink.Error(0x10)]);
 		if (available > 0 || prevPos === currentPosition){
+			self.ready();
+
 			try {
 				soundData = new Float32Array(prevPos === currentPosition ? self.preBufferSize * self.channelCount :
 					self.forceBufferSize ? available < self.bufferSize * 2 ? self.bufferSize * 2 : available : available);
@@ -492,13 +505,15 @@ Sink.sinks('audiodata', function () {
 	preBufferSize: 24576,
 	forceBufferSize: false,
 	interval: 20,
+
 	kill: function () {
-		while(this._timers.length){
-			this._timers[0]();
-			this._timers.splice(0, 1);
+		while (this._timers.length) {
+			this._timers.shift()();
 		}
+
 		this.emit('kill');
 	},
+
 	getPlaybackTime: function () {
 		return this._audio.mozCurrentSampleOffset() / this.channelCount;
 	},
@@ -538,6 +553,9 @@ sinks('wav', function () {
 	
 	function bufferFill () {
 		if (self._audio.hasNextFrame) return;
+
+		self.ready();
+
 		Sink.memcpy(zeroData, 0, soundData, 0);
 		self.process(soundData, self.channelCount);
 
@@ -630,7 +648,7 @@ Sink.sinks('dummy', function () {
 }, true);
 
 }(this.Sink));
-(function (sinks, fixChrome82795) {
+ (function (sinks, fixChrome82795) {
 
 /**
  * A sink class for the Web Audio API
@@ -651,6 +669,8 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 			size		= outputBuffer.size,
 			channels	= new Array(channelCount),
 			tail;
+
+		self.ready();
 		
 		soundData	= soundData && soundData.length === l * channelCount ? soundData : new Float32Array(l * channelCount);
 		zeroBuffer	= zeroBuffer && zeroBuffer.length === soundData.length ? zeroBuffer : new Float32Array(l * channelCount);
@@ -689,6 +709,7 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 		this._node = this._context = null;
 		this.emit('kill');
 	},
+
 	getPlaybackTime: function () {
 		return this._context.currentTime * this.sampleRate;
 	},
@@ -729,7 +750,8 @@ Sink.sinks('worker', function () {
 	importScripts();
 
 	function mspBufferFill (e) {
-		self.ready || self.initMSP(e);
+		self.isReady || self.initMSP(e);
+		self.ready();
 
 		var	channelCount	= self.channelCount,
 			l		= e.audioLength,
@@ -754,7 +776,8 @@ Sink.sinks('worker', function () {
 	}
 
 	function waBufferFill(e) {
-		self.ready || self.initWA(e);
+		self.isReady || self.initWA(e);
+		self.ready();
 
 		var	outputBuffer	= e.outputBuffer,
 			channelCount	= outputBuffer.numberOfChannels,
