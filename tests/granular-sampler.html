@@ -24,6 +24,7 @@ var	delayStart	= document.getElementById('delayStart'),
 	crs		= 'kick',
 	dev		= Sink(),
 	lfo		= audioLib.Oscillator(dev.sampleRate, 0.1),
+	lfo2		= audioLib.Oscillator(dev.sampleRate, 20),
 	gsa		= audioLib.GranularSampler(dev.sampleRate, 50);
 
 function loadSample (name) {
@@ -33,17 +34,21 @@ function loadSample (name) {
 }
 
 function update () {
-	gsa.sampler.delayStart	= parseFloat(delayStart.value);
-	gsa.sampler.delayEnd	= parseFloat(delayEnd.value);
+	gsa.setParam('delayStart', parseFloat(delayStart.value));
+	gsa.setParam('delayEnd', parseFloat(delayEnd.value));
 }
+
+gsa.velocity = 0.5;
 
 loadSample();
 update();
 
 gsa.addAutomation('frequency', lfo, 0.8, 'additiveModulation');
+gsa.addAutomation('velocity', lfo2, 0.4, 'additiveModulation');
 
 dev.on('audioprocess', function (buffer, channelCount) {
 	lfo.generateBuffer(buffer.length / channelCount);
+	lfo2.generateBuffer(buffer.length / channelCount);
 
 	gsa.append(buffer, channelCount);
 });

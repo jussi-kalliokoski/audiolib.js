@@ -16,6 +16,8 @@ GranularSampler.prototype = {
 	sampleRate: 44100,
 	frequency: 440,
 	phase: 1,
+	pitch: 440,
+	velocity: 1,
 
 	getMix: function (ch) {
 		return this.sampler.getMix(ch);
@@ -24,10 +26,21 @@ GranularSampler.prototype = {
 	generate: function () {
 		this.phase += this.frequency / this.sampleRate;
 		if (this.phase >= 1) {
-			this.sampler.noteOn();
+			this.sampler.noteOn(this.pitch, this.velocity);
 			this.phase %= 1;
 		}
 		this.sampler.generate();
+	},
+
+	setParam: function (param, value) {
+		switch (param) {
+		case 'delayEnd':
+		case 'delayStart':
+			this.sampler[param] = value;
+			break;
+		default:
+			this[param] = value;
+		}
 	},
 };
 
