@@ -4,16 +4,41 @@
 	<script src="../lib/audiolib.js"></script>
 	<script src="../plugins/granular-sampler.js"></script>
 	<script src="samples/drum-samples.js"></script>
-	<script>
-var	dev	= Sink(),
-	lfo	= audioLib.Oscillator(dev.sampleRate, 0.1),
-	gsa	= audioLib.GranularSampler(dev.sampleRate, 50);
+</head>
+<body>
+	<button onclick="loadSample('kick')">Kick</button>
+	<button onclick="loadSample('snare')">Snare</button>
+	<button onclick="loadSample('hihat')">Hat</button>
+	<button onclick="loadSample('crash')">Crash</button>
 
-function loadSample(name) {
-	gsa.sampler.loadWav(atob(samples[name]));
+	<br/><br/>
+
+	<label for="delayStart">Pre-delay:</label><br/>
+	<input type="slider" type="number" id="delayStart" value="0.00" onchange="update()" /><br/>
+	<label for="delayEnd">Post-delay:</label><br/>
+	<input type="slider" type="number" id="delayEnd" value="0.50" onchange="update()" /><br/>
+
+	<script>
+var	delayStart	= document.getElementById('delayStart'),
+	delayEnd	= document.getElementById('delayEnd'),
+	crs		= 'kick',
+	dev		= Sink(),
+	lfo		= audioLib.Oscillator(dev.sampleRate, 0.1),
+	gsa		= audioLib.GranularSampler(dev.sampleRate, 50);
+
+function loadSample (name) {
+	crs = name || crs;
+
+	gsa.sampler.loadWav(atob(samples[crs]));
 }
 
-loadSample('kick');
+function update () {
+	gsa.sampler.delayStart	= parseFloat(delayStart.value);
+	gsa.sampler.delayEnd	= parseFloat(delayEnd.value);
+}
+
+loadSample();
+update();
 
 gsa.addAutomation('frequency', lfo, 0.8, 'additiveModulation');
 
@@ -23,11 +48,5 @@ dev.on('audioprocess', function (buffer, channelCount) {
 	gsa.append(buffer, channelCount);
 });
 	</script>
-</head>
-<body>
-<button onclick="loadSample('kick')">Kick</button>
-<button onclick="loadSample('snare')">Snare</button>
-<button onclick="loadSample('hihat')">Hat</button>
-<button onclick="loadSample('crash')">Crash</button>
 </body>
 </html>
