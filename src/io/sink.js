@@ -22,12 +22,12 @@ var Sink = this.Sink = (function(global){
  * @param {Number} default=0 ringOffset The current position of the ring buffer.
 */
 function Sink (readFn, channelCount, bufferSize, sampleRate) {
-	var	sinks	= Sink.sinks,
-		dev;
-	for (dev in sinks){
-		if (sinks.hasOwnProperty(dev) && sinks[dev].enabled){
-			try{
-				return new sinks[dev](readFn, channelCount, bufferSize, sampleRate);
+	var	sinks	= Sink.sinks.list,
+		i;
+	for (i=0; i<sinks.length; i++) {
+		if (sinks[i].enabled) {
+			try {
+				return new sinks[i](readFn, channelCount, bufferSize, sampleRate);
 			} catch(e1){}
 		}
 	}
@@ -121,7 +121,7 @@ SinkClass.prototype = Sink.prototype = {
  * @arg {Boolean} disabled Whether the Sink should be disabled at first.
 */
 
-function sinks (type, constructor, prototype, disabled) {
+function sinks (type, constructor, prototype, disabled, priority) {
 	prototype = prototype || constructor.prototype;
 	constructor.prototype = new Sink.SinkClass();
 	constructor.prototype.type = type;
@@ -132,9 +132,11 @@ function sinks (type, constructor, prototype, disabled) {
 		}
 	}
 	sinks[type] = constructor;
+	sinks.list[priority ? 'unshift' : 'push'](constructor);
 }
 
 Sink.sinks = Sink.devices = sinks;
+Sink.sinks.list = [];
 
 Sink.singleton = function () {
 	var sink = Sink.apply(null, arguments);
@@ -517,7 +519,7 @@ Sink.sinks('audiodata', function () {
 	getPlaybackTime: function () {
 		return this._audio.mozCurrentSampleOffset() / this.channelCount;
 	},
-});
+}, false, true);
 
 Sink.sinks.moz = Sink.sinks.audiodata;
 
@@ -713,7 +715,7 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 	getPlaybackTime: function () {
 		return this._context.currentTime * this.sampleRate;
 	},
-});
+}, false, true);
 
 sinks.webkit = sinks.webaudio;
 
