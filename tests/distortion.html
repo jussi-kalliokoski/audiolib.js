@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>audiolib.js | Distortion Test</title>
+        <script src="../lib/audiolib.js"></script>
+        <script>
+(function(){
+
+function plotPCM(buffer, channelCount){
+    var canvas      = document.getElementById('c'),
+        context     = canvas.getContext('2d'),
+        width       = canvas.width,
+        height      = canvas.height,
+        halfHeight  = height/2,
+        waveScale   = 100, // Pixel height of amplitude 1
+        sampleRate  = 44100,
+        plotTime    = 0.018, // Seconds to plot
+        xscale      = width/(sampleRate*plotTime),
+        osc         = new audioLib.Oscillator(sampleRate, 220),
+        distortion	= new audioLib.Distortion(sampleRate);
+
+	distortion.gain = 10;
+	distortion.master = 2;
+
+    // Reference Box, +- 1
+    context.strokeStyle="#33FF33";
+    context.beginPath();
+    context.rect(0,halfHeight-waveScale, width, waveScale*2);
+    context.stroke();
+
+    // Reference Line, zero
+    context.strokeStyle="#000000";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    context.lineTo(width, halfHeight)
+    context.stroke();
+    
+    // Vanilla sine wave
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + osc.getMix() * waveScale);
+        osc.generate();
+    }
+    context.stroke();
+    
+    
+    // Bit Crushed Waveform
+    context.strokeStyle="#0000FF";
+    context.beginPath();
+    context.moveTo(0, halfHeight);
+    osc.reset();
+     
+    for(var i=0, max=sampleRate*plotTime; i<max; i++){
+        
+        context.lineTo(i*xscale, halfHeight + distortion.pushSample(osc.getMix()) * waveScale);
+        osc.generate();
+    } 
+    context.stroke();
+    
+}
+
+window.onload = function(){
+    setTimeout(function(){
+        plotPCM();
+    }, 2000);
+};
+
+}());
+
+        </script>
+    </head>
+    <body>
+        <h1>Distortion Test</h1>
+        <p>
+            This test shows 2 waveforms:
+            <ul>
+                <li>Unmodified sine wave at 220Hz in <span style="color:black;">Black</span></li>
+                <li>Signal distorted with <em>audioLib.Distortion</em> (gain = 10, master = 2) in <span style="color:blue;">Blue</span></li>
+            </ul>
+        </p>
+        <canvas id=c width=1000 height=420></canvas>
+    </body>
+</html>
