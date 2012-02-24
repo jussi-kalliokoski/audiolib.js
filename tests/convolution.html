@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../lib/audiolib.js"></script>
+	<script>
+	</script>
+</head>
+<body>
+	<script>
+var dev, osc, lfo, cnv, kernels, i;
+
+kernels = new Float32Array(128);
+
+audioLib.Noise('', 'brown').append(kernels);
+
+dev = Sink();
+
+dev.on('ready', function () {
+	osc = audioLib.Oscillator(dev.sampleRate);
+	lfo = audioLib.Oscillator(dev.sampleRate, 0.2);
+
+	cnv = audioLib.Convolution.createBufferBased(2, dev.sampleRate, kernels);
+
+	cnv.mix = 1.0;
+	osc.mix = 0.2;
+
+	osc.addAutomation('fm', lfo, 1.0, 'assignment');
+});
+
+dev.on('audioprocess', function (buffer, channelCount) {
+	lfo.generateBuffer(buffer.length / channelCount);
+
+	osc.append(buffer, channelCount);
+	cnv.append(buffer, channelCount);
+});
+	</script>
+</body>
+</html>

@@ -14,6 +14,7 @@ audioLib.BitCrusher	= BitCrusher;
 audioLib.Chorus		= Chorus;
 audioLib.CombFilter	= CombFilter;
 audioLib.Compressor	= Compressor;
+audioLib.Convolution	= Convolution;
 audioLib.Delay		= Delay;
 audioLib.Distortion	= Distortion;
 audioLib.GainController	= GainController;
@@ -69,7 +70,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
 	effects('BiquadHighPassFilter',	BiquadFilter.HighPass);
 	effects('BiquadLowPassFilter',	BiquadFilter.LowPass);
 	effects('FreeverbAllPassFilter',Freeverb.AllPassFilter);
-}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Limiter', 'Reverb', 'Amplitude', 'FFT']));
+}(['BiquadFilter', 'BitCrusher', 'Chorus', 'CombFilter', 'Compressor', 'Convolution', 'Delay', 'Distortion', 'GainController', 'IIRFilter', 'LP12Filter', 'Limiter', 'Reverb', 'Amplitude', 'FFT']));
 
 (function (names, i) {
 	function generators (name, effect, prototype, argNames) {
