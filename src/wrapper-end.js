@@ -104,7 +104,7 @@ audioLib.GeneratorClass			= GeneratorClass;
 audioLib.codecs				= audioLib.Codec = Codec;
 audioLib.plugins			= Plugin;
 
-audioLib.version			= '0.6.0';
+audioLib.version			= '0.6.1';
 
 audioLib.BufferEffect.prototype.addAutomation	=
 audioLib.EffectClass.prototype.addAutomation	=
