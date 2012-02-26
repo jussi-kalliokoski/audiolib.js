@@ -5,7 +5,8 @@ IN := src/wrapper-start.js $(SOURCE) src/wrapper-end.js
 OUT := lib/audiolib.js
 DOCS := lib/docs.html
 OUT_MIN := lib/audiolib.min.js
-RELEASE := audiolib.js.tar.gz
+RELEASE_TAR_GZ := audiolib.js.tar.gz
+RELEASE_ZIP := audiolib.js.zip
 PACKAGE := package.json
 
 FFT_JS := integration/fft.js/fft.js
@@ -23,7 +24,7 @@ all: minify docs
 update: wrappers package docs
 
 package: $(PACKAGE)
-release: $(RELEASE)
+release: $(RELEASE_TAR_GZ) $(RELEASE_ZIP)
 minify: $(OUT_MIN)
 main: $(OUT)
 docs: $(DOCS)
@@ -38,9 +39,13 @@ $(OUT): $(IN)
 	mkdir lib/ -p
 	$(COMPILER) $^ > $@
 
-$(RELEASE): $(OUT_MIN)
+$(RELEASE_TAR_GZ): $(OUT_MIN)
 	rm -rf $@
 	cd lib && tar pczf $@ *.js
+
+$(RELEASE_ZIP): $(OUT_MIN)
+	rm -rf $@
+	cd lib && zip $@ *.js
 
 $(DOCS): $(TEMPLATES)
 	$(UPDATE) docs
