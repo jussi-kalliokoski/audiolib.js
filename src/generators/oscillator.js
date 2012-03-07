@@ -171,7 +171,7 @@ proto = Oscillator.prototype = {
  * @return {Float} Sample.
 */
 	wavetable: function () {
-		return audioLib.Sink.interpolate(this.wavetable, this._p * this.wavetable.length);
+		return audioLib.Sink.interpolate(this.waveTable, this._p * this.waveTable.length);
 	},
 
 	waveShapes: [],
