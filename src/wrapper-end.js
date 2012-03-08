@@ -24,6 +24,7 @@ audioLib.Limiter	= Limiter;
 audioLib.Reverb		= Freeverb;
 
 // Geneneration
+audioLib.ESMO		= ESMO;
 audioLib.Noise		= Noise;
 audioLib.Oscillator	= Oscillator;
 audioLib.Sampler	= Sampler;
@@ -93,7 +94,7 @@ audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
 	for (i=0; i<names.length; i++) {
 		audioLib[names[i]] = generators(names[i], audioLib[names[i]], audioLib[names[i]].prototype);
 	}
-}(['Noise', 'Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
+}(['ESMO', 'Noise', 'Oscillator', 'Sampler', 'ADSREnvelope', 'StepSequencer', 'UIControl']));
 
 Codec('wav', audioLib.PCMData);
 
