@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../lib/audiolib.js"></script>
+</head>
+<body>
+	<script>
+var dev, osc, lfo, flt;
+
+dev = Sink();
+
+dev.on('ready', function () {
+	lfo = audioLib.Oscillator(dev.sampleRate, 0.1);
+	osc = audioLib.ESMO(dev.sampleRate, [0.0, 0.0019, 0.0062, 0.0108], 200);
+
+	osc.mix = 0.1;
+	flt.mix = 1.0;
+	osc.setParam('waveShape', 'sawtooth');
+
+	osc.addAutomation('frequency', lfo, 0.9, 'additiveModulation');
+});
+
+dev.on('audioprocess', function (buffer, channelCount) {
+	lfo.generateBuffer(buffer.length / channelCount);
+
+	osc.append(buffer, channelCount);
+});
+	</script>
+</body>
+</html>
+
