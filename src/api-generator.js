@@ -113,5 +113,5 @@ GeneratorClass.prototype = {
  *
  * @method Generator
 */
-	reset: function () {},
+	reset: function () {}
 };

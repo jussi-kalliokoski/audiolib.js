@@ -102,5 +102,5 @@ EffectClass.prototype = {
  *
  * @method Effect
 */
-	reset: function () {},
+	reset: function () {}
 };

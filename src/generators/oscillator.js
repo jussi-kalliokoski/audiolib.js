@@ -174,7 +174,7 @@ proto = Oscillator.prototype = {
 		return audioLib.Sink.interpolate(this.waveTable, this._p * this.waveTable.length);
 	},
 
-	waveShapes: [],
+	waveShapes: []
 };
 
 for (i=0; i<waveshapeNames.length; i++) {

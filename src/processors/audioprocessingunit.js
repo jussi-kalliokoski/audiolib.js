@@ -31,5 +31,5 @@ AudioProcessingUnit.prototype = {
 		this.bufferSize	= isNaN(bufferSize) ? this.bufferSize : bufferSize;
 		this.buffer	= new Float32Array(this.bufferSize);
 		this.bufferPos	= -1;
-	},
+	}
 };

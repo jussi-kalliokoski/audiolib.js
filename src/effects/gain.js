@@ -36,5 +36,5 @@ GainController.prototype = {
 */
 	getMix: function () {
 		return this.sample;
-	},
+	}
 };

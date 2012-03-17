@@ -12,7 +12,7 @@ function Codec (name, codec) {
 				data:		this.join(),
 				sampleRate:	this.boundTo.sampleRate,
 				channelCount:	this.boundTo.channelCount,
-				bytesPerSample:	bytesPerSample,
+				bytesPerSample:	bytesPerSample
 			});
 		};
 	}

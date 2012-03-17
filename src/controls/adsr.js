@@ -116,5 +116,5 @@ ADSREnvelope.prototype = {
 				this.state	= 0;
 			}
 		}
-	],
+	]
 };
