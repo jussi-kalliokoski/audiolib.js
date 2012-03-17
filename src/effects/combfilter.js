@@ -60,5 +60,5 @@ CombFilter.prototype = {
 			this[param] = value;
 			break;
 		}
-	},
+	}
 };

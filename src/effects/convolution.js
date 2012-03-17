@@ -53,5 +53,5 @@ This is a very suboptimal implementation...
 		}
 
 		this[param] = value;
-	},
+	}
 };

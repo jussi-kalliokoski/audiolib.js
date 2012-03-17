@@ -93,5 +93,5 @@ Noise.prototype = {
 		var	w	= this.white();
 		this.brownQ	= (this.q1 * w + this.q0 * this.brownQ);
 		return 6.2 * this.brownQ;
-	},
+	}
 };

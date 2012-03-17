@@ -106,7 +106,7 @@ SinkClass.prototype = Sink.prototype = {
 
 		this.isReady = true;
 		this.emit('ready', []);
-	},
+	}
 };
 
 /**
@@ -224,7 +224,7 @@ EventEmitter.prototype = {
 			this._listeners[name].length || delete this._listeners[name];
 		}
 		return this;
-	},
+	}
 };
 
 Sink.EventEmitter = EventEmitter;
@@ -270,24 +270,24 @@ SinkError.prototype.toString = function () {
 
 SinkError[0x01] = {
 	message: 'No such error code.',
-	explanation: 'The error code does not exist.',
+	explanation: 'The error code does not exist.'
 };
 SinkError[0x02] = {
 	message: 'No audio sink available.',
-	explanation: 'The audio device may be busy, or no supported output API is available for this browser.',
+	explanation: 'The audio device may be busy, or no supported output API is available for this browser.'
 };
 
 SinkError[0x10] = {
 	message: 'Buffer underflow.',
-	explanation: 'Trying to recover...',
+	explanation: 'Trying to recover...'
 };
 SinkError[0x11] = {
 	message: 'Critical recovery fail.',
-	explanation: 'The buffer underflow has reached a critical point, trying to recover, but will probably fail anyway.',
+	explanation: 'The buffer underflow has reached a critical point, trying to recover, but will probably fail anyway.'
 };
 SinkError[0x12] = {
 	message: 'Buffer size too large.',
-	explanation: 'Unable to allocate the buffer due to excessive length, please try a smaller buffer. Buffer size should probably be smaller than the sample rate.',
+	explanation: 'Unable to allocate the buffer due to excessive length, please try a smaller buffer. Buffer size should probably be smaller than the sample rate.'
 };
 
 Sink.Error = SinkError;
@@ -518,7 +518,7 @@ Sink.sinks('audiodata', function () {
 
 	getPlaybackTime: function () {
 		return this._audio.mozCurrentSampleOffset() / this.channelCount;
-	},
+	}
 }, false, true);
 
 Sink.sinks.moz = Sink.sinks.audiodata;
@@ -566,7 +566,7 @@ sinks('wav', function () {
 				data:		soundData,
 				sampleRate:	self.sampleRate,
 				channelCount:	self.channelCount,
-				bytesPerSample:	self.quality,
+				bytesPerSample:	self.quality
 			})
 		));
 
@@ -583,7 +583,7 @@ sinks('wav', function () {
 	getPlaybackTime: function () {
 		var audio = this._audio;
 		return (audio.currentFrame ? audio.currentFrame.currentTime * this.sampleRate : 0) + audio.samples;
-	},
+	}
 });
 
 function wavAudio () {
@@ -618,7 +618,7 @@ wavAudio.prototype = {
 		this.nextFrame.addEventListener('ended', this._onended, true);
 
 		this.hasNextFrame = true;
-	},
+	}
 };
 
 sinks.wav.wavAudio = wavAudio;
@@ -646,7 +646,7 @@ Sink.sinks('dummy', function () {
 	kill: function () {
 		this._kill();
 		this.emit('kill');
-	},
+	}
 }, true);
 
 }(this.Sink));
@@ -714,7 +714,7 @@ sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 
 	getPlaybackTime: function () {
 		return this._context.currentTime * this.sampleRate;
-	},
+	}
 }, false, true);
 
 sinks.webkit = sinks.webaudio;
@@ -829,7 +829,7 @@ Sink.sinks('worker', function () {
 		this.bufferSize		= b.length * this.channelCount;
 		this.ready		= true;
 		this.emit('ready', []);
-	},
+	}
 });
 
 }(this.Sink));
@@ -1153,7 +1153,7 @@ Proxy.prototype = {
 		this.offset = 0;
 		Sink.memcpy(this.zeroBuffer, 0, this.buffer, 0);
 		this.emit('audioprocess', [this.buffer, this.channelCount]);
-	},
+	}
 };
 
 Sink.Proxy = Proxy;
@@ -1484,7 +1484,7 @@ Recording.prototype = {
 			bufPos += buffers[i].length;
 		}
 		return newArray;
-	},
+	}
 };
 
 Sink.Recording = Recording;

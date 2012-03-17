@@ -183,7 +183,7 @@ Freeverb.Tuning.prototype = {
 	scaleRoom:		0.28,
 	offsetRoom:		0.7,
 	
-	stereoSpread:		23,
+	stereoSpread:		23
 };
 
 /**
@@ -229,5 +229,5 @@ Freeverb.AllPassFilter.prototype = {
 		this.index	= 0;
 		this.sample	= 0.0;
 		this.buffer	= new Float32Array(this.bufferSize);
-	},
+	}
 }

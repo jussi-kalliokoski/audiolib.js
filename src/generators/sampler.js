@@ -117,5 +117,5 @@ Sampler.prototype = {
 		self.samples	= samples;
 		self.data	= data;
 		self.sampleSize = samples[0].length;
-	},
+	}
 };

@@ -60,5 +60,5 @@ BufferEffect.prototype = {
 		for (i=0; i<l; i++) {
 			this.effects[i].setParam(param, value);
 		}
-	},
+	}
 };

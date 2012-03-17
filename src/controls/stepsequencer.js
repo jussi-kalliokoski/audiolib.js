@@ -73,5 +73,5 @@ StepSequencer.prototype = {
 */
 	triggerGate: function () {
 		this.phase = 0;
-	},
+	}
 };

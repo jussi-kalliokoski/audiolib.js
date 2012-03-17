@@ -69,7 +69,7 @@ FourierTransform.prototype = {
 
 			spectrum[i] = mag;
 		}
-	},
+	}
 };
 
 return FourierTransform;

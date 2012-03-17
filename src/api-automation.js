@@ -22,7 +22,7 @@ AutomationClass.prototype = {
 		} else {
 			this.mode	= this.mode || Automation.modes[this.type];
 		}
-	},
+	}
 };
 
 /**
@@ -174,7 +174,7 @@ Automation.modes = {
 	},
 	absoluteAssignment: function (fx, param, value) {
 		fx.setParam(param, Math.abs(value));
-	},
+	}
 };
 
 Automation.__constructror = AutomationClass;
