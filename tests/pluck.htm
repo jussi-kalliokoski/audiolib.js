@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../lib/audiolib.js"></script>
+	<script src="../plugins/pluck.js"></script>
+</head>
+<body>
+	Note:
+	<button onclick="str.note(440)">440 Hz</button>
+	<button onclick="str.note(880)">880 Hz</button>
+	<button onclick="str.note(660)">660 Hz</button>
+	<button onclick="str.note(330)">330 Hz</button>
+
+	<br/><br/>
+
+	<label for="damping">Damping:</label><br/>
+	<input type="range" min="0" max="1" value="0" step=".001" id="damping" onchange="update()">
+
+	<script>
+	function update() { 
+		str.setParam('damping', parseFloat(damping.value));
+	}
+	
+	function audioProcess(buffer, channelCount){
+		var l = buffer.length;
+		
+		for (var i = 0; i < l; i += channelCount){
+			str.generate();
+			for(var n = 0; n < channelCount; n++) {
+				buffer[i + n] = str.getMix();
+			}
+		}
+	}
+	
+	window.onload	= function(){
+		setTimeout(function(){
+			dev		= audioLib.AudioDevice(audioProcess, 2);
+			sampleRate	= dev.sampleRate;
+			str		= audioLib.Pluck(dev.sampleRate);
+		}, 2000);
+	};
+	</script>
+</body>
+</html>
