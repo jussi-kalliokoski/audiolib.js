@@ -1,3 +1,5 @@
+AJS_VERSION ?= unreleased
+
 SOURCE := src/api-*.js src/*/*
 TEMPLATES := $(SOURCE) templates/ build
 
@@ -5,8 +7,8 @@ IN := src/wrapper-start.js $(SOURCE) src/wrapper-end.js
 OUT := lib/audiolib.js
 DOCS := lib/docs.html
 OUT_MIN := lib/audiolib.min.js
-RELEASE_TAR_GZ := audiolib.js.tar.gz
-RELEASE_ZIP := audiolib.js.zip
+RELEASE_TAR_GZ := audiolib.js.$(AJS_VERSION).tar.gz
+RELEASE_ZIP := audiolib.js.$(AJS_VERSION).zip
 PACKAGE := package.json
 
 SINK_JS := integration/sink.js/sink.js
