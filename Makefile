@@ -11,7 +11,7 @@ RELEASE_TAR_GZ := audiolib.js.$(AJS_VERSION).tar.gz
 RELEASE_ZIP := audiolib.js.$(AJS_VERSION).zip
 PACKAGE := package.json
 
-SINK_JS := integration/sink.js/sink.js
+SINK_JS := dependencies/sink.js/sink.js
 
 COMPILER := cat
 MINIFIER := uglifyjs
@@ -51,7 +51,7 @@ $(DOCS): $(TEMPLATES)
 $(PACKAGE): $(TEMPLATES)
 	$(UPDATE) package
 
-$(SINK_JS): integration/sink.js/
+$(SINK_JS): dependencies/sink.js/
 	cd $^ && make
 
 src/io/sink.js: $(SINK_JS)
