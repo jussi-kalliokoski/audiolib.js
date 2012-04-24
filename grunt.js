@@ -19,9 +19,16 @@ var config = {
 	PACKAGE : 'package.json',
 
 	concat: {
-		dist: {
+		main: {
 			src: '<config:IN>',
 			dest: '<config:OUT>'
+		}
+	},
+
+	min: {
+		main: {
+			src: '<config:OUT>',
+			dest: '<config:OUT_MIN>'
 		}
 	},
 
@@ -40,7 +47,9 @@ var config = {
 			audioLib: true,
 			Sink: true
 		}
-	}
+	},
+
+	uglify: {}
 }
 
 insert(config.TEMPLATES, 0, config.SOURCE)
@@ -49,5 +58,6 @@ insert(config.IN, 1, config.SOURCE)
 
 grunt.initConfig(config)
 grunt.registerTask('default', 'lint concat')
+grunt.registerTask('all', 'lint concat min')
 
 }
