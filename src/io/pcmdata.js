@@ -10,37 +10,37 @@ binary.js repository also includes stream.js
 MIT License
 */
 
-(function(global, Math){
+(function (global, Math) {
 
 	var	fromCharCode	= String.fromCharCode,
 		// the following two aren't really *performance optimization*, but compression optimization.
 		y		= true,
 		n		= false;
 
-	function convertToBinaryLE(num, size){
+	function convertToBinaryLE (num, size) {
 		return size ? fromCharCode(num & 255) + convertToBinaryLE(num >> 8, size - 1) : '';
 	}
 
-	function convertToBinaryBE(num, size){ // I don't think this is right
+	function convertToBinaryBE (num, size) { // I don't think this is right
 		return size ? convertToBinaryBE(num >> 8, size - 1) + fromCharCode(255 - num & 255) : '';
 	}
 
-	function convertToBinary(num, size, bigEndian){
+	function convertToBinary (num, size, bigEndian) {
 		return bigEndian ? convertToBinaryBE(num, size) : convertToBinaryLE(num, size);
 	}
 
-	function convertFromBinary(str, bigEndian){
+	function convertFromBinary (str, bigEndian) {
 		var	l	= str.length,
 			last	= l - 1,
 			n	= 0,
 			pow	= Math.pow,
 			i;
-		if (bigEndian){
-			for (i=0; i<l; i++){
+		if (bigEndian) {
+			for (i=0; i<l; i++) {
 				n += (255 - str.charCodeAt(i)) * pow(256, last - i);
 			}
 		} else {
-			for (i=0; i < l; i++){
+			for (i=0; i < l; i++) {
 				n += str.charCodeAt(i) * pow(256, i);
 			}
 		}
@@ -48,7 +48,7 @@ MIT License
 	}
 
 	// The main function creates all the functions used.
-	function Binary(bitCount, signed, /* false === unsigned */ isQ, from /* false === to */){
+	function Binary (bitCount, signed, /* false === unsigned */ isQ, from /* false === to */) {
 
 		// This is all just for major optimization benefits.
 		var	pow			= Math.pow,
@@ -64,14 +64,14 @@ MIT License
 
 		return from ?
 			isQ ?
-				signed ? function(num, bigEndian){
+				signed ? function (num, bigEndian) {
 					num = floor(num < 0 ? num * semiMask + bitMask : num * intMask);
 					return convertToBinary(
 						num,
 						byteCount,
 						bigEndian
 					);
-				} : function(num, bigEndian){
+				} : function (num, bigEndian) {
 					return convertToBinary(
 						floor(num * intMask),
 						byteCount,
@@ -79,13 +79,13 @@ MIT License
 					);
 				}
 			:
-				signed ? function(num, bigEndian){
+				signed ? function (num, bigEndian) {
 					return convertToBinary(
 						num < 0 ? num + bitMask : num,
 						byteCount,
 						bigEndian
 					);
-				} : function(num, bigEndian){
+				} : function (num, bigEndian) {
 					return convertToBinary(
 						num,
 						byteCount,
@@ -94,17 +94,17 @@ MIT License
 				}
 		:
 			isQ ?
-				signed ? function(str, bigEndian){
+				signed ? function (str, bigEndian) {
 					var num = convertFromBinary(str, bigEndian);
 					return num > intMask ? (num - bitMask) * invSemiMask : num * invIntMask;
-				} : function(str, bigEndian){
+				} : function (str, bigEndian) {
 					return convertFromBinary(str, bigEndian) * invIntMask;
 				}
 			:
-				signed ? function(str, bigEndian){
+				signed ? function (str, bigEndian) {
 					var num = convertFromBinary(str, bigEndian);
 					return num > intMask ? num - bitMask : num;
-				} : function(str, bigEndian){
+				} : function (str, bigEndian) {
 					return convertFromBinary(str, bigEndian);
 				};
 	}
@@ -139,32 +139,32 @@ MIT License
 
 	global.Binary = Binary;
 }(this, Math));
-(function(global, Binary){
+(function (global, Binary) {
 
-function Stream(data){
+function Stream (data) {
 	this.data = data;
 }
 
 var	proto	= Stream.prototype = {
-		read:		function(length){
+		read:		function (length) {
 			var	self	= this,
 				data	= self.data.substr(0, length);
 			self.skip(length);
 			return data;
 		},
-		skip:		function(length){
+		skip:		function (length) {
 			var	self	= this,
 				data	= self.data	= self.data.substr(length);
 			self.pointer	+= length;
 			return data.length;
 		},
-		readBuffer:	function(buffer, bitCount, type){
+		readBuffer:	function (buffer, bitCount, type) {
 			var	self		= this,
 				converter	= 'read' + type + bitCount,
 				byteCount	= bitCount / 8,
 				l		= buffer.length,
 				i		= 0;
-			while (self.data && i < l){
+			while (self.data && i < l) {
 				buffer[i++] = self[converter]();
 			}
 			return i;
@@ -172,33 +172,35 @@ var	proto	= Stream.prototype = {
 	},
 	i, match;
 
-function newType(type, bitCount, fn){
+function newType (type, bitCount, fn) {
 	var	l	= bitCount / 8;
-	proto['read' + type + bitCount] = function(bigEndian){
+	proto['read' + type + bitCount] = function (bigEndian) {
 		return fn(this.read(l), bigEndian);
 	};
 }
 
-for (i in Binary){
+for (i in Binary) {
 	match	= /to([a-z]+)([0-9]+)/i.exec(i);
-	match && newType(match[1], match[2], Binary[i]);
+	if (match) newType(match[1], match[2], Binary[i]);
 }
 
 global.Stream	= Stream;
 Stream.newType	= newType;
 
 }(this, this.Binary));
-this.PCMData = (function(Binary, Stream){
+this.PCMData = (function (Binary, Stream) {
 
-function PCMData(data){
+var ByteArray = typeof Uint8Array === 'undefined' ? Array : Uint8Array;
+
+function PCMData (data) {
 	return (typeof data === 'string' ? PCMData.decode : PCMData.encode)(data);
 }
 
-PCMData.decodeFrame = function(frame, bitCount, result){
-	if (bitCount === 8){
-		var buffer	= new (window.Uint8Array || Array)(result.length);
+PCMData.decodeFrame = function (frame, bitCount, result) {
+	if (bitCount === 8) {
+		var buffer	= new ByteArray(result.length);
 		(new Stream(frame)).readBuffer(buffer, 8, 'Uint');
-		for (bitCount=0; bitCount<result.length; bitCount++){
+		for (bitCount=0; bitCount<result.length; bitCount++) {
 			result[bitCount] = (buffer[bitCount] - 127.5) * 127.5;
 		}
 	} else {
@@ -207,24 +209,24 @@ PCMData.decodeFrame = function(frame, bitCount, result){
 	return result;
 };
 
-PCMData.encodeFrame = function(frame, bitCount){
+PCMData.encodeFrame = function (frame, bitCount) {
 	var	properWriter	= Binary[(bitCount === 8 ? 'fromUint' : 'fromQ') + bitCount],
 		l		= frame.length,
 		r		= '',
 		i;
-	if (bitCount === 8){
-		for (i=0; i<l; i++){
+	if (bitCount === 8) {
+		for (i=0; i<l; i++) {
 			r += properWriter(frame[i] * 127.5 + 127.5);
 		}
 	} else {
-		for (i=0; i<l; i++){
+		for (i=0; i<l; i++) {
 			r += properWriter(frame[i]);
 		}
 	}
 	return r;
 };
 
-PCMData.decode	= function(data, asyncCallback){
+PCMData.decode = function (data, asyncCallback) {
 	var	stream			= new Stream(data),
 		sGroupID1		= stream.read(4),
 		dwFileLength		= stream.readUint32();
@@ -256,32 +258,45 @@ PCMData.decode	= function(data, asyncCallback){
 			data:		samples
 		};
 
-	function readChunk(){
+	function readChunk () {
 		sGroupID		= stream.read(4);
 		dwChunkSize		= stream.readUint32();
 		chunkData		= stream.read(dwChunkSize);
 		dataTypeList		= chunks[sGroupID] = chunks[sGroupID] || [];
-		if (sGroupID === 'data'){
+
+		if (sGroupID === 'data') {
 			sampleCount		= ~~(dwChunkSize / sampleSize);
-			samples			= output.data = new (typeof Float32Array !== 'undefined' ? Float32Array : Array)(sampleCount);
+			samples			= output.data = new Float32Array(sampleCount);
 			PCMData.decodeFrame(chunkData, sampleSize * 8, samples);
 		} else {
 			dataTypeList.push(chunkData);
 		}
-		asyncCallback && (stream.data ? setTimeout(readChunk, 1) : asyncCallback(output));
+
+		if (!asyncCallback) return;
+
+		if (stream.data) {
+			setTimeout(readChunk, 1);
+		} else {
+			asyncCallback(output);
+		}
 	}
 
-	if (asyncCallback){
-		stream.data ? readChunk() : asyncCallback(output);
+	if (asyncCallback) {
+		if (stream.data) {
+			readChunk();
+		} else {
+			asyncCallback(output);
+		}
 	} else {
-		while(stream.data){
+		while (stream.data) {
 			readChunk();
 		}
 	}
-	return output;
-}
 
-PCMData.encode	= function(data, asyncCallback){
+	return output;
+};
+
+PCMData.encode = function (data, asyncCallback) {
 	var	
 		dWord		= Binary.fromUint32,
 		sWord		= Binary.fromUint16,
@@ -317,28 +332,33 @@ PCMData.encode	= function(data, asyncCallback){
 			dWord(dLength)			+	// dwChunkSize		4 bytes		uint32 / dword
 			PCMData.encodeFrame(samples, bitsPerSample)
 		);
+
 		chunkData = data.chunks;
-		if (chunkData){
-			for (i in chunkData){
-				if (chunkData.hasOwnProperty(i)){
+
+		if (chunkData) {
+			for (i in chunkData) {
+				if (chunkData.hasOwnProperty(i)) {
 					chunkType = chunkData[i];
-					for (n=0; n<chunkType.length; n++){
+					for (n=0; n<chunkType.length; n++) {
 						chunk = chunkType[n];
 						chunks.push(i + dWord(chunk.length) + chunk);
 					}
 				}
 			}
 		}
+
 		chunks = chunks.join('');
 		chunks = 'RIFF'			+	// sGroupId		4 bytes		char[4]
 			dWord(chunks.length)	+	// dwFileLength		4 bytes		uint32 / dword
 			'WAVE'			+	// sRiffType		4 bytes		char[4]
 			chunks;
-		asyncCallback && setTimeout(function(){
+
+		if (asyncCallback) setTimeout(function () {
 			asyncCallback(chunks);
 		}, 1);
+
 		return chunks;
-}
+};
 
 return PCMData;
 

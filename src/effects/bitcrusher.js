@@ -13,12 +13,15 @@
 function BitCrusher (sampleRate, bits) {
 	var	self	= this,
 		sample  = 0.0;
+
 	self.sampleRate	= sampleRate;
 	self.resolution	= bits ? Math.pow(2, bits-1) : Math.pow(2, 8-1); // Divided by 2 for signed samples (8bit range = 7bit signed)
+
 	self.pushSample	= function (s) {
-		sample	= Math.floor(s*self.resolution+0.5)/self.resolution
+		sample	= Math.floor(s * self.resolution + 0.5) / self.resolution;
 		return sample;
 	};
+
 	self.getMix = function () {
 		return sample;
 	};

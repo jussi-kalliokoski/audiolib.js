@@ -20,7 +20,7 @@
  * @param {number} a2 Biquadratic difference equation parameter
 */
 function BiquadFilter (sampleRate, b0, b1, b2, a1, a2) {
-	this.reset.apply(this, arguments)
+	this.reset.apply(this, arguments);
 }
 
 /**

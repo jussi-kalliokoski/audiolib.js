@@ -53,7 +53,8 @@ function Automation (fx, parameter, automation, amount, type) {
 			fx.append = Automation.bufferEffectAppend;	break;
 		}
 	}
-	var automation = new AutomationClass(parameter, automation, amount, type);
+
+	automation = new AutomationClass(parameter, automation, amount, type);
 	fx.automation.push(automation);
 	return automation;
 }

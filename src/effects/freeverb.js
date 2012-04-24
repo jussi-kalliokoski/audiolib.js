@@ -38,45 +38,53 @@ function Freeverb (sampleRate, channelCount, wet, dry, roomSize, damping, tuning
 	}());
 
 	self.CFs	= (function () {
-		var 	combs	= [],
+		var	combs	= [],
 			channel	= [],
 			num	= self.tuning.combCount,
 			damp	= self.damping * self.tuning.scaleDamping,
 			feed	= self.roomSize * self.tuning.scaleRoom + self.tuning.offsetRoom,
 			sizes	= self.tuning.combTuning,
 			i, c;
+
 		for (c=0; c<self.channelCount; c++) {
 			for(i=0; i<num; i++) {
 				channel.push(new audioLib.CombFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed, damp));
 			}
+
 			combs.push(channel);
 			channel = [];
 		}
+
 		return combs;
 	}());
+
 	self.numCFs	= self.CFs[0].length;
 	
 	self.APFs	= (function () {
-		var 	apfs	= [],
+		var	apfs	= [],
 			channel	= [],
 			num	= self.tuning.allPassCount,
 			feed	= self.tuning.allPassFeedback,
 			sizes	= self.tuning.allPassTuning,
 			i, c;
+
 		for (c=0; c<self.channelCount; c++) {
 			for (i=0; i<num; i++) {
 				channel.push(new Freeverb.AllPassFilter(self.sampleRate, sizes[i] + c * self.tuning.stereoSpread, feed));
 			}
+
 			apfs.push(channel);
 			channel = [];
 		}
+
 		return apfs;
 	}());
+
 	self.numAPFs	= self.APFs[0].length;
 }
 
 Freeverb.prototype = {
-	channelCount: 	2,
+	channelCount:	2,
 	sample:		[0.0, 0.0],
 
 	wet:		0.5,
@@ -230,4 +238,4 @@ Freeverb.AllPassFilter.prototype = {
 		this.sample	= 0.0;
 		this.buffer	= new Float32Array(this.bufferSize);
 	}
-}
+};

@@ -62,7 +62,7 @@ Sampler.prototype = {
 		self.voices.push(note);
 		while (self.voices.length > self.maxVoices) {
 			end = self.voices.shift();
-			end.onend && end.onend();
+			if (end.onend) end.onend();
 		}
 		return note;
 	},
@@ -75,7 +75,10 @@ Sampler.prototype = {
 		for (i=0; i<voices.length; i++) {
 			voice = voices[i];
 			voice.p += voice.s;
-			voice.p > voice.l && voices.splice(i--, 1) && voice.onend && voice.onend();
+
+			if (voice.p > voice.l && voices.splice(i--, 1) && voice.onend) {
+				voice.onend();
+			}
 		}
 	},
 /**
