@@ -6,7 +6,7 @@ function insert (arr, pos, arr2) {
 }
 
 var config = {
-	SOURCE : ['src/api-*.js', 'src/**/**/*.js'],
+	SOURCE : ['src/api-*.js', 'src/*/*.js'],
 	TEMPLATES : [/* SOURCE, */ 'templates/', 'build'],
 	WRAPPERS : ['src/wrapper-start.js', 'src/wrapper-end.js'],
 
