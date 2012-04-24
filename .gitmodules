@@ -1,3 +1,0 @@
-[submodule "dependencies/sink.js"]
-	path = dependencies/sink.js
-	url = git@github.com:jussi-kalliokoski/sink.js
