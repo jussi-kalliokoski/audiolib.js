@@ -26,11 +26,25 @@ audiolib.js is bundled with some tools to make an audio developer's life in a br
 
 audiolib.js is available both in browser and CLI environments.
 
+### Node
+
 To install via npm:
 
 ```
 $ npm install audiolib
 ```
+
+### Windows
+
+For Windows and npm, you'll need [GNU Make](http://gnuwin32.sourceforge.net/packages/make.htm). You'll also need to set the ```$PATH``` variable properly. In Powershell, you should do this before running the npm install:
+
+```
+PS> $env:Path = "$env:Path;C:\Program Files\GnuWin32\bin\"
+```
+
+Where the path after the semicolon is the path to the directory you installed your GNU utilities in.
+
+### Browser
 
 For browser environments, download the latest version [here](https://github.com/jussi-kalliokoski/audiolib.js/downloads), or get the [source code](https://github.com/jussi-kalliokoski/audiolib.js) from GitHub and build it yourself. Don't worry, instructions are included.
 
