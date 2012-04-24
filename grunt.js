@@ -23,6 +23,23 @@ var config = {
 			src: '<config:IN>',
 			dest: '<config:OUT>'
 		}
+	},
+
+	lint: {
+		files: '<config:SOURCE>'
+	},
+
+	jshint: {
+		options: {
+			boss: true,
+			evil: true,
+			onecase: true
+		},
+
+		globals: {
+			audioLib: true,
+			Sink: true
+		}
 	}
 }
 
@@ -31,6 +48,6 @@ insert(config.IN, 0, config.WRAPPERS)
 insert(config.IN, 1, config.SOURCE)
 
 grunt.initConfig(config)
-grunt.registerTask('default', 'concat')
+grunt.registerTask('default', 'lint concat')
 
 }
