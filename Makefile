@@ -9,11 +9,7 @@ RELEASE_TAR_GZ := audiolib.js.tar.gz
 RELEASE_ZIP := audiolib.js.zip
 PACKAGE := package.json
 
-FFT_JS := integration/fft.js/fft.js
 SINK_JS := integration/sink.js/sink.js
-PCMDATA_JS := integration/pcmdata.js/lib/pcmdata.js
-FFT_APPEND := integration/append-fft.js
-PCMDATA_PREPEND := integration/prepend-pcmdata.js
 
 COMPILER := cat
 MINIFIER := uglifyjs
@@ -29,7 +25,7 @@ minify: $(OUT_MIN)
 main: $(OUT)
 docs: $(DOCS)
 
-integrate: src/processors/fft.js src/io/pcmdata.js src/io/sink.js
+integrate: src/io/sink.js
 
 
 wrappers: $(TEMPLATES)
@@ -55,12 +51,6 @@ $(PACKAGE): $(TEMPLATES)
 
 $(SINK_JS): integration/sink.js/
 	cd $^ && make
-
-src/processors/fft.js: $(FFT_JS) $(FFT_APPEND)
-	echo "" | cat $(FFT_JS) - $(FFT_APPEND) > $@
-
-src/io/pcmdata.js: $(PCMDATA_JS) $(PCMDATA_PREPEND)
-	echo "" | cat $(PCMDATA_PREPEND) - $(PCMDATA_JS) > $@
 
 src/io/sink.js: $(SINK_JS)
 	cat $^ > $@
