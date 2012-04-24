@@ -36,7 +36,7 @@ wrappers: $(TEMPLATES)
 	$(UPDATE) wrappers
 
 $(OUT): $(IN)
-	mkdir -p lib/
+	mkdir -p lib
 	$(COMPILER) $^ > $@
 
 $(RELEASE_TAR_GZ): $(OUT_MIN)
@@ -67,7 +67,7 @@ src/io/sink.js: $(SINK_JS)
 
 
 simple: # this is a simple build, doesn't require the subrepos
-	mkdir -p lib/
+	mkdir -p lib
 	$(COMPILER) $(IN) > $(OUT)
 
 
@@ -75,7 +75,7 @@ simple: # this is a simple build, doesn't require the subrepos
 	$(MINIFIER) $^ > $@
 
 clean:
-	rm -rf lib/
+	rm -rf lib
 
 .PHONY: all update package release minify main docs \
 	integrate wrappers clean simple
