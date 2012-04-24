@@ -1,3 +1,3 @@
-[submodule "integration/sink.js"]
-	path = integration/sink.js
+[submodule "dependencies/sink.js"]
+	path = dependencies/sink.js
 	url = git@github.com:jussi-kalliokoski/sink.js
