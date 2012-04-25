@@ -27,6 +27,8 @@ var config = {
 	RELEASE_ZIP : 'audiolib.js.zip',
 	PACKAGE : 'package.json',
 
+	TOOLS : ['build', 'dependencies/build-scripts/*.js'],
+
 	concat: {
 		main: {
 			src: '<config:IN>',
@@ -42,7 +44,8 @@ var config = {
 	},
 
 	lint: {
-		files: '<config:SOURCE>'
+		main: '<config:SOURCE>',
+		tools: '<config:TOOLS>'
 	},
 
 	jshint: {
@@ -66,8 +69,8 @@ insert(config.IN, 0, config.WRAPPERS)
 insert(config.IN, 1, config.SOURCE)
 
 grunt.initConfig(config)
-grunt.registerTask('default', 'lint concat')
-grunt.registerTask('all', 'lint concat min docs')
+grunt.registerTask('default', 'lint:main concat:main')
+grunt.registerTask('all', 'lint:main concat:main min:main docs')
 
 grunt.registerTask('docs', 'Updates the documentation.', function () {
 	buildTools.updatables.docs()
