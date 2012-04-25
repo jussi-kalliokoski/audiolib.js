@@ -34,15 +34,7 @@ To install via npm:
 $ npm install audiolib
 ```
 
-### Windows
-
-For Windows and npm, you'll need [GNU Make](http://gnuwin32.sourceforge.net/packages/make.htm). You'll also need to set the ```$PATH``` variable properly. In Powershell, you should do this before running the npm install:
-
-```
-PS> $env:Path = "$env:Path;C:\Program Files\GnuWin32\bin\"
-```
-
-Where the path after the semicolon is the path to the directory you installed your GNU utilities in.
+Please note that you'll need [grunt](http://gruntjs.com/) for this to work.
 
 ### Browser
 
@@ -64,9 +56,9 @@ Documentation is available at http://docs.audiolibjs.org/ . Tutorials can be fou
 ## Libraries bundled with audiolib.js
 
 * [sink.js](https://github.com/jussi-kalliokoski/sink.js), for output and buffer handling.
-* [PCMData.js](https://github.com/jussi-kalliokoski/pcmdata.js), for WAV codecs.
-* [binary.js](https://github.com/jussi-kalliokoski/binary.js), for PCMData.js and general binary data processing.
-* [fft.js](https://github.com/jussi-kalliokoski/fft.js), for super fast FT.
+* [PCMData.js](https://github.com/jussi-kalliokoski/pcmdata.js), for WAV codecs. (project deprecated and adopted)
+* [binary.js](https://github.com/jussi-kalliokoski/binary.js), for PCMData.js and general binary data processing. (project deprecated and adopted)
+* [fft.js](https://github.com/jussi-kalliokoski/fft.js), for super fast FT. (project deprecated and adopted)
 
 ## Related libraries
 
