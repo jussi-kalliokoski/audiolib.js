@@ -74,4 +74,6 @@ grunt.registerTask('package', 'Updates the package.json.', function () {
 	buildTools.updatables['package']()
 })
 
+grunt.registerTask('update', 'Updates docs, wrappers and the package.', 'docs wrappers package')
+
 }
