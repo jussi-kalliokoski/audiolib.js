@@ -1,9 +1,3 @@
-[submodule "integration/pcmdata.js"]
-	path = integration/pcmdata.js
-	url = git@github.com:jussi-kalliokoski/pcmdata.js
-[submodule "integration/fft.js"]
-	path = integration/fft.js
-	url = git@github.com:jussi-kalliokoski/fft.js
-[submodule "integration/sink.js"]
-	path = integration/sink.js
+[submodule "dependencies/sink.js"]
+	path = dependencies/sink.js
 	url = git@github.com:jussi-kalliokoski/sink.js

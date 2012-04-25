@@ -1,17 +1,17 @@
-var FFT = (function(){
+var FFT = (function () {
 
 var	sin	= Math.sin,
 	cos	= Math.cos,
 	pi2	= Math.PI * 2;
 
-function twiddle(output, i, n, inverse){
+function twiddle (output, i, n, inverse) {
 	var	phase	= (inverse ? pi2 : -pi2) * i / n;
 	output[0]	= cos(phase);
 	output[1]	= sin(phase);
 }
 
-function pass2(input, output, inverse, product){
-	var	size		= input.length * .5,
+function pass2 (input, output, inverse, product) {
+	var	size		= input.length * 0.5,
 		i		= 0,
 		j		= 0,
 		factor		= 2,
@@ -42,10 +42,10 @@ function pass2(input, output, inverse, product){
 		}
 }
 
-function fft(value, scratch, factors, inverse){
+function fft (value, scratch, factors, inverse) {
 	var	product		= 1,
 		state		= 0,
-		size		= value.length * .5,
+		size		= value.length * 0.5,
 		factorCount	= factors.length,
 		inp, out, factor, i;
 
@@ -53,8 +53,17 @@ function fft(value, scratch, factors, inverse){
 		factor		= factors[i];
 		product		*= factor;
 		
-		state === 0 ? (inp = value, out = scratch, state = 1) : (inp = scratch, out = value, state = 0);
-		factor === 2 && pass2(inp, out, inverse, product);
+		if (state === 0) {
+			inp = value;
+			out = scratch;
+			state = 1;
+		} else {
+			inp = scratch;
+			out = value;
+			state = 0;
+		}
+
+		if (factor === 2) pass2(inp, out, inverse, product);
 	}
 	if (inverse){
 		if (state === 1){
@@ -78,7 +87,7 @@ function fft(value, scratch, factors, inverse){
 	}
 }
 
-function FFT(){
+function FFT () {
 	this.reset.apply(this, arguments);
 }
 
@@ -86,15 +95,17 @@ FFT.prototype = {
 	factors: null,
 	scratch: null,
 	bufferSize: 2048,
-	reset: function(bufferSize){
+
+	reset: function (bufferSize) {
 		this.bufferSize	= isNaN(bufferSize) ? this.bufferSize : this.bufferSize;
 		this.factors	= [2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
 		this.scratch	= new Float32Array(this.bufferSize);
 	},
-	forward: function(input){
+
+	forward: function (input) {
 		fft(input, this.scratch, this.factors, true);
 	},
-	backward: function(input){
+	backward: function (input) {
 		fft(input, this.scratch, this.factors, false);
 	}
 };

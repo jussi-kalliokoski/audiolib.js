@@ -20,7 +20,7 @@
 		"lib":		"./lib"
 	},
 	"scripts":	{
-		"preinstall":	"make simple"
+		"preinstall":	"grunt"
 	},
 	"main":		"./lib/audiolib"
 }

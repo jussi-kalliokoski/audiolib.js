@@ -50,12 +50,12 @@ UIControl.prototype = {
 	setValue: function (value) {
 		this.schedule.push({
 			v:	value,
-			t:	~~((+new Date - this.clock) / 1000 * this.sampleRate)
+			t:	~~((+new Date() - this.clock) / 1000 * this.sampleRate)
 		});
 	},
 
 	reset: function (value) {
 		this.value	= isNaN(value) ? this.value : value;
-		this.clock	= +new Date;
+		this.clock	= +new Date();
 	}
 };

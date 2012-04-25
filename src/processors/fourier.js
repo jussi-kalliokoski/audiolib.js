@@ -57,7 +57,7 @@ FourierTransform.prototype = {
 			rval, ival, mag, i, n;
 
 		for (i=0; i<N; i++) {
-			n	= i * 2,
+			n	= i * 2;
 			rval	= self.buffer[  i * 2  ];
 			ival	= self.buffer[i * 2 + 1];
 			mag	= bSi * sqrt(rval * rval + ival * ival);

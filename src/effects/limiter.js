@@ -64,6 +64,8 @@ Limiter.prototype = {
 		case 'attack':
 		case 'release':
 			this._amplitude[param] = value;
+			this[param] = value;
+			break;
 		default:
 			this[param] = value;
 		}

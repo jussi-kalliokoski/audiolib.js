@@ -8,77 +8,70 @@ This is a simple operation, just joins all the scripts in ``js/`` together in th
 
 Operation:
 
-``
-
-git submodule --init
-make main
-
-``
+```
+$ grunt
+```
 
 If you need to minify as well:
 
-``
-
-make minify
-
-``
+```
+$ grunt default min
+```
 
 Dependencies:
  * A terminal (emulator)
  * git
- * make
- * (con)cat
- * A minifier (optional, defaults to uglifyjs, install via npm `` sudo npm install uglifyjs -g ``)
+ * [grunt](http://gruntjs.com/)
 
 ## Integration
 
-Integrates bundled packages to audiolib.js. To run this operation, you must first have the submodules ready, and it doesn't make much sense unless you update them to the latest version first as well, say we wanted to update `` sink.js ``:
+Integrates bundled packages to audiolib.js. To run this operation, you must first have the submodules ready, and it doesn't make much sense unless you update them to the latest version first as well, say we wanted to update ``` sink.js ```:
 
-``sh
+```sh
 
 git submodule update --init
-cd integration/sink.js
+cd dependencies/sink.js
 git pull origin master
 cd ../..
 make integrate all # all is optional, but recommended so that you can see if the tests still run fine.
 
-``
+```
 
 Dependencies:
  * A terminal (emulator)
  * make
  * git
  * sh
- * (con)cat
+ * [grunt](http://gruntjs.com/)
 
 ## Templates
 
 Some files of audiolib.js are generated from templates, such as the wrappers, package and documentation. You can find these templates from the `` templates/ `` directory. After updating certain things such as the version, you might want to remake these things from the tempates, and that can be done with these simple commands.
 
-``sh
+```sh
 
-make wrappers
-make package
-make docs
+grunt wrappers
+grunt package
+grunt docs
 # Or to update all
-make update
+grunt update
 # You'll probably also want to do this to update the lib/
-make all
+grunt all
 
-`` 
+```
 
 Dependencies:
  * A terminal (emulator)
- * make
  * sh
  * nodejs
  * npm
- * paramon & script-builder (npm packages, installation: `` npm install paramon script-builder ``)
- * (OPTIONAL) for automatic minification of the docs: `` npm install uglify-js html-minifier clean-css ``
+ * paramon & script-builder (npm packages, installation: ``` npm install paramon script-builder ```)
+ * [grunt](http://gruntjs.com/)
+ * (OPTIONAL) for automatic minification of the docs: ``` npm install uglify-js html-minifier clean-css ```
 
 ## Config
 
-The aforementioned templates are affected by source files and configuration data. The configuration data contains things such as the version. To change configurations you can either edit ``templates/variables.json`` directly or recommendedly via the config command. Example uses of the config command:
+The aforementioned templates are affected by source files and configuration data. The configuration data contains things such as the version. To change configurations you can either edit ```templates/variables.json``` directly or recommendedly via the config command. Example uses of the config command:
 
 ``sh
 
@@ -92,12 +85,12 @@ The aforementioned templates are affected by source files and configuration data
 
 ``
 
-After making changes to the config it's recommended to run `` make update all `` to update template generated data and lib/ files to be able to test whether the changes work.
+After making changes to the config it's recommended to run ``` grunt update all ``` to update template generated data and lib/ files to be able to test whether the changes work.
 
 Dependencies:
  * A terminal (emulator)
- * make
  * sh
  * nodejs
  * npm
  * paramon & script-builder (npm packages, installation: `` npm install paramon script-builder ``)
+ * [grunt](http://gruntjs.com/)

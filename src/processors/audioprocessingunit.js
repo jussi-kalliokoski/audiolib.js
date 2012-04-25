@@ -18,7 +18,7 @@ AudioProcessingUnit.prototype = {
 	bufferPos:	-1,
 	pushSample: function (s) {
 		this.bufferPos = (this.bufferPos + 1) % this.buffer.length;
-		this.bufferPos === 0 && this.process(this.buffer);
+		if (this.bufferPos === 0) this.process(this.buffer);
 		this.buffer[this.bufferPos] = s;
 		return s;
 	},
