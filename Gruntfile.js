@@ -27,7 +27,7 @@ var config = {
 	RELEASE_ZIP : 'audiolib.js.zip',
 	PACKAGE : 'package.json',
 
-	TOOLS : ['build', 'dependencies/build-scripts/*.js'],
+	TOOLS : ['build', 'dependencies/build-scripts/*.js', 'Gruntfile.js'],
 
 	concat: {
 		main: {
