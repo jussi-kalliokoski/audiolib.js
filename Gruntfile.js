@@ -1,7 +1,14 @@
 /*jshint asi:true */
 module.exports = function (grunt) {
 
-var buildTools = require('./dependencies/build-scripts')
+var buildTools
+
+try {
+	buildTools = require('./dependencies/build-scripts')
+} catch (e) {
+	console.error('WARNING:', 'It seems that you are missing packages script-builder and/or paramon.')
+	console.error('WARNING:', 'This is only a problem if you use following tasks: all update docs package wrappers.')
+}
 
 function insert (arr, pos, arr2) {
 	return arr.splice.apply(arr, [pos, 0].concat(arr2))
