@@ -33,13 +33,12 @@ git submodule update --init
 cd dependencies/sink.js
 git pull origin master
 cd ../..
-make integrate all # all is optional, but recommended so that you can see if the tests still run fine.
+grunt integrate all # all is optional, but recommended so that you can see if the tests still run fine.
 
 ```
 
 Dependencies:
  * A terminal (emulator)
- * make
  * git
  * sh
  * [grunt](http://gruntjs.com/)
