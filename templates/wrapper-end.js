@@ -14,7 +14,6 @@
 
 // Processing
 //#echo @processors.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
-audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 
 
 audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;

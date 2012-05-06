@@ -31,7 +31,6 @@ audioLib.Sampler	= Sampler;
 // Processing
 audioLib.Amplitude	= Amplitude;
 audioLib.FFT		= FFT;
-audioLib.AudioProcessingUnit	= AudioProcessingUnit;
 
 
 audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
