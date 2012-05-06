@@ -12,6 +12,12 @@
 
 this.audioLib = (function AUDIOLIB (global, Math, Object, Array) {
 
+function onready (callback) {
+	onready.list.push(callback);
+}
+
+onready.list = [];
+
 var	arrayType	= global.Float32Array || Array,
 	audioLib	= this;
 

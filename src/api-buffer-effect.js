@@ -62,3 +62,9 @@ BufferEffect.prototype = {
 		}
 	}
 };
+
+onready(function () {
+	audioLib.EffectClass.createBufferBased = function createBufferBased (channelCount) {
+		return new audioLib.BufferEffect(this, channelCount, [].slice.call(arguments, 1));
+	};
+});

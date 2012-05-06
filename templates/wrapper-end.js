@@ -3,39 +3,62 @@
 	Please note that this file is of invalid syntax if standalone.
 */
 
-// Controls
+/* Controls */
 //#echo @controls.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
-// Effects
+/* Effects */
 //#echo @effects.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
-// Geneneration
+/* Geneneration */
 //#echo @generators.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
-// Processing
+/* Processing */
 //#echo @processors.copy().sort().map(function(e){return ['audioLib.'+e.assignName,'= '+e.name+';']}).table() + '\n'
 
+/* Miscellaneous */
 
-audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
+/* FIXME: The should be templated somehow as well */
+audioLib.AudioDevice			= audioLib.Sink = (function () { return this; } () ).Sink;
+audioLib.Automation			= Automation;
+audioLib.BufferEffect			= BufferEffect;
+audioLib.EffectClass			= EffectClass;
+audioLib.GeneratorClass			= GeneratorClass;
+audioLib.codecs				= audioLib.Codec = Codec;
+audioLib.plugins			= Plugin;
 
-(function (names, i) {
-	function createBufferBased (channelCount) {
-		return new audioLib.BufferEffect(this, channelCount, [].slice.call(arguments, 1));
-	}
+/* Trigger the ready event (all is registered) */
 
+while (onready.list.length) {
+	onready.list.shift().call(audioLib);
+}
+onready = null;
+
+/* Handle inheritance */
+
+void function (names, i) {
 	function effects (name, effect, prototype, argNames) {
+		var proto, k;
+
 		if (effect) {
-			prototype	= prototype || effect.prototype;
-			var	proto	= effect.prototype = new EffectClass();
-			proto.name	= proto.fxid = name;
-			effects[name]	= __class(name, effect, argNames);
-			effects[name].createBufferBased = effect.createBufferBased = createBufferBased;
-			for (argNames in prototype) {
-				if (prototype.hasOwnProperty(argNames)){
-					proto[argNames] = prototype[argNames];
+			prototype = prototype || effect.prototype;
+			proto = effect.prototype = new EffectClass();
+			proto.name = proto.fxid = name;
+
+			effects[name] = __class(name, effect, argNames);
+
+			for (k in prototype) {
+				if (prototype.hasOwnProperty(k)){
+					proto[k] = prototype[k];
+				}
+			}
+
+			for (k in EffectClass) {
+				if (k !== 'prototype' && EffectClass.hasOwnProperty(k)) {
+					effects[name][k] = EffectClass[k];
 				}
 			}
 		}
+
 		return effects[name];
 	}
 
@@ -53,18 +76,28 @@ audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
 */
 }([/*#echo @effects.copy().sort().concat(@processors.copy().sort()).map(function(e){
 	return "'" + e.assignName + "'";
-}).join(', ') */]));
+}).join(', ') */]);
 
-(function (names, i) {
+void function (names, i) {
 	function generators (name, effect, prototype, argNames) {
+		var proto, k;
+
 		if (effect) {
-			prototype	= prototype || effect.prototype;
-			var	proto	= effect.prototype = new GeneratorClass();
-			proto.name	= proto.fxid = name;
-			generators[name]= __class(name, effect, argNames);
-			for (argNames in prototype) {
-				if (prototype.hasOwnProperty(argNames)) {
-					proto[argNames] = prototype[argNames];
+			prototype = prototype || effect.prototype;
+			proto = effect.prototype = new GeneratorClass();
+
+			proto.name = proto.fxid = name;
+			generators[name] = __class(name, effect, argNames);
+
+			for (k in prototype) {
+				if (prototype.hasOwnProperty(k)) {
+					proto[k] = prototype[k];
+				}
+			}
+
+			for (k in GeneratorClass) {
+				if (k !== 'prototype' && GeneratorClass.hasOwnProperty(k)) {
+					generators[name][k] = GeneratorClass[k];
 				}
 			}
 		}
@@ -78,25 +111,12 @@ audioLib.AudioDevice	= audioLib.Sink = (function () { return this; } () ).Sink;
 	}
 }([/*#echo @generators.copy().sort().concat(@controls.copy().sort()).map(function(e){
 	return "'" + e.assignName + "'";
-}).join(', ') */]));
+}).join(', ') */]);
 
+/* FIXME: Make this happen based on the features we have */
 Codec('wav', audioLib.PCMData);
 
-audioLib.Automation			= Automation;
-audioLib.BufferEffect			= BufferEffect;
-audioLib.EffectClass			= EffectClass;
-audioLib.GeneratorClass			= GeneratorClass;
-audioLib.codecs				= audioLib.Codec = Codec;
-audioLib.plugins			= Plugin;
-
-audioLib.version			= '/*#echo @version*/';
-
-audioLib.BufferEffect.prototype.addAutomation	=
-audioLib.EffectClass.prototype.addAutomation	=
-audioLib.GeneratorClass.prototype.addAutomation	=
-function addAutomation () {
-	return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
-};
+audioLib.version = '/*#echo @version*/';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math, Object, Array);

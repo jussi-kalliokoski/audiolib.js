@@ -180,6 +180,15 @@ Automation.modes = {
 
 Automation.__constructror = AutomationClass;
 
+onready(function () {
+	audioLib.BufferEffect.prototype.addAutomation	=
+	audioLib.EffectClass.prototype.addAutomation	=
+	audioLib.GeneratorClass.prototype.addAutomation	=
+	function addAutomation () {
+		return audioLib.Automation.apply(audioLib, [this].concat([].slice.call(arguments)));
+	};
+});
+
 /**
  * Applies automation to a specified component.
  *
