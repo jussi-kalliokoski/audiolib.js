@@ -360,12 +360,12 @@ FFT.prototype.resetFT = function (s) {
 	this.sample = 0;
 	this.offset = 0;
 	this.maxOffset = this.inputType === 'real' ? this.bufferSize : this.bufferSize * 2;
+
+	this.pushSample = this._pushSample;
 };
 
 FFT.prototype.pushSample = function (s) {
 	this.resetFT();
-
-	this.pushSample = this._pushSample;
 
 	return this.pushSample(s);
 };
