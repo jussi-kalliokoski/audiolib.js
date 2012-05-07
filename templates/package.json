@@ -20,7 +20,7 @@
 		"lib":		"./lib"
 	},
 	"scripts":	{
-		"preinstall":	"make simple"
+		"preinstall":	"grunt --config Gruntfile.js concat:main"
 	},
 	"main":		"./lib/audiolib"
 }
