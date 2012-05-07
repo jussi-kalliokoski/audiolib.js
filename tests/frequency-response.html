@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+canvas {
+	display: block;
+	border: 2px outset gray;
+	margin: 2px;
+}
+	</style>
+	<script src="../lib/audiolib.js"></script>
+	<script src="common/common.js"></script>
+	</script>
+</head>
+<body>
+	<script>
+insertPlot(audioLib.Oscillator, [44100, 220], {waveShape: 'sine'});
+insertPlot(audioLib.Oscillator, [44100, 220], {waveShape: 'triangle'});
+insertPlot(audioLib.Oscillator, [44100, 220], {waveShape: 'square'});
+insertPlot(audioLib.Oscillator, [44100, 220], {waveShape: 'sawtooth'});
+
+insertPlot(audioLib.Noise, [44100, 'white']);
+insertPlot(audioLib.Noise, [44100, 'pink']);
+insertPlot(audioLib.Noise, [44100, 'brown']);
+
+insertPlot(audioLib.Reverb, [44100, 1, 0.99], {mix: 1.0});
+insertPlot(audioLib.LP12Filter, [44100, 10000, 5], {mix: 1.0}, 0.177777777);
+insertPlot(audioLib.Distortion, [44100], {gain: 20});
+	</script>
+</body>
+</html>
+
