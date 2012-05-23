@@ -66,5 +66,52 @@ seq.addEvent(snare, 1 + 15/16);
 	</script>
 </head>
 <body>
+	<style>
+body {
+	background: #1a1e1f;
+}
+td {
+	background-color: #9e6ffe;
+}
+
+td.active {
+	background-color: #a6e22e;
+}
+	</style>
+	<table id="beats">
+		<tr>
+			<td>1 1/4</td>
+			<td>1 2/4</td>
+			<td>1 3/4</td>
+			<td>1 4/4</td>
+			<td>2 1/4</td>
+			<td>2 2/4</td>
+			<td>2 3/4</td>
+			<td>2 4/4</td>
+		</tr>
+	</table>
+	<script>
+var beats = [].slice.call(document.querySelectorAll('#beats td'));
+
+function getBeat () {
+	var b = (seq.position - (dev.writePosition - dev.getPlaybackTime()) *
+		60 / seq.tempo / seq.sampleRate);
+	return b < 0 ? b + seq.length : b % seq.length;
+}
+
+setInterval(function () {
+	/* We multiply by four to get the index of the box we want to highlight. */
+	var index, i;
+	index = ~~(getBeat() * 4);
+
+	for (i=0; i<beats.length; i++) {
+		if (i === index) {
+			beats[i].classList.add('active');
+		} else {
+			beats[i].classList.remove('active');
+		}
+	}
+}, 1000/60);
+	</script>
 </body>
 </html>
