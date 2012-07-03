@@ -1,4 +1,4 @@
-var Sink = this.Sink = (function(global){
+var Sink = this.Sink = function (global) {
 
 /**
  * Creates a Sink according to specified parameters, if possible.
@@ -166,8 +166,8 @@ global.Sink = Sink;
 
 return Sink;
 
-}(function (){ return this; }()));
-(function (Sink) {
+}(function (){ return this; }());
+void function (Sink) {
 
 /**
  * A light event emitter.
@@ -249,8 +249,8 @@ Sink.EventEmitter = EventEmitter;
 
 EventEmitter.call(Sink);
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /*
  * A Sink-specific error class.
@@ -310,12 +310,80 @@ SinkError[0x12] = {
 
 Sink.Error = SinkError;
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
-var	BlobBuilder	= typeof window === 'undefined' ? undefined :
-	window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.OBlobBuilder,
-	URL		= typeof window === 'undefined' ? undefined : (window.URL || window.MozURL || window.webkitURL || window.MSURL || window.OURL);
+var _Blob, _BlobBuilder, _URL, _btoa;
+
+void function (prefixes, urlPrefixes) {
+	function find (name, prefixes) {
+		var b, a = prefixes.slice();
+
+		for (b=a.shift(); typeof b !== 'undefined'; b=a.shift()) {
+			b = Function('return typeof ' + b + name + 
+				'=== "undefined" ? undefined : ' +
+				b + name)();
+
+			if (b) return b;
+		}
+	}
+
+	_Blob = find('Blob', prefixes);
+	_BlobBuilder = find('BlobBuilder', prefixes);
+	_URL = find('URL', urlPrefixes);
+	_btoa = find('btoa', ['']);
+}([
+	'',
+	'Moz',
+	'WebKit',
+	'MS'
+], [
+	'',
+	'webkit'
+]);
+
+var createBlob = _Blob && _URL && function (content, type) {
+	return _URL.createObjectURL(new _Blob([content], { type: type }));
+};
+
+var createBlobBuilder = _BlobBuilder && _URL && function (content, type) {
+	var bb = new _BlobBuilder();
+	bb.append(content);
+
+	return _URL.createObjectURL(bb.getBlob(type));
+};
+
+var createData = _btoa && function (content, type) {
+	return 'data:' + type + ';base64,' + _btoa(content);
+};
+
+var createDynURL =
+	createBlob ||
+	createBlobBuilder ||
+	createData;
+
+if (!createDynURL) return;
+
+if (createBlob) createDynURL.createBlob = createBlob;
+if (createBlobBuilder) createDynURL.createBlobBuilder = createBlobBuilder;
+if (createData) createDynURL.createData = createData;
+
+if (_Blob) createDynURL.Blob = _Blob;
+if (_BlobBuilder) createDynURL.BlobBuilder = _BlobBuilder;
+if (_URL) createDynURL.URL = _URL;
+
+Sink.createDynURL = createDynURL;
+
+Sink.revokeDynURL = function (url) {
+	if (typeof url === 'string' && url.indexOf('data:') === 0) {
+		return false;
+	} else {
+		return _URL.revokeObjectURL(url);
+	}
+};
+
+}(this.Sink);
+void function (Sink) {
 
 /**
  * Creates an inline worker using a data/blob URL, if possible.
@@ -327,54 +395,80 @@ var	BlobBuilder	= typeof window === 'undefined' ? undefined :
  * @return {Worker} A web worker, or null if impossible to create.
 */
 
+var define = Object.defineProperty ? function (obj, name, value) {
+	Object.defineProperty(obj, name, {
+		value: value,
+		configurable: true,
+		writable: true
+	});
+} : function (obj, name, value) {
+	obj[name] = value;
+};
+
+function terminate () {
+	define(this, 'terminate', this._terminate);
+
+	Sink.revokeDynURL(this._url);
+
+	delete this._url;
+	delete this._terminate;
+	return this.terminate();
+}
+
 function inlineWorker (script) {
-	var	worker	= null,
-		url, bb;
-	try {
-		bb	= new BlobBuilder();
-		bb.append(script);
-		url	= URL.createObjectURL(bb.getBlob());
-		worker	= new Worker(url);
+	function wrap (type, content, typeName) {
+		try {
+			var url = type(content, 'text/javascript');
+			var worker = new Worker(url);
 
-		worker._terminate	= worker.terminate;
-		worker._url		= url;
-		bb			= null;
+			define(worker, '_url', url);
+			define(worker, '_terminate', worker.terminate);
+			define(worker, 'terminate', terminate);
 
-		worker.terminate = function () {
-			this._terminate();
-			URL.revokeObjectURL(this._url);
-		};
+			if (inlineWorker.type) return worker;
 
-		inlineWorker.type = 'blob';
+			inlineWorker.type = typeName;
+			inlineWorker.createURL = type;
 
-		return worker;
+			return worker;
+		} catch (e) {
+			return null;
+		}
+	}
 
-	} catch (e) {}
+	var createDynURL = Sink.createDynURL;
+	var worker;
 
-	try {
-		worker			= new Worker('data:text/javascript;base64,' + btoa(script));
-		inlineWorker.type	= 'data';
+	if (inlineWorker.createURL) {
+		return wrap(inlineWorker.createURL, script, inlineWorker.type);
+	}
 
-		return worker;
+	worker = wrap(createDynURL.createBlob, script, 'blob');
+	if (worker) return worker;
 
-	} catch (e) {}
+	worker = wrap(createDynURL.createBlobBuilder, script, 'blobbuilder');
+	if (worker) return worker;
+
+	worker = wrap(createDynURL.createData, script, 'data');
 
 	return worker;
 }
 
-inlineWorker.ready = inlineWorker.working = false;
-
 Sink.EventEmitter.call(inlineWorker);
 
 inlineWorker.test = function () {
-	var	worker	= inlineWorker('this.onmessage=function (e){postMessage(e.data)}'),
-		data	= 'inlineWorker';
 	inlineWorker.ready = inlineWorker.working = false;
+	inlineWorker.type = '';
+	inlineWorker.createURL = null;
+
+	var worker = inlineWorker('this.onmessage=function(e){postMessage(e.data)}');
+	var data = 'inlineWorker';
 
 	function ready (success) {
 		if (inlineWorker.ready) return;
-		inlineWorker.ready	= true;
-		inlineWorker.working	= success;
+
+		inlineWorker.ready = true;
+		inlineWorker.working = success;
 		inlineWorker.emit('ready', [success]);
 		inlineWorker.off('ready');
 
@@ -386,12 +480,16 @@ inlineWorker.test = function () {
 	}
 
 	if (!worker) {
-		ready(false);
+		setTimeout(function () {
+			ready(false);
+		}, 0);
 	} else {
 		worker.onmessage = function (e) {
 			ready(e.data === data);
 		};
+
 		worker.postMessage(data);
+
 		setTimeout(function () {
 			ready(false);
 		}, 1000);
@@ -402,8 +500,8 @@ Sink.inlineWorker = inlineWorker;
 
 inlineWorker.test();
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /**
  * Creates a timer with consistent (ie. not clamped) intervals even in background tabs.
@@ -459,8 +557,8 @@ Sink.doInterval = function (callback, timeout) {
 	};
 };
 
-}(this.Sink));
-(function (Sink) {
+}(this.Sink);
+void function (Sink) {
 
 /**
  * A Sink class for the Mozilla Audio Data API.
@@ -555,7 +653,7 @@ Sink.sinks('audiodata', function () {
 
 Sink.sinks.moz = Sink.sinks.audiodata;
 
-}(this.Sink));
+}(this.Sink);
 (function (Sink, sinks) {
 
 sinks = Sink.sinks;
@@ -656,7 +754,7 @@ wavAudio.prototype = {
 sinks.wav.wavAudio = wavAudio;
 
 }(this.Sink));
-(function (Sink) {
+void function (Sink) {
 
 /**
  * A dummy Sink. (No output)
@@ -681,7 +779,7 @@ Sink.sinks('dummy', function () {
 	}
 }, true);
 
-}(this.Sink));
+}(this.Sink);
  (function (sinks, fixChrome82795) {
 
 var AudioContext = typeof window === 'undefined' ? null : window.webkitAudioContext || window.AudioContext;
@@ -693,10 +791,11 @@ var AudioContext = typeof window === 'undefined' ? null : window.webkitAudioCont
 sinks('webaudio', function (readFn, channelCount, bufferSize, sampleRate) {
 	var	self		= this,
 		context		= sinks.webaudio.getContext(),
-		node		= context.createJavaScriptNode(bufferSize, 0, channelCount),
+		node		= null,
 		soundData	= null,
 		zeroBuffer	= null;
 	self.start.apply(self, arguments);
+	node = context.createJavaScriptNode(self.bufferSize, self.channelCount, self.channelCount);
 
 	function bufferFill(e) {
 		var	outputBuffer	= e.outputBuffer,
@@ -1226,7 +1325,7 @@ Sink.prototype.createProxy = function (bufferSize) {
 };
 
 }(this.Sink));
-(function (Sink) {
+void function (Sink) {
 
 function processRingBuffer () {
 	if (this.ringBuffer) {
@@ -1286,8 +1385,8 @@ Sink.prototype.ringSpinDeinterleaved = function (buffer) {
 	this.ringOffset = n;
 };
 
-}(this.Sink));
-(function (Sink, proto) {
+}(this.Sink);
+void function (Sink, proto) {
 
 proto = Sink.prototype;
 
@@ -1428,8 +1527,8 @@ proto.getSyncWriteOffset = function () {
 	return offset;
 };
 
-} (this.Sink));
-(function (Sink) {
+} (this.Sink);
+void function (Sink) {
 
 Sink.on('init', function (sink) {
 	sink.activeRecordings = [];
@@ -1542,4 +1641,4 @@ Recording.prototype = {
 
 Sink.Recording = Recording;
 
-}(this.Sink));
+}(this.Sink);
