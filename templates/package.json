@@ -1,26 +1,30 @@
 {
-	"name":		"audiolib",
-	"author":	"Jussi Kalliokoski",
-	"version":	"/*#echo @version */",
-	"description":	"audiolib.js is a powerful audio tools library for javascript.",
-	"repository":	{
-		"type":		"git",
-		"url":		"http://github.com/jussi-kalliokoski/audiolib.js.git"
+	"name": "audiolib",
+	"author": "Jussi Kalliokoski",
+	"version": "/*#echo @version */",
+	"description": "audiolib.js is a powerful audio tools library for javascript.",
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/jussi-kalliokoski/audiolib.js.git"
 	},
-	"engines":	{
-		"node":		">=0.2.0-0"
+	"engines": {
+		"node": ">=0.8.0-0"
 	},
-	"licenses":	[{
-		"type":		"MIT"
+	"licenses": [{
+		"type": "MIT"
 	}],
-	"bugs":		{
-		"url":		"http://github.com/jussi-kalliokoski/audiolib.js/issues"
+	"bugs": {
+		"url": "http://github.com/jussi-kalliokoski/audiolib.js/issues"
 	},
-	"directories":	{
-		"lib":		"./lib"
+	"directories": {
+		"lib": "./lib"
 	},
-	"scripts":	{
-		"preinstall":	"grunt --config Gruntfile.js concat:main"
+	"dependencies": {
+		"grunt": "3.x.x",
+		"cubeb": "0.1.x"
 	},
-	"main":		"./lib/audiolib"
+	"scripts": {
+		"preinstall": "./node_modules/grunt/bin/grunt --config Gruntfile.js concat:main"
+	},
+	"main": "./lib/audiolib"
 }
