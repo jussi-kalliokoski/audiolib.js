@@ -20,7 +20,6 @@
 		"lib": "./lib"
 	},
 	"dependencies": {
-		"grunt": "3.x.x",
 		"cubeb": "0.1.x"
 	},
 	"scripts": {
