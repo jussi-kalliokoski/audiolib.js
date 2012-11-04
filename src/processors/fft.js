@@ -414,7 +414,7 @@ FFT.prototype.calculateSpectrum = function () {
 	for (i=0, n=2; i<l; i++, n+=2) {
 		rr = buffer[n + 0];
 		ii = buffer[n + 1];
-		mag = bSi * Math.sqrt(rr * rr, ii * ii);
+		mag = bSi * Math.sqrt(rr * rr + ii * ii);
 
 		if (mag > this.peak) {
 			this.peakBand = i;
