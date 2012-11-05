@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script src=../lib/audiolib.js></script>
+	<script src=../plugins/recorder.js></script>
+</head>
+<body>
+	<button id="record">Record</button>
+
+	<script>
+var dev = Sink();
+var osc = audioLib.Oscillator(dev.sampleRate, 110);
+var lfo = audioLib.Oscillator(dev.sampleRate, 0.1);
+var rec = dev.createRecorder();
+var mute = false;
+
+osc.addAutomation('frequency', lfo, 1, 'additiveModulation');
+
+dev.on('audioprocess', function (buffer, channelCount) {
+	if (mute) return;
+
+	lfo.generateBuffer(buffer.length / channelCount);
+
+	osc.append(buffer, channelCount);
+})
+
+document.getElementById('record').onclick = function () {
+	if (rec.active) {
+		rec.stop();
+		rec.exportWav((function (blob) {
+			var audio = new Audio(Sink.createDynURL.createBlob(blob));
+			audio.controls = true;
+			document.body.appendChild(audio);
+
+			rec.clear();
+
+			this.innerHTML = 'Record';
+			this.disabled = false;
+		}).bind(this))
+		this.innerHTML = 'Creating wav...';
+		this.disabled = true;
+	} else {
+		rec.start();
+		this.innerHTML = 'Stop';
+	}
+}
+	</script>
+
+	<button onclick="mute = !mute; this.innerHTML = mute ? 'Unmute' : 'Mute'">Mute</button>
+</body>
+</html>
