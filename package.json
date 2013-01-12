@@ -23,7 +23,7 @@
 		"cubeb": "0.1.x"
 	},
 	"scripts": {
-		"preinstall": "grunt --config Gruntfile.js concat:main"
+		"prepublish": "grunt --config Gruntfile.js concat:main"
 	},
 	"main": "./lib/audiolib"
 }
