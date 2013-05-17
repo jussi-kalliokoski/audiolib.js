@@ -48,10 +48,10 @@ Documentation is available at http://docs.audiolibjs.org/ . Tutorials can be fou
 
 (if you have your own, please fork & add | msg me)
 
-* [JSMad](http://jsmad.org/)
+* [JSMad](http://audiocogs.org/codecs/mp3/)
 * [Orbisyn](http://niiden.com/orbisyn/)
 * [jams.no.de](http://jams.no.de)
-* [ofmlabs codecs](http://codecs.ofmlabs.org/)
+* [Audiocogs codecs](http://audiocogs.org/codecs/)
 
 ## Libraries bundled with audiolib.js
 
