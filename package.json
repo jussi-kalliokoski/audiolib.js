@@ -1,14 +1,14 @@
 {
 	"name": "audiolib",
 	"author": "Jussi Kalliokoski",
-	"version": "0.6.5",
+	"version": "0.6.6",
 	"description": "audiolib.js is a powerful audio tools library for javascript.",
 	"repository": {
 		"type": "git",
 		"url": "http://github.com/jussi-kalliokoski/audiolib.js.git"
 	},
 	"engines": {
-		"node": ">=0.8.0-0"
+		"node": ">=0.10.0-0"
 	},
 	"licenses": [{
 		"type": "MIT"
@@ -20,7 +20,7 @@
 		"lib": "./lib"
 	},
 	"dependencies": {
-		"cubeb": "0.1.x"
+		"cubeb": "0.2.x"
 	},
 	"scripts": {
 		"prepublish": "grunt --config Gruntfile.js concat:main"
