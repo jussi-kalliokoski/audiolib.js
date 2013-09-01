@@ -73,7 +73,7 @@ Specifications for plugin developers can be found in https://github.com/jussi-ka
 
 ## Credits 
 
-This project is maintained by [Jussi Kalliokoski](https://github.com/jussi-kalliokoski), with significant contributions from [David Govea](https://github.com/davidgovea). The project is funded by the awesome [ofmlabs](http://ofmlabs.org) !
+This project is maintained by [Jussi Kalliokoski](https://github.com/jussi-kalliokoski), with significant contributions from [David Govea](https://github.com/davidgovea).
 
 ## License
 
