@@ -1,29 +1,41 @@
 {
-	"name": "audiolib",
-	"author": "Jussi Kalliokoski",
-	"version": "0.6.6",
-	"description": "audiolib.js is a powerful audio tools library for javascript.",
-	"repository": {
-		"type": "git",
-		"url": "http://github.com/jussi-kalliokoski/audiolib.js.git"
-	},
-	"engines": {
-		"node": ">=0.10.0-0"
-	},
-	"licenses": [{
-		"type": "MIT"
-	}],
-	"bugs": {
-		"url": "http://github.com/jussi-kalliokoski/audiolib.js/issues"
-	},
-	"directories": {
-		"lib": "./lib"
-	},
-	"dependencies": {
-		"cubeb": "0.2.x"
-	},
-	"scripts": {
-		"prepublish": "grunt --config Gruntfile.js concat:main"
-	},
-	"main": "./lib/audiolib"
+  "name": "audiolib",
+  "author": "Jussi Kalliokoski",
+  "version": "0.6.6",
+  "description": "audiolib.js is a powerful audio tools library for javascript.",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/jussi-kalliokoski/audiolib.js.git"
+  },
+  "engines": {
+    "node": ">=0.10.0-0"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "bugs": {
+    "url": "http://github.com/jussi-kalliokoski/audiolib.js/issues"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "dependencies": {
+    "cubeb": "0.2.x"
+  },
+  "scripts": {
+    "prepublish": "./node_modules/.bin/grunt concat"
+  },
+  "main": "./lib/audiolib",
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt": "~0.4.1",
+    "paramon": "~0.1.1",
+    "script-builder": "~0.3.3"
+  }
 }
