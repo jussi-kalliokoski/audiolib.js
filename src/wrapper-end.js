@@ -130,7 +130,7 @@ void function (names, i) {
 /* FIXME: Make this happen based on the features we have */
 Codec('wav', audioLib.PCMData);
 
-audioLib.version = '0.6.5';
+audioLib.version = '0.6.6';
 
 return audioLib;
 }).call(typeof exports === 'undefined' ? {} : this, this.window || global, Math, Object, Array);
