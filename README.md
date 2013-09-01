@@ -50,7 +50,6 @@ Documentation is available at http://docs.audiolibjs.org/ . Tutorials can be fou
 
 * [JSMad](http://audiocogs.org/codecs/mp3/)
 * [Orbisyn](http://niiden.com/orbisyn/)
-* [jams.no.de](http://jams.no.de)
 * [Audiocogs codecs](http://audiocogs.org/codecs/)
 
 ## Libraries bundled with audiolib.js
