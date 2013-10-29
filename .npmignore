@@ -1,0 +1,10 @@
+*.jshintrc
+*.gitattributes
+*.gitignore
+*.travis.yml
+*.DS_Store
+*node_modules
+config
+tests
+src
+Gruntfile.coffee

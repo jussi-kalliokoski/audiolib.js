@@ -1,0 +1,22 @@
+{
+  "globals": {
+    "ArrayMath": true,
+    "FFT": true,
+    "Filter": true,
+    "AudioKit": true,
+    "_": true
+  },
+  "node": true,
+  "browser": true,
+  "onecase": true,
+  "maxlen": 140,
+  "boss": true,
+  "latedef": true,
+  "noarg": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "undef": true,
+  "strict": true,
+  "trailing": true,
+  "expr": true
+}

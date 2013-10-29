@@ -1,0 +1,7 @@
+[attr]code text=auto eol=lf whitespace=trailing-space,space-before-tab,tab-in-indent,tabwidth=4
+[attr]binary -text -diff
+[attr]vendor -diff
+
+* code
+
+tests/vendor/* vendor
