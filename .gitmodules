@@ -1,0 +1,3 @@
+[submodule "tests/dsp-test-files"]
+	path = tests/dsp-test-files
+	url = git@github.com:sebpiq/dsp-test-files.git
