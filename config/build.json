@@ -13,7 +13,8 @@
     "src/nodes/band-limited-oscillator.js",
     "src/nodes/noise-source.js",
     "src/nodes/oscillation-source.js",
-    "src/nodes/simple-oscillator.js"
+    "src/nodes/simple-oscillator.js",
+    "src/nodes/phasor.js"
   ],
   "karmaDefaults": {
     "colors": true,

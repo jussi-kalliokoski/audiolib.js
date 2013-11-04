@@ -1,6 +1,8 @@
 void function () {
     "use strict";
 
+    if (typeof require !== 'undefined') var _ = require('underscore')
+
     function Node (options) {
         if ( ! ( this instanceof Node ) ) {
             throw new Error(this.constructor.name + " cannot be called without `new`");

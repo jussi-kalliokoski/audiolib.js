@@ -22,6 +22,7 @@ module.exports = (grunt) ->
       lib:
         dest: "dist/<%= package.name %>.js"
         src: [
+          "dist/webarraymath.js",
           "<%= javascripts %>"
         ]
     coverage:
