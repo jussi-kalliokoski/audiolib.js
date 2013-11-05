@@ -15,7 +15,8 @@
     "url": "git@github.com:jussi-kalliokoski/audiokit"
   },
   "dependencies": {
-    "dsp": "0.0.x"
+    "dsp": "0.0.x",
+    "underscore": "~1.5.2"
   },
   "devDependencies": {
     "coffee-script": "~1.6.2",
@@ -30,7 +31,10 @@
     "grunt-contrib-watch": "~0.5.1",
     "grunt-istanbul-coverage": "0.0.1",
     "grunt-plato": "~0.2.0",
-    "lodash": "~2.2.1"
+    "lodash": "~2.2.1",
+    "mustache": "~0.7.2",
+    "chai": "~1.8.1",
+    "chai-stats": "~0.3.0"
   },
   "author": {
     "name": "Jussi Kalliokoski",
