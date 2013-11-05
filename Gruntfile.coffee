@@ -1,10 +1,26 @@
 module.exports = (grunt) ->
   _ = grunt.util._
 
-  config = require("./config/build.json")
-  config.package = require("./package.json")
+  gruntConfig = _.extend {},
+    package: require("./package.json")
+    jshintrc: ".jshintrc",
+    gruntfile: "Gruntfile.coffee",
+    tempDir: "dist/temp",
+    javascripts: [
+      "src/index.js",
+      "src/core/node.js",
+      "src/tools/index.js",
+      "src/tools/calculate-offset.js",
+      "src/tools/offset.js",
+      "src/tools/window-functions.js",
+      "src/nodes/index.js",
+      "src/nodes/band-limited-oscillator.js",
+      "src/nodes/noise-source.js",
+      "src/nodes/oscillation-source.js",
+      "src/nodes/simple-oscillator.js",
+      "src/nodes/phasor.js"
+    ],
 
-  gruntConfig = _.extend {}, config,
     clean:
       coverage:
         src: ["dist/coverage"]
@@ -12,12 +28,6 @@ module.exports = (grunt) ->
         src: ["<%= tempDir %>"]
       all:
         src: ["dist"]
-    coffee:
-      unit:
-        files: [{
-          src: "tests/unit/**/*.coffee"
-          dest: "<%= tempDir %>/tests/unit.js"
-        }]
     concat:
       lib:
         dest: "dist/<%= package.name %>.js"
@@ -38,17 +48,12 @@ module.exports = (grunt) ->
         src: ["<%= javascripts %>"]
         options:
           jshintrc: "<%= jshintrc %>"
-    karma:
-      unitDev:
-        configFile: "config/karma/unit.conf.coffee"
-      unitProduction:
-        configFile: "config/karma/production.unit.conf.coffee"
     plato:
       all:
         options:
           jshint:
             options:
-              jshintrc: config.jshintrc
+              jshintrc: '.jshintrc'
           complexity:
             logicalor: false
             switchcase: false
@@ -67,14 +72,11 @@ module.exports = (grunt) ->
           ]
         }]
 
-  # Dump config for debugging
-  grunt.log.verbose.writeln("Config dump: " + JSON.stringify(config, null, "  "))
-
   grunt.initConfig(gruntConfig)
 
   # load all grunt tasks based on package.json
   gruntTasks = _
-    .map(config.package.devDependencies, (version, name) -> name)
+    .map(gruntConfig.package.devDependencies, (version, name) -> name)
     .filter( (name) -> /^grunt-(?!cli)/.test(name) )
     .forEach( (task) -> grunt.loadNpmTasks(task) )
 
@@ -102,8 +104,6 @@ module.exports = (grunt) ->
   grunt.registerTask("test", [
     "build:production"
     "clean:coverage"
-    "coffee:unit"
-    "karma"
     "jshint"
     "coverage"
   ])
