@@ -40,7 +40,7 @@ module.exports.testAgainstFile = (actual, filename, opts, done) ->
             maxDiff = {pos: i, val: val} if val > maxDiff.val
           probeLo = Math.max(maxDiff.pos - 2, 0)
           probeHi = maxDiff.pos + 3
-          debugger
+
           # Building a more useful error message
           errStr += ' \n > biggest diff ' + maxDiff.val + ', position ' + maxDiff.pos + ' : '
           errStr += '\n\t\texpected' + JSON.stringify(expected.slice(probeLo, probeHi))

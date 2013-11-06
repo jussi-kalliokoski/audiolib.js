@@ -7,19 +7,18 @@ module.exports = (grunt) ->
     gruntfile: "Gruntfile.coffee",
     tempDir: "dist/temp",
     javascripts: [
-      "src/index.js",
-      "src/core/node.js",
-      "src/tools/index.js",
-      "src/tools/calculate-offset.js",
-      "src/tools/offset.js",
-      "src/tools/window-functions.js",
-      "src/nodes/index.js",
-      "src/nodes/band-limited-oscillator.js",
-      "src/nodes/noise-source.js",
-      "src/nodes/oscillation-source.js",
-      "src/nodes/simple-oscillator.js",
-      "src/nodes/phasor.js"
+      "src/Node.js",
+      "src/WindowFunctions.js",
+      "src/Tools/index.js",
+      "src/Tools/offset.js",
+      "src/Nodes/Phasor.js"
     ],
+    # Dependencies that will not be bundled with the browser build.
+    # [<library name in Node.js>, <library name in the browser>]
+    browserDependencies: [
+      ["dsp", "webarraymath"],
+      ["underscore", "_"]
+    ]
 
     clean:
       coverage:
@@ -28,13 +27,21 @@ module.exports = (grunt) ->
         src: ["<%= tempDir %>"]
       all:
         src: ["dist"]
-    concat:
+    browserify:
       lib:
-        dest: "dist/<%= package.name %>.js"
-        src: [
-          "dist/webarraymath.js",
-          "<%= javascripts %>"
-        ]
+        files:
+          'dist/<%= package.name %>.js': ['./index.js']
+        options:
+          alias: "<%= browserDependencies.map(function(dep) { return tempDir + '/' + dep[0] + '.js:' + dep[0] }) %>"
+    simplemocha:
+      options:
+        globals: ['expect'],
+        timeout: 3000,
+        ignoreLeaks: false,
+        ui: 'bdd',
+        reporter: 'spec',
+        compilers: 'coffee:coffee-script'
+      all: { src: 'tests/src/**/*.coffee' }
     coverage:
       options:
         thresholds:
@@ -80,8 +87,28 @@ module.exports = (grunt) ->
     .filter( (name) -> /^grunt-(?!cli)/.test(name) )
     .forEach( (task) -> grunt.loadNpmTasks(task) )
 
+  grunt.registerTask 'browser-dependencies-export', 'create the files that will expose browser dependencies to our browserified code', () ->
+    async = require('async')
+    fs = require('fs')
+
+    done = this.async()
+    deps = grunt.config('browserDependencies')
+    tempDir = grunt.config('tempDir')
+
+    exposeDepsFiles = deps.map (dep) ->
+      (next) ->
+        browserModuleName = dep[1]
+        nodeModuleName = dep[0]
+        fs.writeFile(
+          tempDir + '/' + nodeModuleName + '.js'
+          'module.exports = window.' + browserModuleName
+          next
+        )
+    async.series exposeDepsFiles, done
+    
   grunt.registerTask("compile:js", [
-    "concat:lib"
+    "browser-dependencies-export",
+    "browserify:lib"
   ])
 
   grunt.registerTask("minify:js", [
@@ -102,7 +129,7 @@ module.exports = (grunt) ->
   ])
 
   grunt.registerTask("test", [
-    "build:production"
+    "simplemocha:all"
     "clean:coverage"
     "jshint"
     "coverage"
