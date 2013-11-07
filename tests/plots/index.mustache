@@ -20,14 +20,21 @@
 
   <h1>Failed tests plots</h1>
 
-  <div id="failures"></div>
+  <div id="graph"></div>
+  <div id="report">
+    actual graph is in green, expected graph in red.
+    <ul>
+      <li><b>length</b> : actual {{length.actual}} / expected {{length.expected}}</li>
+      <li><b>max diff</b> : position {{maxDiff.position}}, actual {{maxDiff.actual}} / expected {{maxDiff.expected}} </li>
+    </ul>
+  </div>
 
   <script>
     var plotWidth = $(window).width() * 0.95
       , plotHeight = plotWidth / 10
-      , container = $('#failures')
-      , dataActual = {{{dataActual}}}
-      , dataExpected = {{{dataExpected}}}
+      , container = $('#graph')
+      , dataActual = {{{data.actual}}}
+      , dataExpected = {{{data.expected}}}
       , r = Raphael(container.get(0), plotWidth, plotHeight)
     
     r.linechart(0, 0, plotWidth, plotHeight, 
