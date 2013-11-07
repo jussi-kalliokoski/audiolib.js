@@ -16,7 +16,7 @@ function Phasor () {
 
 Phasor.prototype.defaults = {
     frequency: 440,
-    initialPhase: 0
+    initialPhase: null
 };
 
 /**
@@ -34,8 +34,12 @@ Phasor.prototype.process = function (phase) {
     ArrayMath.add(phase, frequency, phase);
     ArrayMath.mul(phase, 1 / this.sampleRate, phase);
 
-    var lastPhase = phase[0] = this.lastPhase;
-    for ( var i = 1; i < phase.length; i++ ) {
+    var lastPhase = this.lastPhase;
+
+    // If `lastPhase` hasn't been initialized, we force the first phase to be 0.
+    if (lastPhase === null) lastPhase = -phase[0];
+
+    for ( var i = 0; i < phase.length; i++ ) {
         phase[i] = lastPhase = lastPhase + phase[i];
     }
 

@@ -10,12 +10,18 @@ describe "Nodes.Phasor", ->
   describe "process", ->
 
     it "should return correct results for a 440Hz phasor", (done) ->
-      buffer = new Float32Array(4410)
+      buffer1 = new Float32Array(4410 / 2)
+      buffer2 = new Float32Array(4410 / 2)
       phasor = new Phasor({sampleRate: 44100, blockSize: 4410, parameters: {frequency: 440}})
-      phasor.process(buffer)
+      phasor.process(buffer1)
+      phasor.process(buffer2)
       helpers.loadRefFile "waveforms/phasor-440-hz.json", (err, expected) ->
         throw err if err
-        compareBuffers(helpers.toUInt16(buffer), phasorTestHack(expected), DECIMALS)
+        expected1 = phasorTestHack(expected.slice(0, buffer1.length))
+        expected2 = phasorTestHack(expected.slice(buffer1.length, buffer1.length + buffer2.length))
+
+        compareBuffers(helpers.toUInt16(buffer1), expected1, DECIMALS)
+        compareBuffers(helpers.toUInt16(buffer2), expected2, DECIMALS)
         done()
 
     afterEach (done) ->

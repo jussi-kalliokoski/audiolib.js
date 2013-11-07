@@ -26,6 +26,12 @@
     <ul>
       <li><b>length</b> : actual {{length.actual}} / expected {{length.expected}}</li>
       <li><b>max diff</b> : position {{maxDiff.position}}, actual {{maxDiff.actual}} / expected {{maxDiff.expected}} </li>
+      <li><b>full diff</b> top actual, bottom expected :
+        <div style="overflow:auto;"> 
+          <div>{{data.actual}}</div>
+          <div>{{data.expected}}</div>
+        </div>
+      </li>
     </ul>
   </div>
 
