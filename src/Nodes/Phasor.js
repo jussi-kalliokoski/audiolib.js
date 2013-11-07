@@ -24,12 +24,13 @@ Phasor.prototype.defaults = {
  *
  * @param {Float32Array} phase The array to write the phase to.
 */
-Phasor.prototype.process = function (phase) {
+Phasor.prototype.process = function (phase, frequency) {
+    frequency = frequency || this.parameters.frequency
     var offset = this.blockSize - Tools.calculateOffset(
         phase,
-        this.parameters.frequency
+        frequency || frequency
     );
-    var frequency = Tools.offset(this.parameters.frequency, offset);
+    frequency = Tools.offset(frequency, offset);
 
     ArrayMath.add(phase, frequency, phase);
     ArrayMath.mul(phase, 1 / this.sampleRate, phase);
