@@ -25,6 +25,8 @@ module.exports = (grunt) ->
         src: ["dist/coverage"]
       temporary:
         src: ["<%= tempDir %>"]
+      failurePlots:
+        src: ["tests/failure-plots/*.html"] 
       all:
         src: ["dist"]
     browserify:
@@ -131,6 +133,7 @@ module.exports = (grunt) ->
   grunt.registerTask("test", [
     "simplemocha:all"
     "clean:coverage"
+    "clean:failurePlots"
     "jshint"
     "coverage"
   ])

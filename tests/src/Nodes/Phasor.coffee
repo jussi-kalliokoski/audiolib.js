@@ -1,7 +1,9 @@
-testAgainstFile = require('../../helpers').testAgainstFile
+helpers = require('../../helpers')
+phasorTestHack = helpers.phasorTestHack
+compareBuffers = helpers.compareBuffers
 Phasor = require('../../../src/Nodes/Phasor')
 
-DECIMALS = 0
+DECIMALS = -0.5 # result is valid at +- 1.59
 
 describe "Nodes.Phasor", ->
 
@@ -11,4 +13,10 @@ describe "Nodes.Phasor", ->
       buffer = new Float32Array(4410)
       phasor = new Phasor({sampleRate: 44100, blockSize: 4410, parameters: {frequency: 440}})
       phasor.process(buffer)
-      testAgainstFile(buffer, "waveforms/phasor-440-hz.json", {decimals: DECIMALS, toUInt16: true}, done)
+      helpers.loadRefFile "waveforms/phasor-440-hz.json", (err, expected) ->
+        throw err if err
+        compareBuffers(helpers.toUInt16(buffer), phasorTestHack(expected), DECIMALS)
+        done()
+
+    afterEach (done) ->
+      helpers.renderFailurePlots(this.currentTest, done)

@@ -2,6 +2,7 @@
 
 var Node = require('../Node');
 var Tools = require('../Tools');
+var ArrayMath = require('dsp');
 
 /**
  * A Node that takes frequency values as input to generate phase values as output.
@@ -29,11 +30,11 @@ Phasor.prototype.process = function (phase) {
         this.parameters.frequency
     );
     var frequency = Tools.offset(this.parameters.frequency, offset);
-    var lastPhase = phase[0] = this.lastPhase;
 
     ArrayMath.add(phase, frequency, phase);
     ArrayMath.mul(phase, 1 / this.sampleRate, phase);
 
+    var lastPhase = phase[0] = this.lastPhase;
     for ( var i = 1; i < phase.length; i++ ) {
         phase[i] = lastPhase = lastPhase + phase[i];
     }
