@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="assets/js/raphael-min.js"></script>
+  <script src="assets/js/g.raphael-min.js"></script>
+  <script src="assets/js/g.line-min.js"></script>
+  <script src="assets/js/jquery-2.0.3.min.js"></script>
+  <script src="assets/js/underscore-min.js"></script>
+
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>{{title}}</h1>
+
+  <div id="graph"></div>
+  <div id="report">
+    actual graph is in green, expected graph in red.
+    <ul>
+      <li><b>length</b> : actual {{length.actual}} / expected {{length.expected}}</li>
+      <li><b>max diff</b> : position {{maxDiff.position}}, actual {{maxDiff.actual}} / expected {{maxDiff.expected}} </li>
+      <li><b>full diff</b> top actual, bottom expected :
+        <div style="overflow:auto;"> 
+          <div>{{data.actual}}</div>
+          <div>{{data.expected}}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    var plotWidth = $(window).width() * 0.95
+      , plotHeight = plotWidth / 10
+      , container = $('#graph')
+      , dataActual = {{{data.actual}}}
+      , dataExpected = {{{data.expected}}}
+      , r = Raphael(container.get(0), plotWidth, plotHeight)
+    
+    r.linechart(0, 0, plotWidth, plotHeight, 
+      _.range(Math.max(dataActual.length, dataActual.length)), [dataExpected, dataActual],
+      {smooth: true, colors: ['#F00', '#0F0', '#FF0'], symbol: ''})
+  </script>
+</body>
+
+</html> 
