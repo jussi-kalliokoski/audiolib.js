@@ -1,10 +1,10 @@
 ArrayMath = require('dsp')
 helpers = require('../../helpers')
-phasorTestHack = helpers.phasorTestHack
 compareBuffers = helpers.compareBuffers
 Phasor = require('../../../src/Nodes/Phasor')
 
-DECIMALS = -0.5 # result is valid at +- 1.59
+TOLERANCE = 0.01
+AMPLITUDE = Math.pow(2, 15) - 1
 
 describe "Nodes.Phasor", ->
 
@@ -21,11 +21,8 @@ describe "Nodes.Phasor", ->
         phasor.process(buffer1)
         phasor.process(buffer2)
 
-        expected1 = phasorTestHack(refData.slice(0, blockSize))
-        expected2 = phasorTestHack(refData.slice(blockSize, blockSize * 2))
-
-        compareBuffers(helpers.toUInt16(buffer1), expected1, DECIMALS)
-        compareBuffers(helpers.toUInt16(buffer2), expected2, DECIMALS)
+        compareBuffers(helpers.toUInt16(buffer1), refData.slice(0, blockSize), AMPLITUDE, TOLERANCE)
+        compareBuffers(helpers.toUInt16(buffer2), refData.slice(blockSize, blockSize * 2), AMPLITUDE, TOLERANCE)
         done()
 
     it "should return correct results for a ramp from 220Hz to 440Hz", (done) ->
@@ -42,8 +39,8 @@ describe "Nodes.Phasor", ->
           buffer = new Float32Array(blockSize)
           frequencies = frequencyRamp.subarray(i * blockSize, (i+1) * blockSize)
           phasor.process(buffer, frequencies)
-          expected = phasorTestHack(refData.slice(i * blockSize, (i+1) * blockSize))
-          compareBuffers(helpers.toUInt16(buffer), expected, DECIMALS)
+          debugger
+          compareBuffers(helpers.toUInt16(buffer), refData.slice(i * blockSize, (i+1) * blockSize), AMPLITUDE, TOLERANCE)
         done()
 
     afterEach (done) ->
