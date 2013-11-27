@@ -1,5 +1,6 @@
 _ = require('underscore')
 mustache = require('mustache')
+assert = require('assert')
 fs = require('fs')
 path = require('path')
 ArrayMath = require('dsp')
@@ -7,6 +8,27 @@ chai = require('chai')
 expect = chai.expect
 chaiStats = require('chai-stats')
 chai.use(chaiStats)
+
+# Asserts that `actual` is approximately equal to `expected`, the two numbers
+# being values from a periodic function of amplitude `amplitude`.
+# `tolerance` is actually the maximum tolerated difference between `actual` and `expected`
+# in terms of ratio of the amplitude.
+assertPeriodicApproxEqual = module.exports.assertPeriodicApproxEqual = (actual, expected, amplitude, tolerance) ->
+  diff = Math.abs(actual - expected) % amplitude
+  if ((Math.min(diff, amplitude - diff) % amplitude) / amplitude > tolerance)
+    throw new assert.AssertionError({actual: actual, expected: expected, operator: 'approx'})
+
+# Helper to compare 2 buffers.
+# `actual` and `expected` can be either typed arrays
+# or simple JS arrays.
+module.exports.compareBuffers = (actual, expected, amplitude, tolerance) ->
+  assert.equal(actual.length, expected.length, 'buffers have different length')
+  for val, i in actual
+    try
+      assertPeriodicApproxEqual(val, expected[i], amplitude, tolerance)
+    catch err
+      failures.push({expected: _.toArray(expected), actual: _.toArray(actual), err: err})
+      throw err
 
 # Just a temporary hack to fix #87 and having tests that pass anyways :) 
 # TODO: beeeerk
@@ -23,16 +45,6 @@ module.exports.loadRefFile = (filename, done) ->
     return done(err) if err 
     expected = JSON.parse(data.toString())
     done(null, expected)
-
-# Helper to compare 2 buffers.
-# `actual` and `expected` can be either typed arrays
-# or simple JS arrays.
-module.exports.compareBuffers = (actual, expected, decimals) ->
-  try
-    expect(actual).almost.eql(expected, decimals)
-  catch err
-    failures.push({expected: expected, actual: actual, err: err})
-    throw err
 
 # Function to plot of the failure that happened during `test`.
 # If no failure was recorded, this does nothing.
