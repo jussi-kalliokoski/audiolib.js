@@ -11,7 +11,7 @@ function Node (options) {
     this.parameters = _.extend({}, this.defaults, options.parameters);
     this.sampleRate = options.sampleRate || 48000;
     this.blockSize = options.blockSize || 4096;
-}
+};
 
 Node.prototype = {
     constructor: Node

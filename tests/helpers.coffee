@@ -30,13 +30,6 @@ module.exports.compareBuffers = (actual, expected, amplitude, tolerance) ->
       failures.push({expected: _.toArray(expected), actual: _.toArray(actual), err: err})
       throw err
 
-# Just a temporary hack to fix #87 and having tests that pass anyways :) 
-# TODO: beeeerk
-module.exports.phasorTestHack = (buffer) ->
-  for val, i in buffer
-    buffer[i] = 0 if val is (Math.pow(2, 15) - 1)
-  return buffer
-
 # Helper to load a reference file. 
 # `done(err, expected)` receives `expected` a simple JS array.
 module.exports.loadRefFile = (filename, done) ->
