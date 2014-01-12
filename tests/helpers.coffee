@@ -18,7 +18,7 @@ assertPeriodicApproxEqual = module.exports.assertPeriodicApproxEqual = (actual, 
   if ((Math.min(diff, amplitude - diff) % amplitude) / amplitude > tolerance)
     throw new assert.AssertionError({actual: actual, expected: expected, operator: 'approx'})
 
-# Helper to compare 2 buffers.
+# Helper to compare 2 buffers of periodic functions.
 # `actual` and `expected` can be either typed arrays
 # or simple JS arrays.
 module.exports.compareBuffers = (actual, expected, amplitude, tolerance) ->
@@ -26,6 +26,18 @@ module.exports.compareBuffers = (actual, expected, amplitude, tolerance) ->
   for val, i in actual
     try
       assertPeriodicApproxEqual(val, expected[i], amplitude, tolerance)
+    catch err
+      failures.push({expected: _.toArray(expected), actual: _.toArray(actual), err: err})
+      throw err
+
+# Helper to compare 2 buffers.
+# `actual` and `expected` can be either typed arrays
+# or simple JS arrays.
+module.exports.compareBuffers2 = (actual, expected) ->
+  assert.equal(actual.length, expected.length, 'buffers have different length')
+  for val, i in actual
+    try
+      assert.equal(val, expected[i])
     catch err
       failures.push({expected: _.toArray(expected), actual: _.toArray(actual), err: err})
       throw err
@@ -95,6 +107,8 @@ module.exports.toUInt16 = (val) ->
     return (handleVal elem for elem in val)
   else 
     return handleVal val
-pcmMult = Math.pow(2, 15)
-pcmMax = pcmMult - 1
+
+# TODO: check. int16 range is [-32768, 32767], pd's min seems to be -32767 
+pcmMult = Math.pow(2, 15) - 1
+pcmMax = pcmMult
 pcmMin = -pcmMult
