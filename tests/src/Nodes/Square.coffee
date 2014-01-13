@@ -3,7 +3,7 @@ helpers = require('../../helpers')
 compareBuffers = helpers.compareBuffers2
 Square = require('../../../src/Nodes/Square')
 
-describe "Nodes.Square", ->
+describe.skip "Nodes.Square", ->
 
   describe "process", ->
 
