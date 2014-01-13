@@ -1,5 +1,7 @@
 "use strict";
 
+var ArrayMath = require('dsp')
+
 module.exports = {
 
     Bartlett: function (buffer) {

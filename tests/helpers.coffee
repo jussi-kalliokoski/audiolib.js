@@ -33,11 +33,12 @@ module.exports.compareBuffers = (actual, expected, amplitude, tolerance) ->
 # Helper to compare 2 buffers.
 # `actual` and `expected` can be either typed arrays
 # or simple JS arrays.
-module.exports.compareBuffers2 = (actual, expected) ->
+module.exports.compareBuffers2 = (actual, expected, precision) ->
+  precision = precision or 0
   assert.equal(actual.length, expected.length, 'buffers have different length')
   for val, i in actual
     try
-      assert.equal(val, expected[i])
+      expect(val).almost.equal(expected[i], precision)
     catch err
       failures.push({expected: _.toArray(expected), actual: _.toArray(actual), err: err})
       throw err
