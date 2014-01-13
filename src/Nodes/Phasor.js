@@ -9,10 +9,10 @@ var ArrayMath = require('dsp');
  *
  * @class
 */
-function Phasor () {
-    Node.apply(this, arguments);
+function Phasor (options) {
+    Node.call(this, options);
     this.lastPhase = this.parameters.initialPhase;
-}
+};
 
 Phasor.prototype.defaults = {
     frequency: 440,
