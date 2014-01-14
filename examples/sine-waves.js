@@ -4,7 +4,7 @@
 var sink = require('./utils').sink;
 var Sine = require('../src/Nodes/Sine');
 
-var blockSize = 4410/2;
+var blockSize = 4410;
 var sine1 = new Sine({sampleRate: 44100, blockSize: blockSize, parameters: {frequency: 220}});
 var sine2 = new Sine({sampleRate: 44100, blockSize: blockSize, parameters: {frequency: 440}});
 
