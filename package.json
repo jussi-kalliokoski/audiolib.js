@@ -36,7 +36,8 @@
     "async": "~0.2.9",
     "mustache": "~0.7.2",
     "chai": "~1.8.1",
-    "chai-stats": "~0.3.0"
+    "chai-stats": "~0.3.0",
+    "seed-random": "2.2.x"
   },
   "author": {
     "name": "Jussi Kalliokoski",

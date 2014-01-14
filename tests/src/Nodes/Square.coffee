@@ -16,7 +16,7 @@ describe.skip "Nodes.Square", ->
         buffer1 = new Float32Array(blockSize)
         buffer2 = new Float32Array(blockSize)
         square.process(buffer1)
-        square.process(buffer2);debugger
+        square.process(buffer2)
 
         compareBuffers(helpers.toUInt16(buffer1), refData.slice(0, blockSize))
         compareBuffers(helpers.toUInt16(buffer2), refData.slice(blockSize, blockSize * 2))
